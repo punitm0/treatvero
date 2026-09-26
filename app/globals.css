@@ -1,26 +1,209 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * TreatVero design tokens — extracted from the Claude Design handoff
+ * (Home / India / TreatmentEnquiry / TVHeader / TVFooter prototypes).
+ */
+@theme {
+  /* Surfaces */
+  --color-canvas: #faf9f6; /* page background */
+  --color-surface: #ffffff; /* cards, white bands */
+  --color-sand: #f3f1ec; /* alternate section band */
+  --color-sand-2: #f5f3ee; /* info boxes inside forms */
+  --color-sand-3: #f7f6f2; /* journey role chips */
+  --color-hover: #efede7; /* nav hover background */
+  --color-dropzone: #fcfbf9;
+
+  /* Ink */
+  --color-ink: #14201d;
+  --color-ink-muted: #4a5552;
+  /* Mockup used #6B7471; darkened slightly so small text passes WCAG AA on sand. */
+  --color-ink-subtle: #636c69;
+
+  /* Brand */
+  --color-brand: #1d5a52;
+  --color-brand-hover: #164840;
+  --color-brand-deep: #0f2e2a;
+  --color-brand-tint: #eef4f2;
+  --color-brand-tint-2: #eaf2ef;
+  --color-brand-tint-3: #f2f7f5;
+  --color-brand-line: #bfd3ce;
+
+  /* Lines */
+  --color-line: #e4e1da;
+  --color-line-strong: #d9d5cc;
+  --color-line-soft: #eeebe4;
+  --color-line-alt: #dcd8cf;
+  --color-line-faint: #ece9e2;
+  --color-line-dash: #c9c4b8;
+  --color-line-hover: #b9b4a9;
+  --color-progress: #e7e4dd;
+
+  /* Status */
+  --color-live: #2fa36b;
+  --color-live-bright: #4cc38a;
+  --color-warn-ink: #8a5a1f;
+  --color-warn-bg: #fbf3e6;
+  --color-warn-line: #efddbf;
+  --color-error: #8a4b2f;
+
+  /* On dark (brand-deep) */
+  --color-ondark-muted: #c9dbd6;
+  --color-ondark-2: #b9cfc9;
+  --color-ondark-accent: #8fc2b5;
+  --color-ondark-soft: #d8e6e2;
+  --color-inverse-hover: #e6efec;
+
+  /* Breakpoints — the design collapses the header nav below ~1100px (1120 so all items fit) */
+  --breakpoint-desk: 70rem;
+
+  /* Type */
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-newsreader), Georgia, serif;
+
+  /* Shadows */
+  --shadow-card: 0 1px 2px rgba(20, 32, 29, 0.04), 0 24px 48px -20px rgba(20, 32, 29, 0.22);
+  --shadow-lift: 0 14px 32px -18px rgba(20, 32, 29, 0.25);
+  --shadow-float: 0 12px 32px -12px rgba(20, 32, 29, 0.3);
+  --shadow-form: 0 1px 2px rgba(20, 32, 29, 0.04), 0 12px 40px -16px rgba(20, 32, 29, 0.12);
+  --shadow-tab: 0 1px 3px rgba(20, 32, 29, 0.12);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ---------- Typographic scale (mockup clamp values, cqw → vw) ---------- */
+@utility text-display {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(42px, 6vw, 78px);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+@utility text-display-sm {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(40px, 5.6vw, 72px);
+  line-height: 1.03;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+@utility text-h2 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(34px, 4.2vw, 54px);
+  line-height: 1.06;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+@utility text-h2-sm {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(32px, 4vw, 50px);
+  line-height: 1.06;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+@utility text-h3-lg {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(30px, 3.6vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+@utility text-lede {
+  font-size: clamp(17px, 1.5vw, 19px);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---------- Layout ---------- */
+@utility container-site {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 4vw, 40px);
+}
+@utility section-y {
+  padding-block: clamp(72px, 9vw, 128px);
+}
+@utility section-y-sm {
+  padding-block: clamp(72px, 9vw, 120px);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  a {
+    color: var(--color-brand);
+  }
+  a:hover {
+    color: var(--color-brand-deep);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  /* Offset in-page anchors below the sticky header */
+  [id] {
+    scroll-margin-top: 88px;
+  }
+  ::selection {
+    background: var(--color-brand-tint);
+    color: var(--color-ink);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* FAQ disclosure (native <details>) */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details[open] .faq-plus {
+  display: none;
+}
+details:not([open]) .faq-minus {
+  display: none;
 }
