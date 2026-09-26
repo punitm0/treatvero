@@ -32,6 +32,9 @@ function PlanCard({ plan, featured = false, headingLevel: H = "h3" }: { plan: Pl
           </span>
           <span className={cn("text-[15px]", featured ? "text-ondark-2" : "text-ink-muted")}>USD · {plan.billingNote}</span>
         </div>
+        {plan.priceNote ? (
+          <p className={cn("mt-2 mb-0 text-sm", featured ? "text-ondark-2" : "text-ink-muted")}>{plan.priceNote}</p>
+        ) : null}
         <p className={cn("mt-2.5 mb-0 text-sm", featured ? "text-ondark-2" : "text-ink-muted")}>{plan.description}</p>
       </div>
       <div className={cn("flex flex-1 flex-col gap-3 border-t pt-6", featured ? "border-white/15" : "border-line-soft")}>

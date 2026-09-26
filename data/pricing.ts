@@ -3,19 +3,25 @@ import type { Plan, PlanId } from "@/types";
 /**
  * Single source of truth for TreatVero plans.
  *
- * Final prices have not been agreed. Set `priceUSD` to a number to publish a
- * price everywhere (cards, enquiry flow, FAQ, checkout) at once — no
- * component holds a price of its own.
+ * `priceUSD` publishes a price everywhere (cards, enquiry flow, FAQ, checkout)
+ * at once — no component holds a price of its own. Set it to null to show the
+ * placeholder instead.
  */
 export const CURRENCY = "USD" as const;
+
+/** On-ground days covered by the Concierge fee. */
+export const CONCIERGE_INCLUDED_DAYS = 14;
+/** Concierge fee for each additional week on the ground. */
+export const CONCIERGE_EXTRA_WEEK_USD = 250;
 
 export const plans: Record<PlanId, Plan> = {
   basic: {
     id: "basic",
     name: "Basic",
-    priceUSD: null,
+    priceUSD: 199,
     pricePlaceholder: "$XX",
     billingNote: "one-time",
+    priceNote: "Credited in full if you upgrade to Concierge.",
     description: "For patients who want help finding and coordinating treatment options.",
     features: [
       "Initial case coordination",
@@ -34,9 +40,10 @@ export const plans: Record<PlanId, Plan> = {
   concierge: {
     id: "concierge",
     name: "Concierge",
-    priceUSD: null,
+    priceUSD: 1190,
     pricePlaceholder: "$XXX",
     billingNote: "one-time",
+    priceNote: `Covers up to ${CONCIERGE_INCLUDED_DAYS} days on the ground, then $${CONCIERGE_EXTRA_WEEK_USD} per additional week.`,
     description: "For patients who want end-to-end support throughout their medical journey.",
     badge: "Most Complete",
     featuresIntro: "Everything in Basic, plus:",

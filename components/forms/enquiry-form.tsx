@@ -415,6 +415,7 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
                                   <span className="font-serif text-[40px] leading-none tracking-[-0.03em]">{formatPlanPrice(p)}</span>
                                   <span className="text-sm text-ink-muted">USD · {p.billingNote}</span>
                                 </span>
+                                {p.priceNote ? <span className="text-[13px] text-ink-subtle">{p.priceNote}</span> : null}
                                 <span className="text-sm text-ink-muted">{p.description}</span>
                                 <span className="mt-auto flex items-center gap-2 text-sm font-medium text-brand">
                                   <span

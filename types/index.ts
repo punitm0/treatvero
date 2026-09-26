@@ -89,6 +89,8 @@ export type Plan = {
   /** Shown while priceUSD is null (e.g. "$XX"). */
   pricePlaceholder: string;
   billingNote: string;
+  /** Short pricing term shown under the price (e.g. what the fee covers). */
+  priceNote?: string;
   description: string;
   badge?: string;
   featuresIntro?: string;

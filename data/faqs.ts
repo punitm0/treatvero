@@ -1,5 +1,5 @@
 import type { FAQ } from "@/types";
-import { formatPlanPrice, plans } from "@/data/pricing";
+import { CONCIERGE_EXTRA_WEEK_USD, CONCIERGE_INCLUDED_DAYS, formatPlanPrice, plans } from "@/data/pricing";
 
 const basic = `${plans.basic.name} (${formatPlanPrice(plans.basic)})`;
 const concierge = `${plans.concierge.name} (${formatPlanPrice(plans.concierge)})`;
@@ -22,7 +22,12 @@ export const generalFaqs: FAQ[] = [
   },
   {
     question: "How much does TreatVero cost?",
-    answer: `TreatVero is a paid service with two plans, priced in USD and agreed before any work starts: ${basic} and ${concierge}. There is no free plan. Medical treatment and other third-party costs are paid separately.`,
+    answer: `TreatVero is a paid service with two plans, priced in USD and agreed before any work starts: ${basic} and ${concierge}. Concierge covers up to ${CONCIERGE_INCLUDED_DAYS} days on the ground; longer stays are $${CONCIERGE_EXTRA_WEEK_USD} per additional week. If you start on Basic and upgrade, your Basic fee is credited toward Concierge. There is no free plan. Medical treatment and other third-party costs are paid separately.`,
+  },
+  {
+    question: "Does TreatVero take commissions from hospitals?",
+    answer:
+      "No. TreatVero is paid by patients through our plan fees — we don't currently receive commissions or referral fees from hospitals, so the options we share aren't shaped by who pays us. If that ever changes, we'll say so clearly before you choose a provider.",
   },
   {
     question: "What does the Basic plan include?",
@@ -117,6 +122,7 @@ export const indiaFaqs: FAQ[] = [
 export const pricingFaqs: FAQ[] = generalFaqs.filter((f) =>
   [
     "How much does TreatVero cost?",
+    "Does TreatVero take commissions from hospitals?",
     "What does the Basic plan include?",
     "What does Concierge include?",
     "Are treatment costs included?",
