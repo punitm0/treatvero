@@ -21,14 +21,13 @@
 		"binding": "IMAGES"
 	},
 
-	// Treatment requests. Schema lives in ./migrations.
-	// Create with `npx wrangler d1 create treatvero` and paste the id below
-	// (local development works without it).
+	// Treatment requests. Schema lives in ./migrations
+	// (apply with `npx wrangler d1 migrations apply treatvero --remote`).
 	"d1_databases": [
 		{
 			"binding": "DB",
 			"database_name": "treatvero",
-			"database_id": "00000000-0000-0000-0000-000000000000",
+			"database_id": "71e1a1da-bd8a-4bdd-b78d-4a9ea5b1d90e",
 			"migrations_dir": "migrations"
 		}
 	],
