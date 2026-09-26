@@ -1,4 +1,4 @@
-import { THIRD_PARTY_COSTS_NOTE } from "@/data/pricing";
+import { CONCIERGE_EXTRA_WEEK_USD, CONCIERGE_INCLUDED_DAYS, THIRD_PARTY_COSTS_NOTE } from "@/data/pricing";
 import { pageMetadata } from "@/lib/seo";
 import { LegalPage } from "@/components/ui/legal-page";
 
@@ -43,6 +43,11 @@ export default function TermsPage() {
               <p>
                 TreatVero offers two paid plans, Basic and Concierge, priced in USD and confirmed with you before work
                 starts. There is no free plan.
+              </p>
+              <p>
+                The Concierge fee covers up to {CONCIERGE_INCLUDED_DAYS} days of on-ground support; each additional
+                week is ${CONCIERGE_EXTRA_WEEK_USD}. If you upgrade from Basic to Concierge, the Basic fee you paid is
+                credited toward Concierge.
               </p>
               <p>{THIRD_PARTY_COSTS_NOTE}</p>
             </>
