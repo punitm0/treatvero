@@ -1,5 +1,5 @@
 import { Check, Minus } from "lucide-react";
-import { formatPlanPrice, planComparison, plans } from "@/data/pricing";
+import { formatPlanCompareAt, formatPlanPrice, planComparison, plans } from "@/data/pricing";
 import { cn } from "@/lib/utils";
 
 function Mark({ on }: { on: boolean }) {
@@ -37,7 +37,17 @@ export function PricingComparison() {
                 )}
               >
                 <div className="text-[15px] font-medium sm:text-base">{p.name}</div>
-                <div className="font-mono text-xs text-ink-subtle">{formatPlanPrice(p)}</div>
+                <div className="font-mono text-xs text-ink-subtle">
+                  {formatPlanCompareAt(p) ? (
+                    <>
+                      <s>
+                        <span className="sr-only">Was </span>
+                        {formatPlanCompareAt(p)}
+                      </s>{" "}
+                    </>
+                  ) : null}
+                  {formatPlanPrice(p)}
+                </div>
               </th>
             ))}
           </tr>

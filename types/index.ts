@@ -88,6 +88,8 @@ export type Plan = {
   priceUSD: number | null;
   /** Shown while priceUSD is null (e.g. "$XX"). */
   pricePlaceholder: string;
+  /** Previous price, shown struck through beside `priceUSD` to show a reduction. */
+  compareAtUSD?: number;
   billingNote: string;
   /** Short pricing term shown under the price (e.g. what the fee covers). */
   priceNote?: string;
