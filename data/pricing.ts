@@ -12,7 +12,7 @@ export const CURRENCY = "USD" as const;
 /** On-ground days covered by the Concierge fee. */
 export const CONCIERGE_INCLUDED_DAYS = 14;
 /** Concierge fee for each additional week on the ground. */
-export const CONCIERGE_EXTRA_WEEK_USD = 250;
+export const CONCIERGE_EXTRA_WEEK_USD = 125;
 
 export const plans: Record<PlanId, Plan> = {
   basic: {
