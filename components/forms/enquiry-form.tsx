@@ -8,7 +8,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, Check, Loader2, Lock, MessageCircle } from "lucide-react";
 import type { z } from "zod";
 import type { PlanId } from "@/types";
-import { formatPlanPrice, planList, THIRD_PARTY_COSTS_NOTE } from "@/data/pricing";
+import { formatPlanCompareAt, formatPlanPrice, planList, THIRD_PARTY_COSTS_NOTE } from "@/data/pricing";
 import {
   BUDGET_OPTIONS,
   CITY_OPTIONS,
@@ -396,6 +396,7 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
                       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-3">
                         {planList.map((p) => {
                           const on = selectedPlan === p.id;
+                          const compareAt = formatPlanCompareAt(p);
                           return (
                             <label key={p.id} className="relative block cursor-pointer">
                               <input type="radio" value={p.id} className="peer sr-only" {...register("plan")} />
@@ -411,7 +412,13 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
                                     <span className="rounded-full bg-brand-deep px-2.5 py-0.5 text-[11px] text-white">{p.badge}</span>
                                   ) : null}
                                 </span>
-                                <span className="flex items-baseline gap-2">
+                                <span className="flex flex-wrap items-baseline gap-2">
+                                  {compareAt ? (
+                                    <s className="font-serif text-2xl leading-none text-ink-subtle">
+                                      <span className="sr-only">Was </span>
+                                      {compareAt}
+                                    </s>
+                                  ) : null}
                                   <span className="font-serif text-[40px] leading-none tracking-[-0.03em]">{formatPlanPrice(p)}</span>
                                   <span className="text-sm text-ink-muted">USD · {p.billingNote}</span>
                                 </span>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Check, Info } from "lucide-react";
 import type { Plan } from "@/types";
-import { formatPlanPrice, plans, THIRD_PARTY_COSTS_NOTE } from "@/data/pricing";
+import { formatPlanCompareAt, formatPlanPrice, plans, THIRD_PARTY_COSTS_NOTE } from "@/data/pricing";
 import { ENQUIRY_PATH } from "@/lib/config";
 import { buttonClasses } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 function PlanCard({ plan, featured = false, headingLevel: H = "h3" }: { plan: Plan; featured?: boolean; headingLevel?: "h2" | "h3" }) {
   const price = formatPlanPrice(plan);
   const pending = plan.priceUSD == null;
+  const compareAt = formatPlanCompareAt(plan);
   return (
     <article
       aria-labelledby={`plan-${plan.id}`}
@@ -27,8 +28,21 @@ function PlanCard({ plan, featured = false, headingLevel: H = "h3" }: { plan: Pl
           ) : null}
         </div>
         <div className="flex flex-wrap items-baseline gap-2">
+          {compareAt ? (
+            <s className={cn("font-serif text-3xl leading-none tracking-[-0.02em]", featured ? "text-ondark-2" : "text-ink-subtle")}>
+              <span className="sr-only">Was </span>
+              {compareAt}
+            </s>
+          ) : null}
           <span className="font-serif text-6xl leading-none tracking-[-0.03em]">
-            {pending ? <span aria-label={`${plan.name} price to be confirmed`}>{price}</span> : price}
+            {pending ? (
+              <span aria-label={`${plan.name} price to be confirmed`}>{price}</span>
+            ) : (
+              <>
+                {compareAt ? <span className="sr-only">now </span> : null}
+                {price}
+              </>
+            )}
           </span>
           <span className={cn("text-[15px]", featured ? "text-ondark-2" : "text-ink-muted")}>USD · {plan.billingNote}</span>
         </div>

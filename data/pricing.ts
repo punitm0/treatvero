@@ -18,7 +18,8 @@ export const plans: Record<PlanId, Plan> = {
   basic: {
     id: "basic",
     name: "Basic",
-    priceUSD: 199,
+    priceUSD: 99,
+    compareAtUSD: 199,
     pricePlaceholder: "$XX",
     billingNote: "one-time",
     priceNote: "Credited in full if you upgrade to Concierge.",
@@ -40,7 +41,8 @@ export const plans: Record<PlanId, Plan> = {
   concierge: {
     id: "concierge",
     name: "Concierge",
-    priceUSD: 1190,
+    priceUSD: 595,
+    compareAtUSD: 1190,
     pricePlaceholder: "$XXX",
     billingNote: "one-time",
     priceNote: `Covers up to ${CONCIERGE_INCLUDED_DAYS} days on the ground, then $${CONCIERGE_EXTRA_WEEK_USD} per additional week.`,
@@ -72,13 +74,23 @@ export const planList: Plan[] = [plans.basic, plans.concierge];
 export const THIRD_PARTY_COSTS_NOTE =
   "Medical treatment, visa fees, flights, hotels, transportation and other third-party expenses are paid separately.";
 
-export function formatPlanPrice(plan: Plan): string {
-  if (plan.priceUSD == null) return plan.pricePlaceholder;
+function formatUSD(amount: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: CURRENCY,
-    maximumFractionDigits: plan.priceUSD % 1 === 0 ? 0 : 2,
-  }).format(plan.priceUSD);
+    maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
+  }).format(amount);
+}
+
+export function formatPlanPrice(plan: Plan): string {
+  if (plan.priceUSD == null) return plan.pricePlaceholder;
+  return formatUSD(plan.priceUSD);
+}
+
+/** The struck-through previous price, or null when the plan isn't reduced. */
+export function formatPlanCompareAt(plan: Plan): string | null {
+  if (plan.priceUSD == null || plan.compareAtUSD == null || plan.compareAtUSD <= plan.priceUSD) return null;
+  return formatUSD(plan.compareAtUSD);
 }
 
 export function isPlanId(value: unknown): value is PlanId {
