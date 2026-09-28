@@ -6,7 +6,7 @@ Built from the Claude Design handoff (Home, India, Treatment Enquiry, header and
 
 ## Stack
 
-Next.js 16 (App Router, Turbopack) on **Cloudflare Workers** via the OpenNext adapter · D1 (treatment requests) · R2 (private medical reports) · Workers Rate Limiting · Turnstile (bot protection) · Email Sending (enquiry alerts) · Cloudflare Access (admin) · TypeScript · Tailwind CSS v4 · React Hook Form + Zod · Motion (enquiry step transitions only) · Lucide icons · `next/font` (Geist, Geist Mono, Newsreader) · `next/image`.
+Next.js 16 (App Router, Turbopack) on **Cloudflare Workers** via the OpenNext adapter · D1 (treatment requests) · R2 (private medical reports) · Workers Rate Limiting · Turnstile (bot protection) · Resend (enquiry alerts) · Cloudflare Access (admin) · TypeScript · Tailwind CSS v4 · React Hook Form + Zod · Motion (enquiry step transitions only) · Lucide icons · `next/font` (Geist, Geist Mono, Newsreader) · `next/image`.
 
 ## Getting started
 
@@ -34,7 +34,7 @@ npx wrangler d1 migrations apply treatvero --remote
 npx wrangler r2 bucket lifecycle add treatvero-reports purge-abandoned-uploads pending/ --expire-days 7
 npx wrangler secret put TURNSTILE_SECRET        # from the Turnstile widget
 npx wrangler secret put SESSION_SECRET          # e.g. `openssl rand -base64 32`
-npx wrangler email sending enable treatvero.com # sender domain for enquiry alerts
+npx wrangler secret put RESEND_API_KEY          # Resend API key (sending access) for enquiry alerts
 ```
 
 Run `npx wrangler d1 migrations apply treatvero --remote` again whenever `migrations/` changes, **before** deploying.
@@ -43,7 +43,7 @@ Then `npm run deploy`. Build-time `NEXT_PUBLIC_*` values must be present in the 
 
 - **Never** enable public access (r2.dev or a custom domain) on `treatvero-reports`.
 - Uploads land in `pending/` and move to `requests/<reference>/` when an enquiry is submitted; the lifecycle rule removes abandoned uploads.
-- New enquiries email `ENQUIRY_ALERT_TO` (`wrangler.jsonc`). Alerts contain no patient name, contact details or medical description — only a link to the admin.
+- New enquiries email `ENQUIRY_ALERT_TO` (`wrangler.jsonc`) through Resend, from `ENQUIRY_ALERT_FROM`; `treatvero.com` must be a verified domain in Resend. Alerts contain no patient name, contact details or medical description — only a link to the admin.
 
 ## Admin
 
@@ -78,7 +78,7 @@ Access is enforced by **Cloudflare Access**, and the app verifies the Access JWT
 | `lib/rate-limit.ts` | Workers Rate Limiting bindings (enquiries 5/min, uploads 20/min, bot checks 10/min per IP) |
 | `lib/security` | Turnstile verification and the signed visitor session |
 | `lib/admin`, `app/coord-*` | Admin auth (Cloudflare Access JWT), data access and pages |
-| `lib/notifications` | New-enquiry alert email |
+| `lib/notifications` | New-enquiry alert email (Resend) |
 | `app/(site)` | Public pages (share the header/footer layout) |
 
 ## Content and trust rules
@@ -91,7 +91,7 @@ Access is enforced by **Cloudflare Access**, and the app verifies the Access JWT
 ## Production TODOs
 
 - **Admin:** create the Cloudflare Access application and set `CF_ACCESS_TEAM_DOMAIN` / `CF_ACCESS_AUD` (see Admin). Limit Cloudflare account roles to people who need raw D1/R2 access.
-- **Email:** onboard `treatvero.com` for Email Sending, and set up Email Routing so `hello@treatvero.com` forwards to the team inbox.
+- **Email:** verify `treatvero.com` in Resend and set `RESEND_API_KEY`; set up Cloudflare Email Routing so `hello@treatvero.com` forwards to the team inbox.
 - **Bot protection:** optionally add a WAF rate-limit rule (Workers rate limits are per location).
 - **Cache interception** is disabled in `open-next.config.ts` (it caused an RSC prefetch loop with Next 16.3); re-test before enabling.
 - **Payments:** set real prices in `data/pricing.ts`; if using Stripe, add a signature-verified webhook before relying on payment status.

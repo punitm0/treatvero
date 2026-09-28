@@ -6,8 +6,9 @@ import { ADMIN_PATH } from "@/lib/admin/path";
 import type { EnquiryInput } from "@/lib/validation/enquiry";
 
 /**
- * Emails the coordination team when an enquiry arrives (Cloudflare Email
- * Sending, `EMAIL` binding). Recipients come from ENQUIRY_ALERT_TO.
+ * Emails the coordination team when an enquiry arrives, via the Resend API
+ * (RESEND_API_KEY Worker secret; the sender domain must be verified in
+ * Resend). Recipients come from ENQUIRY_ALERT_TO.
  *
  * Email leaves our infrastructure, so the alert deliberately contains no
  * patient name, contact details, age or medical description — only enough to
@@ -20,7 +21,12 @@ export function sendEnquiryAlert(args: { reference: string; input: EnquiryInput;
     .map((s) => s.trim())
     .filter(Boolean);
   const from = String(env.ENQUIRY_ALERT_FROM || "");
-  if (!to.length || !from || !env.EMAIL) return;
+  const apiKey = env.RESEND_API_KEY;
+  if (!to.length || !from) return;
+  if (!apiKey) {
+    console.warn(`[enquiry] RESEND_API_KEY not set — alert for ${args.reference} skipped`);
+    return;
+  }
 
   const { reference, input, reportCount } = args;
   const link = absoluteUrl(`${ADMIN_PATH}/requests/${reference}`);
@@ -57,13 +63,23 @@ export function sendEnquiryAlert(args: { reference: string; input: EnquiryInput;
   ctx.waitUntil(
     (async () => {
       try {
-        await env.EMAIL.send({
-          to,
-          from: { email: from, name: `${siteConfig.name} alerts` },
-          subject: `New ${plan} enquiry ${reference}`,
-          text,
-          html,
+        const res = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+            // Resend drops repeats of the same key for 24h, so retries never double-send.
+            "Idempotency-Key": `enquiry-alert/${reference}`,
+          },
+          body: JSON.stringify({
+            from: `${siteConfig.name} alerts <${from}>`,
+            to,
+            subject: `New ${plan} enquiry ${reference}`,
+            text,
+            html,
+          }),
         });
+        if (!res.ok) console.error(`[enquiry] alert email for ${reference} failed (${res.status})`);
       } catch {
         console.error(`[enquiry] alert email for ${reference} failed`);
       }

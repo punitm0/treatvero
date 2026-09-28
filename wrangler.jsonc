@@ -56,21 +56,18 @@
 		{ "name": "SESSION_RATE_LIMITER", "namespace_id": "1003", "simple": { "limit": 10, "period": 60 } }
 	],
 
-	// New-enquiry alerts (Cloudflare Email Sending). The sender domain must be
-	// onboarded: `npx wrangler email sending enable treatvero.com`.
-	"send_email": [{ "name": "EMAIL" }],
 
-	// Secrets (never here): TURNSTILE_SECRET, SESSION_SECRET — `npx wrangler secret put <NAME>`.
+	// Secrets (never here): TURNSTILE_SECRET, SESSION_SECRET, RESEND_API_KEY — `npx wrangler secret put <NAME>`.
 	"vars": {
 		"PAYMENTS_PROVIDER": "manual",
-		// Comma-separated recipients of new-enquiry alerts. Alerts carry no patient details.
+		// New-enquiry alerts (sent with Resend). Comma-separated recipients; alerts carry no patient details.
 		"ENQUIRY_ALERT_TO": "hello@treatvero.com",
 		"ENQUIRY_ALERT_FROM": "alerts@treatvero.com",
 		// Cloudflare Access protecting the admin path (lib/admin/path.ts).
 		// Team domain, e.g. "treatvero.cloudflareaccess.com", and the application's AUD tag.
 		// The admin denies everyone until both are set.
-		"CF_ACCESS_TEAM_DOMAIN": "",
-		"CF_ACCESS_AUD": ""
+		"CF_ACCESS_TEAM_DOMAIN": "quiet-bar-ac59.cloudflareaccess.com",
+		"CF_ACCESS_AUD": "ac98b0ba6d1cd7cf2f5ea0ebf97767f2897f5450f730c67ea120086ffed58e02"
 	},
 
 	"observability": { "enabled": true }
