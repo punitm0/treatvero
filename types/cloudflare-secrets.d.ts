@@ -3,4 +3,5 @@
 interface CloudflareEnv {
   TURNSTILE_SECRET?: string;
   SESSION_SECRET?: string;
+  RESEND_API_KEY?: string;
 }

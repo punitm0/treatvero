@@ -3,3 +3,5 @@
 # session secret. `npm run preview` is a production build and needs them set.
 TURNSTILE_SECRET=1x0000000000000000000000000000000AA
 SESSION_SECRET=local-dev-session-secret
+# Optional: enquiry alert emails are skipped when unset.
+# RESEND_API_KEY=
