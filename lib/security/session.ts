@@ -32,6 +32,15 @@ async function sign(value: string, key: string): Promise<string> {
   return btoa(String.fromCharCode(...mac)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
+/**
+ * HMAC of `value` keyed by the session secret, for other signed tokens
+ * (e.g. patient links). Null when no secret is configured.
+ */
+export async function signWithSessionSecret(value: string): Promise<string | null> {
+  const key = secret();
+  return key ? sign(value, key) : null;
+}
+
 function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let diff = 0;
