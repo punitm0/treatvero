@@ -67,11 +67,10 @@ export type Hospital = {
   accreditations: string[];
   specialties: TreatmentSlug[];
   description: string;
-  /**
-   * Only a photo we have the rights to use. When omitted, the city photo is
-   * shown instead — never a stock hospital photo beside a real hospital's name.
-   */
+  /** Photo of the hospital itself. When omitted, the city photo is shown instead. */
   image?: string;
+  /** Credit shown under the photo on the hospital page, when the source requires one. */
+  imageCredit?: string;
   /** The hospital's official website. */
   website?: string;
   /** ISO date the listing (name, city, accreditations) was last checked against official sources. */

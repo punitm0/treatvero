@@ -33,9 +33,7 @@ export function HospitalsSection() {
               a partnership with TreatVero.
             </p>
           ) : (
-            <p className="m-0 max-w-[640px] text-[13px] text-ink-subtle">
-              Independent listings. A listing does not indicate a partnership with TreatVero.
-            </p>
+            <span />
           )}
           <Link href="/hospitals" className="inline-flex items-center gap-1.5 text-[15px] font-medium no-underline">
             Browse hospital options

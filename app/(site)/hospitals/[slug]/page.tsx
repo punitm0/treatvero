@@ -59,9 +59,20 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
         aside={
           <figure className="m-0">
             <div className="relative aspect-[16/11] overflow-hidden rounded-3xl border border-line bg-[#e8e4dc]">
-              <Image src={hospitalImage(h)} alt="" fill preload sizes="(min-width: 1100px) 560px, 100vw" className="object-cover" />
+              <Image
+                src={hospitalImage(h)}
+                alt={h.image ? `${h.name}, ${city.name}` : ""}
+                fill
+                preload
+                sizes="(min-width: 1100px) 560px, 100vw"
+                className="object-cover"
+              />
             </div>
-            {h.image ? null : <figcaption className="mt-2 text-[13px] text-ink-subtle">{city.name}, India</figcaption>}
+            {h.image ? (
+              h.imageCredit ? <figcaption className="mt-2 text-[13px] text-ink-subtle">{h.imageCredit}</figcaption> : null
+            ) : (
+              <figcaption className="mt-2 text-[13px] text-ink-subtle">{city.name}, India</figcaption>
+            )}
           </figure>
         }
       />
@@ -74,8 +85,8 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
               <p className="mt-3 mb-0 text-[13px] text-ink-subtle">Illustrative only. Verified accreditations are shown on real listings.</p>
             ) : h.verifiedOn ? (
               <p className="mt-3 mb-0 text-[13px] text-ink-subtle">
-                Checked against the accrediting body&apos;s directory on {formatDate(h.verifiedOn)}. Accreditation status can
-                change — confirm it with the hospital.
+                Checked against the {h.accreditations.join(" and ")} {h.accreditations.length > 1 ? "directories" : "directory"} on{" "}
+                {formatDate(h.verifiedOn)}.
               </p>
             ) : null}
           </div>
@@ -96,12 +107,11 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
             </ul>
           </div>
           <div className="rounded-[20px] border border-line bg-surface p-[22px]">
-            <h2 className="label-mono mt-0 mb-4 font-normal text-ink-subtle">Relationship</h2>
-            <p className="m-0 text-[15px] text-ink-muted">
-              {h.isConfirmedPartner
-                ? "TreatVero has a confirmed working agreement with this hospital."
-                : "Independent listing. TreatVero does not have a partnership with this hospital; options are requested on your behalf."}
-            </p>
+            <h2 className="label-mono mt-0 mb-4 font-normal text-ink-subtle">Location</h2>
+            <p className="m-0 text-[15px]">{city.name}, India</p>
+            {h.isConfirmedPartner ? (
+              <p className="mt-3 mb-0 text-[15px] text-ink-muted">TreatVero has a confirmed working agreement with this hospital.</p>
+            ) : null}
             {h.website ? (
               <p className="mt-3 mb-0 text-[15px]">
                 <a href={h.website} target="_blank" rel="noopener noreferrer nofollow">

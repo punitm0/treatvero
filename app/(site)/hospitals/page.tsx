@@ -65,8 +65,8 @@ export default function HospitalsPage() {
             </p>
           ) : (
             <p className="mt-0 mb-7 max-w-[760px] text-[15px] text-ink-muted">
-              Independent listings of accredited hospitals. A listing does not mean a partnership with TreatVero — options
-              are requested on your behalf, and we&apos;re not limited to the hospitals shown here.
+              JCI- and NABH-accredited hospitals in each city. Options are requested for your case, and we&apos;re not
+              limited to the hospitals shown here.
             </p>
           )}
           <HospitalsBrowser

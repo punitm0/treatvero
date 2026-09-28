@@ -29,7 +29,7 @@ export function HospitalCard({ hospital: h, headingLevel = "h3" }: { hospital: H
   return (
     <article className="flex flex-col overflow-hidden rounded-[20px] border border-line bg-surface">
       <div className="relative aspect-video bg-[#e8e4dc]">
-        <Image src={hospitalImage(h)} alt="" fill sizes="(min-width: 1100px) 400px, (min-width: 700px) 50vw, 100vw" className="object-cover" />
+        <Image src={hospitalImage(h)} alt={h.image ? h.name : ""} fill sizes="(min-width: 1100px) 400px, (min-width: 700px) 50vw, 100vw" className="object-cover" />
         {h.isSample ? <SampleBadge className="absolute top-3.5 left-3.5">Sample listing</SampleBadge> : null}
       </div>
       <div className="flex flex-1 flex-col gap-3.5 p-[22px]">
@@ -48,7 +48,7 @@ export function HospitalCard({ hospital: h, headingLevel = "h3" }: { hospital: H
         <p className="m-0 text-sm text-ink-muted">{specialtyLine(h)}</p>
         <div className="flex-1" />
         <div className="flex items-center justify-between gap-3 border-t border-line-soft pt-4">
-          <span className="text-xs text-ink-subtle">{h.isConfirmedPartner ? "TreatVero partner" : "Independent listing"}</span>
+          {h.isConfirmedPartner ? <span className="text-xs text-ink-subtle">TreatVero partner</span> : <span />}
           <Link href={ENQUIRY_PATH} className={buttonClasses({ variant: "outline", size: "sm", className: "h-11 px-4" })}>
             Request Options
           </Link>

@@ -109,8 +109,7 @@ function CityPage({ page }: { page: IndiaCityPage }) {
               ))}
             </ul>
             <p className="mt-5 mb-0 text-[13px] text-ink-subtle">
-              Independent listings — not partnerships. Options can also be requested from other suitable hospitals in{" "}
-              {city.name}.
+              Options can also be requested from other suitable hospitals in {city.name}.
             </p>
           </Container>
         </section>

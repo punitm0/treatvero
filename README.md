@@ -84,7 +84,7 @@ Access is enforced by **Cloudflare Access**, and the app verifies the Access JWT
 ## Content and trust rules
 
 - No fabricated testimonials, statistics, partnerships, accreditations or outcomes. The patient-stories band (labelled empty slots) and metrics are hidden until real content exists (`features.showPatientStoriesPlaceholder` / `features.showMetrics` in `lib/config.ts`).
-- Hospitals in `data/hospitals.ts` are **real, independently listed** hospitals (`isConfirmedPartner: false`). Accreditations are checked against the accrediting body's own directory (JCI's "Find JCI Accredited Organizations") and dated with `verifiedOn`; see the rules at the top of the file. Without a licensed photo, listings show the city photo. `isSample: true` entries are still supported (labelled, `noindex`, excluded from the sitemap).
+- Hospitals in `data/hospitals.ts` are **real hospitals**, none yet a partner (`isConfirmedPartner: false`). Each entry is checked against the hospital's own website (specialties, locality, website link) and its accreditations against the JCI and NABH directories, dated with `verifiedOn`; see the rules at the top of the file. Photos of each hospital live in `public/images/hospitals/`. `isSample: true` entries are still supported (labelled, `noindex`, excluded from the sitemap).
 - The comparison table is an **illustrative example**: unnamed hospitals and invented figures, always labelled "Illustrative" and never presented as quotes.
 - No real treatment prices are published.
 
