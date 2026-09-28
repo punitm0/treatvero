@@ -41,6 +41,11 @@ Run `npx wrangler d1 migrations apply treatvero --remote` again whenever `migrat
 
 Then `npm run deploy`. Build-time `NEXT_PUBLIC_*` values must be present in the environment that runs the build.
 
+- **Previews:** Workers Builds deploys non-production branches with `wrangler preview`, which uses the `previews` block in `wrangler.jsonc`: a separate `treatvero-preview` D1 database and `treatvero-reports-preview` bucket, so previews never touch patient data. `wrangler d1 migrations apply` only reads top-level bindings, so apply migrations to the preview database with a temporary config:
+  ```bash
+  printf '{"name":"x","compatibility_date":"2026-09-26","d1_databases":[{"binding":"DB","database_name":"treatvero-preview","database_id":"d5fdf779-db97-493b-850b-c7de824eb0de","migrations_dir":"migrations"}]}' > /tmp/preview.jsonc
+  npx wrangler d1 migrations apply treatvero-preview --remote --config /tmp/preview.jsonc
+  ```
 - **Never** enable public access (r2.dev or a custom domain) on `treatvero-reports`.
 - Uploads land in `pending/` and move to `requests/<reference>/` when an enquiry is submitted; the lifecycle rule removes abandoned uploads.
 - New enquiries email `ENQUIRY_ALERT_TO` (`wrangler.jsonc`) through Resend, from `ENQUIRY_ALERT_FROM`; `treatvero.com` must be a verified domain in Resend. Alerts contain no patient name, contact details or medical description — only a link to the admin.
