@@ -5,13 +5,13 @@ import { Check, Plus } from "lucide-react";
 import { comparisonSample } from "@/data/site";
 import { cn } from "@/lib/utils";
 
-const { options, rows } = comparisonSample;
+const { scenario, options, rows } = comparisonSample;
 
 function cellValue(rowKey: string, i: number): string {
   const row = rows.find((r) => r.key === rowKey)!;
   if (rowKey === "hospital") return options[i].hospital;
   if (rowKey === "city") return options[i].city;
-  return "value" in row ? row.value : "";
+  return "values" in row ? row.values[i] : "";
 }
 
 /**
@@ -27,7 +27,7 @@ export function ComparisonTable() {
       {/* Desktop / tablet */}
       <div className="hidden overflow-hidden rounded-2xl border border-line min-[860px]:block">
         <table className="w-full table-fixed border-collapse text-left">
-          <caption className="sr-only">Illustrative comparison of three sample hospital options</caption>
+          <caption className="sr-only">Illustrative comparison of three sample hospital options. {scenario}.</caption>
           <colgroup>
             <col className="w-[200px]" />
             <col />
@@ -36,7 +36,10 @@ export function ComparisonTable() {
           </colgroup>
           <thead>
             <tr className="border-b border-line bg-canvas">
-              <td className="label-mono px-5 py-[18px] align-bottom text-ink-subtle">Illustrative</td>
+              <td className="px-5 py-[18px] align-bottom">
+                <div className="label-mono text-ink-subtle">Illustrative</div>
+                <div className="mt-1 text-[13px] text-ink-muted">{scenario}</div>
+              </td>
               {options.map((o, i) => {
                 const on = pick === i;
                 return (
@@ -95,6 +98,9 @@ export function ComparisonTable() {
 
       {/* Mobile */}
       <div className="min-[860px]:hidden">
+        <p className="mt-0 mb-3 text-[13px] text-ink-muted">
+          <span className="label-mono text-ink-subtle">Illustrative</span> · {scenario}
+        </p>
         <div role="tablist" aria-label="Sample options" className="mb-3 grid grid-cols-3 gap-1 rounded-xl bg-sand p-1">
           {options.map((o, i) => (
             <button

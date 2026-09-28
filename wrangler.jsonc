@@ -70,5 +70,45 @@
 		"CF_ACCESS_AUD": "ac98b0ba6d1cd7cf2f5ea0ebf97767f2897f5450f730c67ea120086ffed58e02"
 	},
 
-	"observability": { "enabled": true }
+	"observability": { "enabled": true },
+
+	// Worker Previews (non-production branches, deployed by Workers Builds with
+	// `wrangler preview`). Bindings aren't inherited, and previews use their own
+	// D1 database and R2 bucket so preview URLs never touch patient data.
+	// `wrangler d1 migrations apply` only reads top-level bindings: apply to
+	// treatvero-preview with a temporary --config that lists it (see README).
+	// Secrets aren't set for previews, so the enquiry form won't submit there;
+	// alerts are skipped without RESEND_API_KEY, and the admin denies everyone
+	// (preview URLs aren't behind Cloudflare Access).
+	"previews": {
+		"vars": {
+			"PAYMENTS_PROVIDER": "manual",
+			"ENQUIRY_ALERT_TO": "hello@treatvero.com",
+			"ENQUIRY_ALERT_FROM": "alerts@treatvero.com",
+			"CF_ACCESS_TEAM_DOMAIN": "quiet-bar-ac59.cloudflareaccess.com",
+			"CF_ACCESS_AUD": "ac98b0ba6d1cd7cf2f5ea0ebf97767f2897f5450f730c67ea120086ffed58e02"
+		},
+		"d1_databases": [
+			{
+				"binding": "DB",
+				"database_name": "treatvero-preview",
+				"database_id": "d5fdf779-db97-493b-850b-c7de824eb0de",
+				"migrations_dir": "migrations"
+			}
+		],
+		"r2_buckets": [
+			{
+				"binding": "REPORTS",
+				"bucket_name": "treatvero-reports-preview"
+			}
+		],
+		"ratelimits": [
+			{ "name": "ENQUIRY_RATE_LIMITER", "namespace_id": "2001", "simple": { "limit": 5, "period": 60 } },
+			{ "name": "UPLOAD_RATE_LIMITER", "namespace_id": "2002", "simple": { "limit": 20, "period": 60 } },
+			{ "name": "SESSION_RATE_LIMITER", "namespace_id": "2003", "simple": { "limit": 10, "period": 60 } }
+		],
+		"images": {
+			"binding": "IMAGES"
+		}
+	}
 }

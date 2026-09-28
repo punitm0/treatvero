@@ -24,10 +24,11 @@ export function ComparisonSection() {
           <ComparisonTable />
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
             <div className="flex max-w-[600px] items-start gap-3">
-              <SampleBadge className="shrink-0">Sample data</SampleBadge>
+              <SampleBadge className="shrink-0">Illustrative</SampleBadge>
               <p className="m-0 text-[13px] text-ink-subtle">
-                Illustrative layout with placeholder values. Real options are prepared for each patient from hospital
-                responses; estimates are indicative until confirmed by the hospital.
+                Illustrative example — the hospitals are unnamed and the figures are not quotes or price guidance. Real
+                options are prepared for each patient from hospital responses; estimates are indicative until confirmed by
+                the hospital.
               </p>
             </div>
             <ButtonLink href={ENQUIRY_PATH} size="md+" className="gap-2">

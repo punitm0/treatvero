@@ -41,6 +41,11 @@ Run `npx wrangler d1 migrations apply treatvero --remote` again whenever `migrat
 
 Then `npm run deploy`. Build-time `NEXT_PUBLIC_*` values must be present in the environment that runs the build.
 
+- **Previews:** Workers Builds deploys non-production branches with `wrangler preview`, which uses the `previews` block in `wrangler.jsonc`: a separate `treatvero-preview` D1 database and `treatvero-reports-preview` bucket, so previews never touch patient data. `wrangler d1 migrations apply` only reads top-level bindings, so apply migrations to the preview database with a temporary config:
+  ```bash
+  printf '{"name":"x","compatibility_date":"2026-09-26","d1_databases":[{"binding":"DB","database_name":"treatvero-preview","database_id":"d5fdf779-db97-493b-850b-c7de824eb0de","migrations_dir":"migrations"}]}' > /tmp/preview.jsonc
+  npx wrangler d1 migrations apply treatvero-preview --remote --config /tmp/preview.jsonc
+  ```
 - **Never** enable public access (r2.dev or a custom domain) on `treatvero-reports`.
 - Uploads land in `pending/` and move to `requests/<reference>/` when an enquiry is submitted; the lifecycle rule removes abandoned uploads.
 - New enquiries email `ENQUIRY_ALERT_TO` (`wrangler.jsonc`) through Resend, from `ENQUIRY_ALERT_FROM`; `treatvero.com` must be a verified domain in Resend. Alerts contain no patient name, contact details or medical description — only a link to the admin.
@@ -84,16 +89,16 @@ Access is enforced by **Cloudflare Access**, and the app verifies the Access JWT
 ## Content and trust rules
 
 - No fabricated testimonials, statistics, partnerships, accreditations or outcomes. The patient-stories band (labelled empty slots) and metrics are hidden until real content exists (`features.showPatientStoriesPlaceholder` / `features.showMetrics` in `lib/config.ts`).
-- Hospitals in `data/hospitals.ts` are **sample data** (`isSample: true`, `isConfirmedPartner: false`): labelled in the UI, `noindex`, and excluded from the sitemap.
-- The comparison table uses clearly marked placeholder values.
-- No treatment prices are published.
+- Hospitals in `data/hospitals.ts` are **real hospitals**, none yet a partner (`isConfirmedPartner: false`). Each entry is checked against the hospital's own website (specialties, locality, website link) and its accreditations against the JCI and NABH directories, dated with `verifiedOn`; see the rules at the top of the file. Photos of each hospital live in `public/images/hospitals/`. `isSample: true` entries are still supported (labelled, `noindex`, excluded from the sitemap).
+- The comparison table is an **illustrative example**: unnamed hospitals and invented figures, always labelled "Illustrative" and never presented as quotes.
+- No real treatment prices are published.
 
 ## Production TODOs
 
-- **Admin:** create the Cloudflare Access application and set `CF_ACCESS_TEAM_DOMAIN` / `CF_ACCESS_AUD` (see Admin). Limit Cloudflare account roles to people who need raw D1/R2 access.
-- **Email:** confirm `treatvero.com` is verified in Resend (alerts send from `alerts@treatvero.com`).
+- **Admin:** limit Cloudflare account roles to people who need raw D1/R2 access.
 - **Bot protection:** optionally add a WAF rate-limit rule (Workers rate limits are per location).
 - **Cache interception** is disabled in `open-next.config.ts` (it caused an RSC prefetch loop with Next 16.3); re-test before enabling.
 - **Payments:** set real prices in `data/pricing.ts`; if using Stripe, add a signature-verified webhook before relying on payment status.
 - **CSP:** public pages still allow `'unsafe-inline'` scripts (static prerendering can't carry a nonce); revisit if they ever render user content, and consider CSP reporting.
-- **`/from/*` pages** need verified country-specific content before publishing.
+- **`/from/*` pages** need verified country-specific content before publishing (a scheduled job adds one country every two weeks as a PR).
+- **Hospitals:** a scheduled job adds one verified hospital a week as a PR; re-check existing `verifiedOn` dates periodically.

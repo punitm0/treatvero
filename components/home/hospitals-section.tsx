@@ -5,7 +5,8 @@ import { HospitalCard } from "@/components/hospitals/hospital-card";
 import { Container, SplitHeading } from "@/components/ui/primitives";
 
 export function HospitalsSection() {
-  const featured = [hospitals[0], hospitals[4], hospitals[2]];
+  // First listing from each of the first three cities, so the home page shows a spread.
+  const featured = hospitals.filter((h, i) => hospitals.findIndex((x) => x.city === h.city) === i).slice(0, 3);
   return (
     <section id="hospitals" aria-labelledby="hospitals-title" className="pt-[clamp(72px,9vw,128px)] pb-[clamp(40px,5vw,64px)]">
       <Container>

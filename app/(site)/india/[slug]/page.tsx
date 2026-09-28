@@ -108,6 +108,9 @@ function CityPage({ page }: { page: IndiaCityPage }) {
                 </li>
               ))}
             </ul>
+            <p className="mt-5 mb-0 text-[13px] text-ink-subtle">
+              Options can also be requested from other suitable hospitals in {city.name}.
+            </p>
           </Container>
         </section>
       ) : null}
