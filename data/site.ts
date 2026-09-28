@@ -145,22 +145,35 @@ export const trustPoints: { icon: IconName; lead: string; text: string }[] = [
 /* -------------------------- Comparison (sample) --------------------------- */
 
 /**
- * ILLUSTRATIVE SAMPLE — shows the format patients receive. Values are
- * placeholders and must never be presented as real estimates.
+ * ILLUSTRATIVE EXAMPLE — shows the format patients receive, with realistic-
+ * looking figures so the layout reads naturally. The hospitals are unnamed and
+ * the figures are invented: always shown with the "Illustrative" label and
+ * never presented as quotes, price guidance or real estimates.
  */
 export const comparisonSample = {
+  scenario: "Example: total knee replacement, one knee",
   options: [
-    { label: "Option A", hospital: "Sample Hospital A", city: "Delhi NCR" },
-    { label: "Option B", hospital: "Sample Hospital B", city: "Chennai" },
-    { label: "Option C", hospital: "Sample Hospital C", city: "Mumbai" },
+    { label: "Option A", hospital: "Multi-specialty hospital", city: "Delhi NCR" },
+    { label: "Option B", hospital: "Orthopaedic centre", city: "Chennai" },
+    { label: "Option C", hospital: "Multi-specialty hospital", city: "Mumbai" },
   ],
   rows: [
     { key: "hospital", label: "Hospital" },
     { key: "city", label: "City" },
-    { key: "doctor", label: "Doctor", value: "Consultant — named in the hospital's estimate" },
-    { key: "cost", label: "Estimated treatment cost", value: "$X,XXX – $X,XXX", mono: true },
-    { key: "stay", label: "Expected stay", value: "X days in hospital · X weeks in country" },
-    { key: "accreditation", label: "Accreditation", value: "e.g. JCI, NABH" },
-    { key: "next", label: "Next step", value: "Video consultation with the treating team" },
+    {
+      key: "doctor",
+      label: "Doctor",
+      values: ["Senior orthopaedic surgeon · 22 yrs", "Joint replacement surgeon · 17 yrs", "Senior orthopaedic surgeon · 26 yrs"],
+    },
+    { key: "cost", label: "Estimated treatment cost", values: ["$5,400 – $6,200", "$4,600 – $5,300", "$5,900 – $6,800"], mono: true },
+    {
+      key: "includes",
+      label: "Estimate includes",
+      values: ["Surgery, implant, 4 nights, in-hospital physio", "Surgery, implant, 5 nights", "Surgery, implant, 4 nights, 6 physio sessions"],
+    },
+    { key: "stay", label: "Expected stay", values: ["4 days in hospital · 3 weeks in India", "5 days in hospital · 3 weeks in India", "4 days in hospital · 2–3 weeks in India"] },
+    { key: "accreditation", label: "Accreditation", values: ["JCI · NABH", "NABH", "JCI · NABH"] },
+    { key: "reply", label: "Hospital replied in", values: ["2 working days", "3 working days", "1 working day"] },
+    { key: "next", label: "Next step", values: ["Video consultation with the surgeon", "Surgeon reviews recent X-rays", "Video consultation with the surgeon"] },
   ],
 } as const;

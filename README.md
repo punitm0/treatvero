@@ -84,16 +84,16 @@ Access is enforced by **Cloudflare Access**, and the app verifies the Access JWT
 ## Content and trust rules
 
 - No fabricated testimonials, statistics, partnerships, accreditations or outcomes. The patient-stories band (labelled empty slots) and metrics are hidden until real content exists (`features.showPatientStoriesPlaceholder` / `features.showMetrics` in `lib/config.ts`).
-- Hospitals in `data/hospitals.ts` are **sample data** (`isSample: true`, `isConfirmedPartner: false`): labelled in the UI, `noindex`, and excluded from the sitemap.
-- The comparison table uses clearly marked placeholder values.
-- No treatment prices are published.
+- Hospitals in `data/hospitals.ts` are **real, independently listed** hospitals (`isConfirmedPartner: false`). Accreditations are checked against the accrediting body's own directory (JCI's "Find JCI Accredited Organizations") and dated with `verifiedOn`; see the rules at the top of the file. Without a licensed photo, listings show the city photo. `isSample: true` entries are still supported (labelled, `noindex`, excluded from the sitemap).
+- The comparison table is an **illustrative example**: unnamed hospitals and invented figures, always labelled "Illustrative" and never presented as quotes.
+- No real treatment prices are published.
 
 ## Production TODOs
 
-- **Admin:** create the Cloudflare Access application and set `CF_ACCESS_TEAM_DOMAIN` / `CF_ACCESS_AUD` (see Admin). Limit Cloudflare account roles to people who need raw D1/R2 access.
-- **Email:** confirm `treatvero.com` is verified in Resend (alerts send from `alerts@treatvero.com`).
+- **Admin:** limit Cloudflare account roles to people who need raw D1/R2 access.
 - **Bot protection:** optionally add a WAF rate-limit rule (Workers rate limits are per location).
 - **Cache interception** is disabled in `open-next.config.ts` (it caused an RSC prefetch loop with Next 16.3); re-test before enabling.
 - **Payments:** set real prices in `data/pricing.ts`; if using Stripe, add a signature-verified webhook before relying on payment status.
 - **CSP:** public pages still allow `'unsafe-inline'` scripts (static prerendering can't carry a nonce); revisit if they ever render user content, and consider CSP reporting.
-- **`/from/*` pages** need verified country-specific content before publishing.
+- **`/from/*` pages** need verified country-specific content before publishing (a scheduled job adds one country every two weeks as a PR).
+- **Hospitals:** a scheduled job adds one verified hospital a week as a PR; re-check existing `verifiedOn` dates periodically.

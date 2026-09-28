@@ -63,7 +63,12 @@ export default function HospitalsPage() {
               These placeholder listings show how hospital options are presented. They are not real hospitals and do
               not indicate any partnership with TreatVero. Verified profiles will replace them.
             </p>
-          ) : null}
+          ) : (
+            <p className="mt-0 mb-7 max-w-[760px] text-[15px] text-ink-muted">
+              Independent listings of accredited hospitals. A listing does not mean a partnership with TreatVero — options
+              are requested on your behalf, and we&apos;re not limited to the hospitals shown here.
+            </p>
+          )}
           <HospitalsBrowser
             cities={cities.map((c) => ({ slug: c.slug, name: c.name }))}
             cards={hospitals.map((h) => ({ key: h.slug, city: h.city, node: <HospitalCardCompact hospital={h} /> }))}

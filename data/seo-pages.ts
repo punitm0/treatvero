@@ -31,11 +31,10 @@ export const indiaPages: IndiaPage[] = [
   { kind: "treatment", slug: "ivf", treatment: "ivf-fertility", label: "IVF", published: true },
   { kind: "city", slug: "delhi", city: "delhi-ncr", published: true },
   { kind: "city", slug: "mumbai", city: "mumbai", published: true },
-  // Not yet written — add content, then publish:
-  { kind: "city", slug: "chennai", city: "chennai", published: false },
-  { kind: "city", slug: "bengaluru", city: "bengaluru", published: false },
-  { kind: "city", slug: "hyderabad", city: "hyderabad", published: false },
-  { kind: "city", slug: "ahmedabad", city: "ahmedabad", published: false },
+  { kind: "city", slug: "chennai", city: "chennai", published: true },
+  { kind: "city", slug: "bengaluru", city: "bengaluru", published: true },
+  { kind: "city", slug: "hyderabad", city: "hyderabad", published: true },
+  { kind: "city", slug: "ahmedabad", city: "ahmedabad", published: true },
 ];
 
 export const publishedIndiaPages = indiaPages.filter((p) => p.published);

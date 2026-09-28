@@ -60,13 +60,22 @@ export type Hospital = {
   name: string;
   city: CitySlug;
   /**
-   * Accreditations as shown to patients. For sample data these are prefixed
-   * "e.g." and must never be presented as verified.
+   * Accreditations as shown to patients. Real listings only include
+   * accreditations checked against the accrediting body's own directory.
+   * For sample data these are prefixed "e.g." and must never be presented as verified.
    */
   accreditations: string[];
   specialties: TreatmentSlug[];
   description: string;
-  image: string;
+  /**
+   * Only a photo we have the rights to use. When omitted, the city photo is
+   * shown instead — never a stock hospital photo beside a real hospital's name.
+   */
+  image?: string;
+  /** The hospital's official website. */
+  website?: string;
+  /** ISO date the listing (name, city, accreditations) was last checked against official sources. */
+  verifiedOn?: string;
   /**
    * Development/sample entry. Sample hospitals are labelled in the UI,
    * excluded from the sitemap and served with noindex.

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin } from "lucide-react";
-import { getHospital, hospitals } from "@/data/hospitals";
+import { getHospital, hospitalImage, hospitals } from "@/data/hospitals";
 import { getCity } from "@/data/destinations";
 import { getTreatmentOrThrow } from "@/data/treatments";
 import { pageMetadata } from "@/lib/seo";
@@ -13,6 +13,10 @@ import { Icon } from "@/components/ui/icon";
 import { FinalCta } from "@/components/home/final-cta";
 
 export const dynamicParams = false;
+
+function formatDate(iso: string) {
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+}
 
 export function generateStaticParams() {
   return hospitals.map((h) => ({ slug: h.slug }));
@@ -53,9 +57,12 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
         title={h.name}
         lede={h.description}
         aside={
-          <div className="relative aspect-[16/11] overflow-hidden rounded-3xl border border-line bg-[#e8e4dc]">
-            <Image src={h.image} alt="" fill preload sizes="(min-width: 1100px) 560px, 100vw" className="object-cover" />
-          </div>
+          <figure className="m-0">
+            <div className="relative aspect-[16/11] overflow-hidden rounded-3xl border border-line bg-[#e8e4dc]">
+              <Image src={hospitalImage(h)} alt="" fill preload sizes="(min-width: 1100px) 560px, 100vw" className="object-cover" />
+            </div>
+            {h.image ? null : <figcaption className="mt-2 text-[13px] text-ink-subtle">{city.name}, India</figcaption>}
+          </figure>
         }
       />
       <section aria-label="Hospital details" className="pb-[clamp(56px,7vw,96px)]">
@@ -65,6 +72,11 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
             <p className="m-0 text-[15px]">{h.accreditations.join(" · ")}</p>
             {h.isSample ? (
               <p className="mt-3 mb-0 text-[13px] text-ink-subtle">Illustrative only. Verified accreditations are shown on real listings.</p>
+            ) : h.verifiedOn ? (
+              <p className="mt-3 mb-0 text-[13px] text-ink-subtle">
+                Checked against the accrediting body&apos;s directory on {formatDate(h.verifiedOn)}. Accreditation status can
+                change — confirm it with the hospital.
+              </p>
             ) : null}
           </div>
           <div className="rounded-[20px] border border-line bg-surface p-[22px]">
@@ -90,6 +102,13 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
                 ? "TreatVero has a confirmed working agreement with this hospital."
                 : "Independent listing. TreatVero does not have a partnership with this hospital; options are requested on your behalf."}
             </p>
+            {h.website ? (
+              <p className="mt-3 mb-0 text-[15px]">
+                <a href={h.website} target="_blank" rel="noopener noreferrer nofollow">
+                  Official website
+                </a>
+              </p>
+            ) : null}
           </div>
         </Container>
       </section>
