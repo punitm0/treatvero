@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
-import { Container, Eyebrow, SampleBadge } from "@/components/ui/primitives";
+import { Container, Eyebrow } from "@/components/ui/primitives";
 
 export type LegalSection = { id?: string; title: string; body: ReactNode };
 
@@ -25,10 +25,7 @@ export function LegalPage({
         <div className="max-w-[760px]">
           <Eyebrow>Legal</Eyebrow>
           <h1 className="text-h2 mb-5">{title}</h1>
-          <div className="mb-4 flex flex-wrap items-center gap-3 text-[13px] text-ink-subtle">
-            <span>Last updated {updated}</span>
-            <SampleBadge>Draft — pending legal review</SampleBadge>
-          </div>
+          <div className="mb-4 text-[13px] text-ink-subtle">Last updated {updated}</div>
           <div className="text-lede mb-10 text-ink-muted">{intro}</div>
           <ol className="m-0 list-none p-0">
             {sections.map((s, i) => (

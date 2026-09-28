@@ -35,7 +35,7 @@ export const siteConfig = {
  */
 export const features = {
   /** Shows the "Patient stories coming soon" placeholder band. Never shows fabricated stories. */
-  showPatientStoriesPlaceholder: true,
+  showPatientStoriesPlaceholder: false,
   /** Metrics band — keep false until verified figures are available. */
   showMetrics: false,
 } as const;

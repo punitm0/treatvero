@@ -83,7 +83,7 @@ Access is enforced by **Cloudflare Access**, and the app verifies the Access JWT
 
 ## Content and trust rules
 
-- No fabricated testimonials, statistics, partnerships, accreditations or outcomes. The patient-stories band shows labelled empty slots (`features.showPatientStoriesPlaceholder` in `lib/config.ts`); metrics are hidden.
+- No fabricated testimonials, statistics, partnerships, accreditations or outcomes. The patient-stories band (labelled empty slots) and metrics are hidden until real content exists (`features.showPatientStoriesPlaceholder` / `features.showMetrics` in `lib/config.ts`).
 - Hospitals in `data/hospitals.ts` are **sample data** (`isSample: true`, `isConfirmedPartner: false`): labelled in the UI, `noindex`, and excluded from the sitemap.
 - The comparison table uses clearly marked placeholder values.
 - No treatment prices are published.
@@ -91,10 +91,9 @@ Access is enforced by **Cloudflare Access**, and the app verifies the Access JWT
 ## Production TODOs
 
 - **Admin:** create the Cloudflare Access application and set `CF_ACCESS_TEAM_DOMAIN` / `CF_ACCESS_AUD` (see Admin). Limit Cloudflare account roles to people who need raw D1/R2 access.
-- **Email:** verify `treatvero.com` in Resend and set `RESEND_API_KEY`; set up Cloudflare Email Routing so `hello@treatvero.com` forwards to the team inbox.
+- **Email:** confirm `treatvero.com` is verified in Resend (alerts send from `alerts@treatvero.com`).
 - **Bot protection:** optionally add a WAF rate-limit rule (Workers rate limits are per location).
 - **Cache interception** is disabled in `open-next.config.ts` (it caused an RSC prefetch loop with Next 16.3); re-test before enabling.
 - **Payments:** set real prices in `data/pricing.ts`; if using Stripe, add a signature-verified webhook before relying on payment status.
 - **CSP:** public pages still allow `'unsafe-inline'` scripts (static prerendering can't carry a nonce); revisit if they ever render user content, and consider CSP reporting.
-- **Legal pages** are drafts pending legal review.
 - **`/from/*` pages** need verified country-specific content before publishing.
