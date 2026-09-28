@@ -10,7 +10,9 @@ import type { AllowedMime } from "@/lib/uploads/validate";
  * R2 encrypts all objects at rest.
  *
  * Uploads land in `pending/` and move to `requests/<reference>/` when the
- * enquiry is submitted. Add an R2 lifecycle rule that deletes `pending/`
+ * enquiry is submitted. Each pending upload is tagged with the uploader's
+ * session id (lib/security/session.ts) and can only be removed or attached
+ * by that session. Add an R2 lifecycle rule that deletes `pending/`
  * objects after ~7 days so abandoned uploads don't linger (see README).
  */
 export type StoredReport = {
@@ -19,14 +21,19 @@ export type StoredReport = {
   mimeType: AllowedMime;
   size: number;
   createdAt: string;
+  /** Session that uploaded the file; empty for legacy objects. */
+  sessionId: string;
 };
 
 export interface ReportStorage {
-  save(file: { bytes: Uint8Array; fileName: string; mimeType: AllowedMime }): Promise<StoredReport>;
+  save(file: { bytes: Uint8Array; fileName: string; mimeType: AllowedMime; sessionId: string }): Promise<StoredReport>;
   get(id: string): Promise<StoredReport | null>;
-  remove(id: string): Promise<void>;
+  /** Deletes a pending upload, only if it belongs to `sessionId`. */
+  remove(id: string, sessionId: string): Promise<void>;
   /** Moves pending uploads under the submitted request so cleanup never touches them. */
   attach(ids: string[], reference: string): Promise<void>;
+  /** Reads a report attached to a request (admin downloads). */
+  open(reference: string, id: string): Promise<R2ObjectBody | null>;
 }
 
 const ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -35,17 +42,18 @@ const key = (id: string) => `pending/${id}`;
 class R2ReportStorage implements ReportStorage {
   constructor(private readonly bucket: R2Bucket) {}
 
-  async save({ bytes, fileName, mimeType }: { bytes: Uint8Array; fileName: string; mimeType: AllowedMime }) {
+  async save({ bytes, fileName, mimeType, sessionId }: { bytes: Uint8Array; fileName: string; mimeType: AllowedMime; sessionId: string }) {
     const meta: StoredReport = {
       id: crypto.randomUUID(),
       fileName,
       mimeType,
       size: bytes.byteLength,
       createdAt: new Date().toISOString(),
+      sessionId,
     };
     await this.bucket.put(key(meta.id), bytes, {
       httpMetadata: { contentType: mimeType, contentDisposition: "attachment" },
-      customMetadata: { fileName, createdAt: meta.createdAt },
+      customMetadata: { fileName, createdAt: meta.createdAt, sessionId },
     });
     return meta;
   }
@@ -60,11 +68,13 @@ class R2ReportStorage implements ReportStorage {
       mimeType: (obj.httpMetadata?.contentType ?? "application/pdf") as AllowedMime,
       size: obj.size,
       createdAt: obj.customMetadata?.createdAt ?? obj.uploaded.toISOString(),
+      sessionId: obj.customMetadata?.sessionId ?? "",
     };
   }
 
-  async remove(id: string) {
-    if (!ID_RE.test(id)) return;
+  async remove(id: string, sessionId: string) {
+    const existing = await this.get(id);
+    if (!existing || existing.sessionId !== sessionId) return;
     await this.bucket.delete(key(id));
   }
 
@@ -79,6 +89,12 @@ class R2ReportStorage implements ReportStorage {
       });
       await this.bucket.delete(key(id));
     }
+  }
+
+  async open(reference: string, id: string) {
+    if (!ID_RE.test(id)) return null;
+    // Falls back to pending/ in case moving the file failed at submission time.
+    return (await this.bucket.get(`requests/${reference}/${id}`)) ?? (await this.bucket.get(key(id)));
   }
 }
 

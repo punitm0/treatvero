@@ -6,7 +6,7 @@ Built from the Claude Design handoff (Home, India, Treatment Enquiry, header and
 
 ## Stack
 
-Next.js 16 (App Router, Turbopack) on **Cloudflare Workers** via the OpenNext adapter · D1 (treatment requests) · R2 (private medical reports) · Workers Rate Limiting · TypeScript · Tailwind CSS v4 · React Hook Form + Zod · Motion (enquiry step transitions only) · Lucide icons · `next/font` (Geist, Geist Mono, Newsreader) · `next/image`.
+Next.js 16 (App Router, Turbopack) on **Cloudflare Workers** via the OpenNext adapter · D1 (treatment requests) · R2 (private medical reports) · Workers Rate Limiting · Turnstile (bot protection) · Email Sending (enquiry alerts) · Cloudflare Access (admin) · TypeScript · Tailwind CSS v4 · React Hook Form + Zod · Motion (enquiry step transitions only) · Lucide icons · `next/font` (Geist, Geist Mono, Newsreader) · `next/image`.
 
 ## Getting started
 
@@ -17,9 +17,9 @@ npx wrangler d1 migrations apply treatvero --local   # create the local D1 schem
 npm run dev
 ```
 
-`next dev` uses local emulations of D1, R2 and the rate limiters (stored in `.wrangler/`), so no Cloudflare account is needed to develop. `npm run preview` builds with OpenNext and runs the app in the real Workers runtime locally.
+`next dev` uses local emulations of D1, R2 and the rate limiters (stored in `.wrangler/`), so no Cloudflare account is needed to develop. Turnstile uses Cloudflare's always-pass test keys and the admin signs you in as `dev@localhost`. `npm run preview` builds with OpenNext and runs the app in the real Workers runtime locally (copy `.dev.vars.example` to `.dev.vars` first).
 
-> Shell environment variables override `.env*` files. If `NEXT_PUBLIC_SITE_URL` is exported in your shell, canonicals and the sitemap will use it.
+> Shell environment variables override `.env*` files. If `NEXT_PUBLIC_SITE_URL` is exported in your shell, canonicals and the sitemap will use it — unset it before `npm run deploy`.
 
 Scripts: `npm run dev`, `npm run preview`, `npm run deploy`, `npm run cf-typegen` (after editing `wrangler.jsonc`), `npm run lint`, `npx tsc --noEmit`.
 
@@ -32,13 +32,33 @@ npx wrangler d1 create treatvero            # paste the database_id into wrangle
 npx wrangler r2 bucket create treatvero-reports
 npx wrangler d1 migrations apply treatvero --remote
 npx wrangler r2 bucket lifecycle add treatvero-reports purge-abandoned-uploads pending/ --expire-days 7
+npx wrangler secret put TURNSTILE_SECRET        # from the Turnstile widget
+npx wrangler secret put SESSION_SECRET          # e.g. `openssl rand -base64 32`
+npx wrangler email sending enable treatvero.com # sender domain for enquiry alerts
 ```
+
+Run `npx wrangler d1 migrations apply treatvero --remote` again whenever `migrations/` changes, **before** deploying.
 
 Then `npm run deploy`. Build-time `NEXT_PUBLIC_*` values must be present in the environment that runs the build.
 
 - **Never** enable public access (r2.dev or a custom domain) on `treatvero-reports`.
 - Uploads land in `pending/` and move to `requests/<reference>/` when an enquiry is submitted; the lifecycle rule removes abandoned uploads.
-- Read requests with `npx wrangler d1 execute treatvero --remote --command "SELECT * FROM treatment_requests ORDER BY created_at DESC LIMIT 20"`, or build an authenticated internal view.
+- New enquiries email `ENQUIRY_ALERT_TO` (`wrangler.jsonc`). Alerts contain no patient name, contact details or medical description — only a link to the admin.
+
+## Admin
+
+The coordination-team admin lives at an unlisted path, `ADMIN_PATH` in `lib/admin/path.ts` (never linked, not in robots.txt or the sitemap). It lists enquiries with status filters and search, shows full request details, streams medical reports from R2, and records status changes, internal notes and report downloads with the signed-in user's email.
+
+Access is enforced by **Cloudflare Access**, and the app verifies the Access JWT itself (`lib/admin/auth.ts`), so the admin stays closed even if the Worker is reached another way. Without a valid token the path returns 404. To set it up:
+
+1. Cloudflare dashboard → Zero Trust → Access → Applications → **Add a self-hosted application** for `treatvero.com/<ADMIN_PATH>` (the domain must be on Cloudflare).
+2. Add an **Allow** policy listing the team's email addresses (login with one-time PIN or Google).
+3. Copy the application's **AUD tag** and your team domain (`<team>.cloudflareaccess.com`) into `CF_ACCESS_AUD` and `CF_ACCESS_TEAM_DOMAIN` in `wrangler.jsonc`, then deploy. Until both are set, the admin denies everyone.
+
+## Security
+
+- **Bot protection:** the enquiry form runs Cloudflare Turnstile (invisible unless a challenge is needed). Passing it issues a short-lived signed session cookie (`lib/security`) that uploads, upload deletion and submission all require; uploads are tied to that session. Workers rate limits are a backstop.
+- **Headers** (`next.config.ts`, `proxy.ts`): HSTS, CSP, COOP/CORP, frame denial, nosniff, Permissions-Policy. Public pages are prerendered, so their CSP keeps `'unsafe-inline'` scripts; the admin — which renders patient-supplied text — gets a strict per-request nonce CSP with `'strict-dynamic'`.
 
 ## Where things live
 
@@ -55,7 +75,11 @@ Then `npm run deploy`. Build-time `NEXT_PUBLIC_*` values must be present in the 
 | `lib/requests` | `saveTreatmentRequest()` — D1 store; add HubSpot/Airtable/CRM adapters behind the same interface |
 | `lib/uploads` | Private R2 report storage + magic-byte file validation (20 MB per file) |
 | `lib/payments` | `createCheckoutSession()`, `verifyPayment()`, `getPaymentStatus()` — `manual` by default, Stripe Checkout when configured |
-| `lib/rate-limit.ts` | Workers Rate Limiting bindings (enquiries 5/min, uploads 20/min per IP) |
+| `lib/rate-limit.ts` | Workers Rate Limiting bindings (enquiries 5/min, uploads 20/min, bot checks 10/min per IP) |
+| `lib/security` | Turnstile verification and the signed visitor session |
+| `lib/admin`, `app/coord-*` | Admin auth (Cloudflare Access JWT), data access and pages |
+| `lib/notifications` | New-enquiry alert email |
+| `app/(site)` | Public pages (share the header/footer layout) |
 
 ## Content and trust rules
 
@@ -66,10 +90,11 @@ Then `npm run deploy`. Build-time `NEXT_PUBLIC_*` values must be present in the 
 
 ## Production TODOs
 
-- **Internal access:** there's no admin UI yet — decide who can read D1/R2 (Cloudflare account roles) and consider Cloudflare Access for any internal tool.
-- **Bot protection:** consider Turnstile on the enquiry form and a WAF rate-limit rule (Workers rate limits are per location).
+- **Admin:** create the Cloudflare Access application and set `CF_ACCESS_TEAM_DOMAIN` / `CF_ACCESS_AUD` (see Admin). Limit Cloudflare account roles to people who need raw D1/R2 access.
+- **Email:** onboard `treatvero.com` for Email Sending, and set up Email Routing so `hello@treatvero.com` forwards to the team inbox.
+- **Bot protection:** optionally add a WAF rate-limit rule (Workers rate limits are per location).
 - **Cache interception** is disabled in `open-next.config.ts` (it caused an RSC prefetch loop with Next 16.3); re-test before enabling.
 - **Payments:** set real prices in `data/pricing.ts`; if using Stripe, add a signature-verified webhook before relying on payment status.
-- **CSP:** move to a nonce-based policy to drop `'unsafe-inline'` scripts.
+- **CSP:** public pages still allow `'unsafe-inline'` scripts (static prerendering can't carry a nonce); revisit if they ever render user content, and consider CSP reporting.
 - **Legal pages** are drafts pending legal review.
 - **`/from/*` pages** need verified country-specific content before publishing.

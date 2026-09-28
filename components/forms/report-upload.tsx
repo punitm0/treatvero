@@ -18,9 +18,14 @@ export type UploadItem = {
 export function ReportUpload({
   items,
   onChange,
+  ready,
+  verifyError,
 }: {
   items: UploadItem[];
   onChange: (updater: (prev: UploadItem[]) => UploadItem[]) => void;
+  /** Settles once the bot check has issued a session; uploads wait for it. */
+  ready: Promise<boolean>;
+  verifyError: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -28,6 +33,10 @@ export function ReportUpload({
   const hintId = useId();
 
   async function upload(file: File, key: string) {
+    if (!(await ready)) {
+      onChange((prev) => prev.map((it) => (it.key === key ? { ...it, status: "error", error: verifyError } : it)));
+      return;
+    }
     const body = new FormData();
     body.append("file", file);
     try {

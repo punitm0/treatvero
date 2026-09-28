@@ -21,15 +21,17 @@ import {
 } from "@/lib/validation/enquiry";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
-import { submitTreatmentRequest } from "@/app/get-treatment-options/actions";
+import { submitTreatmentRequest } from "@/app/(site)/get-treatment-options/actions";
 import { LogoMark } from "@/components/ui/logo";
 import { buttonClasses } from "@/components/ui/button";
 import { ChoiceChip, ChoiceGroup, FieldError, Label, inputClass } from "@/components/forms/fields";
 import { ReportUpload, type UploadItem } from "@/components/forms/report-upload";
+import { BotCheck, createSessionGate } from "@/components/forms/bot-check";
 
 type FormInput = z.input<typeof enquirySchema>;
 
 const comingSoon = ["Turkey", "Thailand", "UAE", "Singapore"];
+const VERIFY_ERROR = "We couldn't verify your browser. Please refresh the page and try again, or reach us on WhatsApp.";
 const CONSENT_LABEL =
   "I consent to TreatVero processing my information and sharing relevant medical information with healthcare providers when necessary to obtain treatment options.";
 
@@ -39,6 +41,7 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
   const [serverError, setServerError] = useState("");
   const [done, setDone] = useState<{ reference: string } | null>(null);
   const [pending, startTransition] = useTransition();
+  const [gate] = useState(createSessionGate);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
@@ -99,6 +102,10 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
   const onSubmit = handleSubmit((values) => {
     setServerError("");
     startTransition(async () => {
+      if (!(await gate.promise)) {
+        setServerError(VERIFY_ERROR);
+        return;
+      }
       // Only successfully stored reports are attached (opaque ids, no file data).
       const uploadIds = uploads.flatMap((u) => (u.status === "done" && u.id ? [u.id] : []));
       const result = await submitTreatmentRequest({ ...values, uploadIds });
@@ -294,7 +301,7 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
                       title="Medical reports"
                       text="Medical reports help hospitals provide more useful treatment estimates. You can continue without uploading medical reports."
                     />
-                    <ReportUpload items={uploads} onChange={setUploads} />
+                    <ReportUpload items={uploads} onChange={setUploads} ready={gate.promise} verifyError={VERIFY_ERROR} />
                   </>
                 )}
 
@@ -452,6 +459,8 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
                 )}
               </motion.div>
             </AnimatePresence>
+
+            <BotCheck gate={gate} />
 
             {serverError ? (
               <p role="alert" className="mt-6 mb-0 rounded-xl border border-[#e8cfc3] bg-[#fbf1ec] px-4 py-3 text-sm text-error">

@@ -7,6 +7,8 @@ import { clientKey, getRateLimiter } from "@/lib/rate-limit";
 import { saveTreatmentRequest } from "@/lib/requests";
 import { createCheckoutSession } from "@/lib/payments";
 import { getReportStorage } from "@/lib/uploads/storage";
+import { getSessionId } from "@/lib/security/session";
+import { sendEnquiryAlert } from "@/lib/notifications/enquiry-alert";
 
 export type SubmitResult =
   | { ok: true; reference: string; checkoutUrl: string | null }
@@ -23,6 +25,12 @@ export async function submitTreatmentRequest(raw: unknown): Promise<SubmitResult
     return { ok: false, error: "You've sent several requests in a short time. Please wait a few minutes, or reach us on WhatsApp." };
   }
 
+  // Issued by /api/session after a Turnstile check — proves a real browser.
+  const sessionId = await getSessionId();
+  if (!sessionId) {
+    return { ok: false, error: "Your session has expired. Please refresh the page, or reach us on WhatsApp." };
+  }
+
   const parsed = enquirySchema.safeParse(raw);
   if (!parsed.success) {
     return {
@@ -36,10 +44,10 @@ export async function submitTreatmentRequest(raw: unknown): Promise<SubmitResult
   // Honeypot filled → silently accept without storing anything.
   if (input.website) return { ok: true, reference: "TV-RECEIVED", checkoutUrl: null };
 
-  // Only attach report ids that actually exist in private storage.
+  // Only attach reports that exist in private storage and were uploaded by this session.
   const storage = getReportStorage();
   const existing = await Promise.all(input.uploadIds.map((id) => storage.get(id)));
-  const reports = existing.filter((r): r is NonNullable<typeof r> => r !== null);
+  const reports = existing.filter((r): r is NonNullable<typeof r> => r !== null && r.sessionId === sessionId);
 
   let reference: string;
   try {
@@ -58,6 +66,12 @@ export async function submitTreatmentRequest(raw: unknown): Promise<SubmitResult
     );
   } catch {
     console.error(`[enquiry] reports for ${reference} still in pending/ — move manually`);
+  }
+
+  try {
+    sendEnquiryAlert({ reference, input, reportCount: reports.length });
+  } catch {
+    console.error(`[enquiry] alert for ${reference} could not be queued`);
   }
 
   try {

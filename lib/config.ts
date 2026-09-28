@@ -22,6 +22,9 @@ export const siteConfig = {
     "Explore medical treatment options abroad and get help coordinating hospitals, visas, accommodation, travel and on-ground support with TreatVero.",
   url: normaliseUrl(process.env.NEXT_PUBLIC_SITE_URL),
   contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || null,
+  /** Cloudflare Turnstile site key (public). Falls back to the always-pass test key in development. */
+  turnstileSiteKey:
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || (process.env.NODE_ENV === "development" ? "1x00000000000000000000AA" : ""),
   locale: "en",
   foundingYear: 2026,
 } as const;

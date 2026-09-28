@@ -2,11 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/lib/config";
-import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
-import { Header, SkipLink } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
-import { FloatingActions } from "@/components/layout/floating-actions";
-import { JsonLd } from "@/components/ui/json-ld";
 
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"], display: "swap" });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], weight: ["400", "500"], display: "swap" });
@@ -47,16 +42,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${geist.variable} ${geistMono.variable} ${newsreader.variable}`}>
-      <body className="min-h-dvh">
-        <SkipLink />
-        <Header />
-        <main id="main" tabIndex={-1} className="outline-none">
-          {children}
-        </main>
-        <Footer />
-        <FloatingActions />
-        <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
-      </body>
+      <body className="min-h-dvh">{children}</body>
     </html>
   );
 }
