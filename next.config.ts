@@ -61,6 +61,24 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  async redirects() {
+    // treatvero.com is the canonical host. The bare "/" needs its own rule:
+    // on Workers an empty :path* is left uninterpolated in the destination.
+    return [
+      {
+        source: "/",
+        has: [{ type: "host", value: "www.treatvero.com" }],
+        destination: "https://treatvero.com/",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.treatvero.com" }],
+        destination: "https://treatvero.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },

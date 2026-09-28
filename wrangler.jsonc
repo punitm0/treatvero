@@ -4,6 +4,14 @@
 	"name": "treatvero",
 	"compatibility_date": "2026-09-26",
 	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+
+	// Workers Custom Domains on the treatvero.com zone (same Cloudflare account).
+	// Deploy creates the DNS records and certificates; www 301s to the apex in next.config.ts.
+	"workers_dev": false,
+	"routes": [
+		{ "pattern": "treatvero.com", "custom_domain": true },
+		{ "pattern": "www.treatvero.com", "custom_domain": true }
+	],
 	"assets": {
 		"directory": ".open-next/assets",
 		"binding": "ASSETS"
