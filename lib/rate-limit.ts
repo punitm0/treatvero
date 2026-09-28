@@ -3,9 +3,9 @@ import { cfEnv } from "@/lib/cloudflare";
 
 /**
  * Rate limiting via Cloudflare Workers Rate Limiting bindings (configured in
- * wrangler.jsonc: enquiries 5/min, uploads 20/min per client). Counters are
+ * wrangler.jsonc: enquiries 5/min, uploads 20/min, bot checks 10/min per client). Counters are
  * per Cloudflare location — suitable for abuse protection, not exact quotas.
- * For stronger protection, add a WAF rate-limiting rule or Turnstile.
+ * Turnstile (lib/security) is the primary bot defence; these are a backstop.
  */
 export interface RateLimiter {
   limit(key: string): Promise<{ success: boolean }>;
@@ -14,6 +14,7 @@ export interface RateLimiter {
 const bindings = {
   enquiry: "ENQUIRY_RATE_LIMITER",
   upload: "UPLOAD_RATE_LIMITER",
+  session: "SESSION_RATE_LIMITER",
 } as const;
 
 export function getRateLimiter(name: keyof typeof bindings): RateLimiter {

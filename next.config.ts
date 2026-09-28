@@ -6,19 +6,27 @@ initOpenNextCloudflareForDev();
 
 const isDev = process.env.NODE_ENV !== "production";
 
+const TURNSTILE = "https://challenges.cloudflare.com";
+
 /**
- * Baseline security headers.
- * TODO(production): move to a nonce-based CSP (removing 'unsafe-inline' from
- * script-src) once the hosting/rendering strategy is final, and add
- * report-uri monitoring.
+ * Content Security Policy for the public site.
+ *
+ * Public pages are prerendered at build time and served as static assets, so
+ * they can't carry a per-request nonce; 'unsafe-inline' scripts stay allowed
+ * here (Next.js inlines its RSC payload). These pages render no user-supplied
+ * content. The admin area (lib/admin/path.ts), which does, gets a strict
+ * nonce-based policy from proxy.ts instead.
  */
-const csp = [
+const publicCsp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' ${TURNSTILE}${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
   `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
+  `frame-src ${TURNSTILE}`,
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
   "frame-ancestors 'none'",
   "form-action 'self' https://checkout.stripe.com",
   "base-uri 'self'",
@@ -26,14 +34,26 @@ const csp = [
   ...(isDev ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
+/** Headers for every response, public and admin. */
 const securityHeaders = [
-  { key: "Content-Security-Policy", value: csp },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), interest-cohort=()" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()",
+  },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
+  { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
+];
+
+const ADMIN = "coord-8k3m7x2q"; // keep in sync with lib/admin/path.ts
+
+const privateHeaders = [
+  { key: "Cache-Control", value: "no-store" },
+  { key: "X-Robots-Tag", value: "noindex, nofollow" },
 ];
 
 const nextConfig: NextConfig = {
@@ -44,8 +64,12 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
-      // Never cache enquiry/upload API responses or the form page.
-      { source: "/api/:path*", headers: [{ key: "Cache-Control", value: "no-store" }] },
+      // Everything except the admin area, whose CSP is set per request in proxy.ts.
+      { source: `/((?!${ADMIN}(?:/|$)).*)`, headers: [{ key: "Content-Security-Policy", value: publicCsp }] },
+      // Never cache or index API responses or the admin area.
+      { source: "/api/:path*", headers: privateHeaders },
+      { source: `/${ADMIN}`, headers: privateHeaders },
+      { source: `/${ADMIN}/:path*`, headers: privateHeaders },
     ];
   },
 };

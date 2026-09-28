@@ -1,0 +1,5 @@
+# Optional local overrides for Worker secrets (copy to .dev.vars — gitignored).
+# Without them, `next dev` uses Turnstile's always-pass test secret and a dev
+# session secret. `npm run preview` is a production build and needs them set.
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+SESSION_SECRET=local-dev-session-secret

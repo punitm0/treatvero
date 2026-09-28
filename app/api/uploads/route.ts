@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { clientKey, getRateLimiter } from "@/lib/rate-limit";
 import { isSameOrigin } from "@/lib/request-guard";
+import { getSessionId } from "@/lib/security/session";
 import { getReportStorage } from "@/lib/uploads/storage";
 import { MAX_UPLOAD_BYTES, precheckFile, safeFileName, sniffMime } from "@/lib/uploads/validate";
 
@@ -12,6 +13,14 @@ export async function POST(request: Request) {
   const noStore = { "Cache-Control": "no-store" };
   if (!isSameOrigin(request)) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403, headers: noStore });
+  }
+
+  const sessionId = await getSessionId();
+  if (!sessionId) {
+    return NextResponse.json(
+      { error: "Your session has expired. Please refresh the page and try again." },
+      { status: 401, headers: noStore },
+    );
   }
 
   const storage = getReportStorage();
@@ -53,7 +62,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const stored = await storage.save({ bytes, fileName: safeFileName(file.name), mimeType });
+    const stored = await storage.save({ bytes, fileName: safeFileName(file.name), mimeType, sessionId });
     return NextResponse.json(
       { id: stored.id, fileName: stored.fileName, size: stored.size, mimeType: stored.mimeType },
       { status: 201, headers: noStore },
