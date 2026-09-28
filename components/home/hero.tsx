@@ -9,7 +9,7 @@ const trustIndicators = ["Independent patient support", "Transparent pricing", "
 export function Hero() {
   return (
     <section className="pt-[clamp(40px,6vw,88px)] pb-[clamp(64px,8vw,112px)]">
-      <div className="container-site grid grid-cols-1 items-center gap-[clamp(48px,6vw,88px)] min-[1080px]:grid-cols-2">
+      <div className="container-site grid grid-cols-1 items-center gap-[clamp(48px,6vw,88px)] min-[67.5rem]:grid-cols-2">
         <div>
           <p className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-line bg-surface py-1.5 pr-3.5 pl-2.5 text-[13px] text-ink-muted">
             <span aria-hidden="true" className="block size-2 rounded-full bg-live shadow-[0_0_0_3px_rgba(47,163,107,0.15)]" />
@@ -40,7 +40,7 @@ export function Hero() {
         </div>
 
         <div className="relative pb-[120px] md:pb-0">
-          <div className="relative aspect-[4/4.4] overflow-hidden rounded-3xl border border-line bg-[#e8e4dc] md:aspect-[16/10] min-[1080px]:aspect-[4/4.4]">
+          <div className="relative aspect-[4/4.4] overflow-hidden rounded-3xl border border-line bg-[#e8e4dc] md:aspect-[16/10] min-[67.5rem]:aspect-[4/4.4]">
             <Image
               src="/images/hero.jpg"
               alt="A calm, modern hospital reception area"
@@ -61,7 +61,7 @@ function JourneyCard() {
   return (
     <figure
       aria-label="Illustration of a coordinated patient journey"
-      className="absolute bottom-0 left-3 m-0 w-[min(360px,calc(100%-24px))] rounded-[18px] border border-line bg-surface p-5 shadow-card md:left-6 min-[1080px]:-left-8"
+      className="absolute bottom-0 left-3 m-0 w-[min(360px,calc(100%-24px))] rounded-[18px] border border-line bg-surface p-5 shadow-card md:left-6 min-[67.5rem]:-left-8"
     >
       <div className="mb-4 flex items-baseline justify-between gap-3">
         <span className="label-mono text-ink-subtle">Your journey</span>
