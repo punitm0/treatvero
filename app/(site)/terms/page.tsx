@@ -14,7 +14,7 @@ export default function TermsPage() {
       title="Terms of Service"
       path="/terms"
       updated="September 2026"
-      intro="These draft terms describe what TreatVero does and doesn't do. They will be finalised with legal counsel before launch."
+      intro="These terms describe what TreatVero does and doesn't do."
       sections={[
         {
           title: "Our service",

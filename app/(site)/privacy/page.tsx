@@ -13,7 +13,7 @@ export default function PrivacyPage() {
       title="Privacy Policy"
       path="/privacy"
       updated="September 2026"
-      intro="Medical information is sensitive. This policy explains what we collect, why, who we share it with and the choices you have. It is a working draft and will be finalised with legal counsel before launch."
+      intro="Medical information is sensitive. This policy explains what we collect, why, who we share it with and the choices you have."
       sections={[
         {
           title: "Information we collect",
