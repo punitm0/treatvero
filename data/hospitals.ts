@@ -1,4 +1,4 @@
-import type { Hospital, InternationalService, TreatmentSlug } from "@/types";
+import type { Hospital, TreatmentSlug } from "@/types";
 import { getCity } from "@/data/destinations";
 
 /**
@@ -17,13 +17,17 @@ import { getCity } from "@/data/destinations";
  *   accreditation numbers start with "H-"). Record both in the comment above
  *   the entry and in `jci` / `nabh` (shown on the page). A hospital's own
  *   claim isn't enough.
- * - Other facts can come from any published source that isn't the
- *   hospital's own marketing: Wikipedia, news reports, government or
- *   regulator pages, the group's corporate pages. Add each source used to
- *   `sources` (it's shown on the page). When sources disagree (bed counts
- *   often do), use the most recent reliable one or leave the field out.
- *   Directory/booking sites (Practo, Credihealth, medical-tourism agents)
- *   are for cross-checking only, never the sole source.
+ * - Other facts can come from the hospital's own site or any other
+ *   published source: Wikipedia, news reports, government or regulator
+ *   pages, the group's corporate pages. Add each source other than
+ *   `website` to `sources`. When sources disagree (bed counts often do),
+ *   use the most recent reliable one or leave the field out. Only exact
+ *   figures: skip "600+"-style numbers. Directory/booking sites (Practo,
+ *   Credihealth, medical-tourism agents) are for cross-checking only, never
+ *   the sole source.
+ * - `place`: locality and city as people search for the hospital
+ *   ("Andheri West, Mumbai"); just the city when the name already carries
+ *   the locality ("Apollo Hospitals, Greams Road" → "Chennai").
  * - `address`: the hospital's street address (its own site, or a directory
  *   that matches it).
  * - `googleMapsCid`: the hospital's own Google Maps listing — the second hex
@@ -34,21 +38,24 @@ import { getCity } from "@/data/destinations";
  *   stations via overpass-api.de, straight-line km to one decimal).
  *   `airportDistanceKm`: road distance from the city's airport
  *   (City.airportName), from router.project-osrm.org, rounded to the km.
- * - `established`, `beds`, `history`: from `sources` (or the hospital's
- *   own site for the year). `history` is 1–3 neutral sentences in our own
+ * - `established`, `beds`, `history`: from the hospital's site or
+ *   `sources`. `history` is 1–3 neutral sentences in our own
  *   words: dates, founders, ownership. "First" claims only when a cited
  *   source states them.
- * - `international`: only services the hospital's (or its group's)
- *   international patients page states; `languages` only when it names them.
- *   Omit the field if there is no such page.
  * - Specialties use the treatment slugs and must be departments or centres
  *   listed on the hospital's own page. Be conservative.
+ * - `specialtyNotes`: one neutral sentence per specialty naming what this
+ *   hospital offers in it (centres, programmes, procedures), in our own
+ *   words, from the hospital's page for this specific hospital or a source
+ *   about it. Skip group-wide template lists that read the same for every
+ *   branch (Apollo's are), and skip a specialty rather than pad it. No
+ *   volumes, success rates, "first" or "best" claims.
  * - Descriptions are factual and neutral: no rankings, "best", "leading",
  *   outcome or volume claims.
  * - `image`: a photo of the hospital itself, saved to
  *   public/images/hospitals/<slug>.jpg (max 1600px wide).
  * - Set `verifiedOn` to the date the entry was checked.
- * - `website`, `sources`, `international` and `verifiedOn` are internal
+ * - `website`, `sources` and `verifiedOn` are internal
  *   records only. Don't render them on public pages or link to the hospital:
  *   patients come to hospitals through TreatVero, not directly. (Wikipedia-
  *   style `isAbout` sources may still go in the JSON-LD `sameAs`.)
@@ -60,8 +67,15 @@ export const hospitals: Hospital[] = [
     slug: "medanta-the-medicity-gurugram",
     name: "Medanta – The Medicity",
     city: "delhi-ncr",
+    place: "Gurugram",
     accreditations: ["JCI", "NABH"],
     specialties: ["cardiac-care", "cancer-treatment", "neurology-neurosurgery", "orthopaedics", "organ-transplant"],
+    specialtyNotes: {
+      "cardiac-care": "Interventional, clinical and preventive cardiology, cardiac surgery and paediatric cardiology, with a heart transplant programme.",
+      "cancer-treatment": "Medical and radiation oncology, with dedicated services for breast, gastrointestinal, and head and neck cancers.",
+      "neurology-neurosurgery": "Neurology, neurosurgery and paediatric neurology within its neurosciences department.",
+      "organ-transplant": "Liver, kidney, heart and lung transplant, and bone marrow transplant for adults and children.",
+    },
     description:
       "The founding hospital of the Medanta network: a multi-specialty tertiary-care campus in Sector 38, Gurugram, opened in 2009, with liver, lung and bone marrow transplant programmes.",
     image: "/images/hospitals/medanta-the-medicity-gurugram.jpg",
@@ -75,17 +89,14 @@ export const hospitals: Hospital[] = [
       "Opened in 2009 as the first hospital of Medanta, the network founded by cardiac surgeon Naresh Trehan, on a 43-acre campus in Sector 38, Gurugram.",
     sources: [{ title: "Wikipedia: Medanta", url: "https://en.wikipedia.org/wiki/Medanta" }],
     established: 2009,
+    // Operational beds from the hospital page (Wikipedia gives 1,250 at opening in 2009).
+    beds: 1440,
     jci: {
       listedAs: "Medanta - The Medicity",
       program: "Hospital Program",
       effectiveDate: "2013-08-31",
     },
     nabh: { number: "H-2011-0073" },
-    international: {
-      url: "https://www.medanta.org/international-patient",
-      services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
-      languages: ["Russian", "Arabic", "Bengali", "Burmese", "Persian"],
-    },
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -94,6 +105,7 @@ export const hospitals: Hospital[] = [
     slug: "indraprastha-apollo-hospitals-new-delhi",
     name: "Indraprastha Apollo Hospitals",
     city: "delhi-ncr",
+    place: "Sarita Vihar, New Delhi",
     accreditations: ["JCI"],
     specialties: [
       "cardiac-care",
@@ -106,6 +118,9 @@ export const hospitals: Hospital[] = [
       "ivf-fertility",
       "eye-care",
     ],
+    specialtyNotes: {
+      "cancer-treatment": "Radiotherapy includes a Varian Edge radiosurgery system, added in February 2026.",
+    },
     description:
       "Multi-specialty tertiary-care hospital on Delhi–Mathura Road, Sarita Vihar, New Delhi, part of the Apollo Hospitals group.",
     image: "/images/hospitals/indraprastha-apollo-hospitals-new-delhi.jpg",
@@ -131,9 +146,6 @@ export const hospitals: Hospital[] = [
       program: "Hospital Program",
       effectiveDate: "2005-06-18",
     },
-    international: {
-      services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
-    },
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -142,6 +154,7 @@ export const hospitals: Hospital[] = [
     slug: "fortis-memorial-research-institute-gurugram",
     name: "Fortis Memorial Research Institute",
     city: "delhi-ncr",
+    place: "Gurugram",
     accreditations: ["JCI", "NABH"],
     specialties: [
       "cardiac-care",
@@ -154,6 +167,16 @@ export const hospitals: Hospital[] = [
       "eye-care",
       "dental-treatment",
     ],
+    specialtyNotes: {
+      "cardiac-care": "Interventional cardiology, electrophysiology, and cardiothoracic and vascular surgery, with a heart transplant programme.",
+      "cancer-treatment": "Medical, surgical and radiation oncology and haemato-oncology, with gynaecologic, breast, gastrointestinal, and head and neck cancer surgery.",
+      orthopaedics: "Joint replacement, including robotic and computer-navigated joint reconstruction, plus sports medicine and paediatric orthopaedics.",
+      "spine-surgery": "Spine surgery through both its neurosurgery and orthopaedics departments.",
+      "neurology-neurosurgery": "Neurology, neurosurgery and neurointerventional radiology.",
+      "organ-transplant": "Kidney, liver, lung and heart transplant, and bone marrow transplant through its haematology department.",
+      "bariatric-surgery": "Metabolic and bariatric surgery within its gastrointestinal and minimal access surgery department.",
+      "dental-treatment": "Oral and maxillofacial surgery, orthodontics and periodontics.",
+    },
     description: "Multi-specialty quaternary-care hospital in Sector 44, Gurugram, opposite HUDA City Centre, part of Fortis Healthcare.",
     image: "/images/hospitals/fortis-memorial-research-institute-gurugram.jpg",
     website: "https://www.fortishealthcare.com/location/fortis-memorial-research-institute-gurgaon",
@@ -179,10 +202,6 @@ export const hospitals: Hospital[] = [
       effectiveDate: "2019-07-13",
     },
     nabh: { number: "H-2015-0303" },
-    international: {
-      url: "https://www.fortishealthcare.com/international-patients/hospitals/fortis-memorial-research-institute-gurgaon",
-      services: ["coordinator"],
-    },
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -193,8 +212,17 @@ export const hospitals: Hospital[] = [
     slug: "kokilaben-dhirubhai-ambani-hospital-mumbai",
     name: "Kokilaben Dhirubhai Ambani Hospital",
     city: "mumbai",
+    place: "Andheri West, Mumbai",
     accreditations: ["JCI", "NABH"],
     specialties: ["cardiac-care", "cancer-treatment", "orthopaedics", "neurology-neurosurgery", "organ-transplant", "bariatric-surgery"],
+    specialtyNotes: {
+      "cardiac-care": "A cardiac sciences centre and a separate children's heart centre.",
+      "cancer-treatment": "A cancer centre with Radixact radiotherapy and robotic surgery.",
+      orthopaedics: "A bone and joint centre, including minimally invasive foot and ankle surgery, and a sports medicine centre.",
+      "neurology-neurosurgery": "A neurosciences centre; its operating suite includes a three-room intra-operative MRI (IMRIS).",
+      "organ-transplant": "A transplant centre with a liver transplant programme.",
+      "bariatric-surgery": "A diabetes and bariatric surgery centre.",
+    },
     description: "Multi-specialty tertiary-care hospital and medical research institute at Four Bungalows, Andheri West, Mumbai.",
     image: "/images/hospitals/kokilaben-dhirubhai-ambani-hospital-mumbai.jpg",
     website: "https://www.kokilabenhospital.com",
@@ -220,10 +248,6 @@ export const hospitals: Hospital[] = [
       effectiveDate: "2015-12-13",
     },
     nabh: { number: "H-2014-0260" },
-    international: {
-      url: "https://www.kokilabenhospital.com/patients/internationalpatients/what_to_expect.html",
-      services: ["visa-letter", "airport-pickup"],
-    },
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -232,6 +256,7 @@ export const hospitals: Hospital[] = [
     slug: "sir-hn-reliance-foundation-hospital-mumbai",
     name: "Sir H. N. Reliance Foundation Hospital",
     city: "mumbai",
+    place: "Girgaon, Mumbai",
     accreditations: ["JCI", "NABH"],
     specialties: [
       "cardiac-care",
@@ -243,6 +268,14 @@ export const hospitals: Hospital[] = [
       "eye-care",
       "dental-treatment",
     ],
+    specialtyNotes: {
+      "cardiac-care": "Heart and vascular care, including a valve clinic, TAVR and heart transplant.",
+      "cancer-treatment": "Haemato-oncology and bone marrow transplant for adults and children.",
+      orthopaedics: "Bone, joint and spine care within one department.",
+      "spine-surgery": "Both orthopaedic spine surgery and neuro spine surgery.",
+      "organ-transplant": "Heart, lung, liver and kidney transplant, including paediatric organ transplant.",
+      "dental-treatment": "Dental and oral care.",
+    },
     description: "Multi-specialty tertiary-care hospital and research centre on Raja Rammohan Roy Road, Girgaon, South Mumbai.",
     image: "/images/hospitals/sir-hn-reliance-foundation-hospital-mumbai.jpg",
     imageCredit: "Photo: Ajitdada Pawar, CC BY-SA 4.0, via Wikimedia Commons",
@@ -269,10 +302,6 @@ export const hospitals: Hospital[] = [
       effectiveDate: "2020-10-17",
     },
     nabh: { number: "H-2018-0539" },
-    international: {
-      url: "https://www.rfhospital.org/patients-visitors/international-patient",
-      services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
-    },
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -283,6 +312,7 @@ export const hospitals: Hospital[] = [
     slug: "apollo-hospitals-greams-road-chennai",
     name: "Apollo Hospitals, Greams Road",
     city: "chennai",
+    place: "Chennai",
     accreditations: ["JCI"],
     specialties: [
       "cardiac-care",
@@ -313,9 +343,6 @@ export const hospitals: Hospital[] = [
       program: "Hospital Program",
       effectiveDate: "2006-01-29",
     },
-    international: {
-      services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
-    },
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -324,8 +351,14 @@ export const hospitals: Hospital[] = [
     slug: "mgm-healthcare-chennai",
     name: "MGM Healthcare",
     city: "chennai",
+    place: "Aminjikarai, Chennai",
     accreditations: ["JCI", "NABH"],
     specialties: ["cardiac-care", "cancer-treatment", "orthopaedics", "neurology-neurosurgery", "organ-transplant"],
+    specialtyNotes: {
+      "cardiac-care": "Cardiac care with a heart and lung transplant programme.",
+      orthopaedics: "Orthopaedics including total knee replacement, alongside a level 1 trauma centre.",
+      "organ-transplant": "Heart and lung, liver, and multi-visceral abdominal organ transplant, with an institute for liver diseases and HPB surgery.",
+    },
     description:
       "Multi-specialty tertiary-care hospital on Nelson Manickam Road, Aminjikarai, Chennai, with heart, lung, liver and multi-organ transplant programmes.",
     image: "/images/hospitals/mgm-healthcare-chennai.jpg",
@@ -345,10 +378,6 @@ export const hospitals: Hospital[] = [
       effectiveDate: "2021-03-06",
     },
     nabh: { number: "H-2021-0768" },
-    international: {
-      url: "https://mgmhealthcare.in/international-patients/",
-      services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
-    },
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -359,8 +388,12 @@ export const hospitals: Hospital[] = [
     slug: "narayana-institute-of-cardiac-sciences-bengaluru",
     name: "Narayana Institute of Cardiac Sciences",
     city: "bengaluru",
+    place: "Bommasandra, Bengaluru",
     accreditations: ["JCI", "NABH"],
     specialties: ["cardiac-care"],
+    specialtyNotes: {
+      "cardiac-care": "Heart surgery and heart transplant for newborns, children and adults, with robot-assisted cardiac surgery, catheterisation labs including a hybrid lab, and peripheral vascular and endovascular intervention.",
+    },
     description:
       "Specialist cardiac hospital at Narayana Health City, Bommasandra, on Hosur Road in south Bengaluru, part of Narayana Health.",
     image: "/images/hospitals/narayana-institute-of-cardiac-sciences-bengaluru.jpg",
@@ -372,7 +405,7 @@ export const hospitals: Hospital[] = [
     nearestStation: { name: "Delta Electronics Bommasandra", network: "Namma Metro", km: 1.4 },
     established: 2000,
     history:
-      "Commissioned in 2000 by cardiac surgeon Devi Shetty as part of Narayana Health City in Bommasandra. It has 23 cardiac operating theatres and a heart transplant programme.",
+      "Commissioned in 2000 by cardiac surgeon Devi Shetty as part of Narayana Health City in Bommasandra. It focuses on cardiac surgery and heart transplantation for newborns, children and adults.",
     sources: [
       {
         title: "Wikipedia: Narayana Institute of Cardiac Sciences",
@@ -394,6 +427,7 @@ export const hospitals: Hospital[] = [
     slug: "apollo-hospitals-bannerghatta-road-bengaluru",
     name: "Apollo Hospitals, Bannerghatta Road",
     city: "bengaluru",
+    place: "Bengaluru",
     accreditations: ["JCI"],
     specialties: [
       "cardiac-care",
@@ -419,9 +453,6 @@ export const hospitals: Hospital[] = [
       program: "Hospital Program",
       effectiveDate: "2008-07-18",
     },
-    international: {
-      services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
-    },
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -432,6 +463,7 @@ export const hospitals: Hospital[] = [
     slug: "apollo-hospitals-jubilee-hills-hyderabad",
     name: "Apollo Hospitals, Jubilee Hills",
     city: "hyderabad",
+    place: "Hyderabad",
     accreditations: ["JCI"],
     specialties: [
       "cardiac-care",
@@ -464,9 +496,6 @@ export const hospitals: Hospital[] = [
       program: "Hospital Program",
       effectiveDate: "2006-04-28",
     },
-    international: {
-      services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
-    },
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -475,6 +504,7 @@ export const hospitals: Hospital[] = [
     slug: "aig-hospitals-hyderabad",
     name: "AIG Hospitals",
     city: "hyderabad",
+    place: "Gachibowli, Hyderabad",
     accreditations: ["JCI", "NABH"],
     specialties: ["organ-transplant", "cancer-treatment", "cardiac-care", "neurology-neurosurgery"],
     description:
@@ -487,19 +517,19 @@ export const hospitals: Hospital[] = [
     airportDistanceKm: 31,
     nearestStation: { name: "Raidurg", network: "Hyderabad Metro", km: 1.2 },
     established: 2018,
+    beds: 800,
     history:
       "The Asian Institute of Gastroenterology began in 1994 as a day-care centre for digestive diseases, opened a 130-bed hospital in Somajiguda in 2004, and opened this multi-specialty hospital in Gachibowli in 2018.",
-    sources: [{ title: "AIG Hospitals: History", url: "https://www.aighospitals.com/history" }],
+    sources: [
+      { title: "AIG Hospitals: History", url: "https://www.aighospitals.com/history" },
+      { title: "AIG Hospitals: About us", url: "https://www.aighospitals.com/about-us" },
+    ],
     jci: {
       listedAs: "AIG Hospitals (A Unit of Asian Institute of Gastroenterology, Private Limited)",
       program: "Hospital Program",
       effectiveDate: "2021-12-11",
     },
     nabh: { number: "H-2020-0704" },
-    international: {
-      url: "https://www.aighospitals.com/international-patients",
-      services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
-    },
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -510,6 +540,7 @@ export const hospitals: Hospital[] = [
     slug: "marengo-cims-hospital-ahmedabad",
     name: "Marengo CIMS Hospital",
     city: "ahmedabad",
+    place: "Sola, Ahmedabad",
     accreditations: ["JCI", "NABH"],
     specialties: [
       "cardiac-care",
@@ -522,6 +553,13 @@ export const hospitals: Hospital[] = [
       "eye-care",
       "dental-treatment",
     ],
+    specialtyNotes: {
+      "cardiac-care": "An institute of cardiac sciences with a heart transplant programme.",
+      "cancer-treatment": "An institute of cancer care, with bone marrow transplant.",
+      orthopaedics: "An institute of orthopaedics and joint replacement.",
+      "neurology-neurosurgery": "An institute of neurosciences.",
+      "organ-transplant": "Heart, lung, liver and kidney transplant, with a dedicated institute of HPB surgery and liver transplant.",
+    },
     description:
       "Multi-specialty tertiary-care hospital (formerly CIMS Hospital) off Science City Road, Sola, Ahmedabad, operated by Marengo Asia Healthcare.",
     image: "/images/hospitals/marengo-cims-hospital-ahmedabad.jpg",
@@ -547,10 +585,6 @@ export const hospitals: Hospital[] = [
       effectiveDate: "2016-09-24",
     },
     nabh: { number: "H-2013-0166" },
-    international: {
-      url: "https://www.marengoasiahospitals.com/internationalpatients",
-      services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
-    },
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -559,8 +593,12 @@ export const hospitals: Hospital[] = [
     slug: "apex-heart-institute-ahmedabad",
     name: "Apex Heart Institute",
     city: "ahmedabad",
+    place: "S G Road, Ahmedabad",
     accreditations: ["JCI", "NABH"],
     specialties: ["cardiac-care"],
+    specialtyNotes: {
+      "cardiac-care": "Complex coronary and peripheral interventions, structural heart procedures (device closure of ASD, VSD and PDA, left atrial appendage occlusion, TAVI), electrophysiology and robotic angioplasty.",
+    },
     description: "Specialist cardiac hospital at Mondeal Business Park on S G Road, Ahmedabad.",
     image: "/images/hospitals/apex-heart-institute-ahmedabad.jpg",
     website: "https://www.apexheart.in",
@@ -570,16 +608,15 @@ export const hospitals: Hospital[] = [
     airportDistanceKm: 18,
     nearestStation: { name: "Thaltej", network: "Ahmedabad Metro", km: 0.5 },
     established: 2012,
+    history:
+      "Interventional cardiologist Tejas Patel, who chairs the hospital, joined the TCVS practice in Ahmedabad in 2006; it was renamed Apex Heart Institute in 2012. In December 2018 its team performed a telerobotic coronary intervention with the operating doctor about 32 km from the patient, reported as the first in humans.",
+    sources: [{ title: "Wikipedia: Tejas Patel", url: "https://en.wikipedia.org/wiki/Tejas_Patel" }],
     jci: {
       listedAs: "Apex Heart Institute (A Unit of TCVS Pvt. Ltd.)",
       program: "Hospital Program",
       effectiveDate: "2018-01-27",
     },
     nabh: { number: "H-2014-0235" },
-    international: {
-      url: "https://www.apexheart.in/international_patients.html",
-      services: ["coordinator", "airport-pickup", "accommodation", "interpreters"],
-    },
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -602,13 +639,6 @@ export function getRelatedHospitals(h: Hospital, limit = 3): Hospital[] {
     .slice(0, limit);
 }
 
-export const internationalServiceLabels: Record<InternationalService, string> = {
-  coordinator: "International patient coordinators",
-  "visa-letter": "Medical visa assistance",
-  "airport-pickup": "Airport pickup",
-  accommodation: "Help with accommodation",
-  interpreters: "Interpreters",
-};
 
 /**
  * Google Maps link for the hospital: its own listing when we have the CID,
@@ -618,6 +648,17 @@ export function hospitalMapUrl(h: Hospital): string | undefined {
   if (h.googleMapsCid) return `https://maps.google.com/?cid=${h.googleMapsCid}`;
   const query = h.address ? `${h.name}, ${h.address}` : h.geo ? `${h.geo.lat},${h.geo.lng}` : undefined;
   return query ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}` : undefined;
+}
+
+/** Google Maps search for hotels around the hospital (live results, nothing stored). */
+export function hotelsNearUrl(h: Hospital): string {
+  const where = h.address ? `${h.name}, ${h.address}` : `${h.name}, ${getCity(h.city).name}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`hotels near ${where}`)}`;
+}
+
+/** Where the hospital is, for titles and headings: its `place`, else the city. */
+export function hospitalPlace(h: Hospital): string {
+  return h.place ?? getCity(h.city).name;
 }
 
 /** Photo for a listing: the hospital's own photo, else the city photo. */

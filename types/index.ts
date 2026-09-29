@@ -56,18 +56,28 @@ export type Destination = {
   href?: string;
 };
 
-export type InternationalService = "coordinator" | "visa-letter" | "airport-pickup" | "accommodation" | "interpreters";
-
 export type Hospital = {
   slug: string;
   name: string;
   city: CitySlug;
+  /**
+   * Where the hospital is, as people search for it: locality and city
+   * ("Andheri West, Mumbai"), or just the city when the name already
+   * carries the locality. Used in the page title and heading area.
+   */
+  place?: string;
   /**
    * Accreditations as shown to patients. Real listings only include
    * accreditations checked against the accrediting body's own directory.
    */
   accreditations: string[];
   specialties: TreatmentSlug[];
+  /**
+   * One sentence per specialty on what this hospital specifically offers
+   * (named centres, programmes, procedures), from the hospital's own page
+   * for that hospital or a source in `sources`.
+   */
+  specialtyNotes?: Partial<Record<TreatmentSlug, string>>;
   description: string;
   /** Photo of the hospital itself. When omitted, the city photo is shown instead. */
   image?: string;
@@ -91,7 +101,7 @@ export type Hospital = {
   history?: string;
   /** Closest metro or rail station (OpenStreetMap), straight-line distance. */
   nearestStation?: { name: string; network: string; km: number };
-  /** Published sources behind the listing, other than the official website. Shown on the page. */
+  /** Published sources behind the listing, other than the official website. Internal record, not shown on the page. */
   sources?: {
     title: string;
     url: string;
@@ -102,11 +112,6 @@ export type Hospital = {
   jci?: { listedAs: string; program: string; effectiveDate: string };
   /** NABH directory record: accreditation number (hospitals start with "H-"). */
   nabh?: { number: string };
-  /**
-   * International patient services listed on the hospital's (or its
-   * group's) own international patients page. Only what the page states.
-   */
-  international?: { url?: string; services: InternationalService[]; languages?: string[] };
   /** ISO date the listing (name, city, accreditations) was last checked against official sources. */
   verifiedOn?: string;
   /**
