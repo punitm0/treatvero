@@ -4,6 +4,7 @@ import type { FAQ, Treatment } from "@/types";
 import type { Crumb } from "@/lib/seo";
 import { internationalPatientJourney } from "@/data/treatments";
 import { getHospitalsForTreatment, hasSampleHospitals } from "@/data/hospitals";
+import { getCity } from "@/data/destinations";
 import { Icon } from "@/components/ui/icon";
 import { PageHero } from "@/components/ui/page-hero";
 import { Container, Eyebrow, Section } from "@/components/ui/primitives";
@@ -27,7 +28,9 @@ export function TreatmentGuide({
   /** Optional destination framing, e.g. "in India". */
   context?: string;
 }) {
-  const hospitalOptions = getHospitalsForTreatment(t.slug);
+  const allHospitalOptions = getHospitalsForTreatment(t.slug);
+  const hospitalOptions = allHospitalOptions.slice(0, 3);
+  const moreHospitalOptions = allHospitalOptions.slice(3);
   const faqs = [...t.faqs, ...extraFaqs];
 
   return (
@@ -214,6 +217,21 @@ export function TreatmentGuide({
                 </li>
               ))}
             </ul>
+            {moreHospitalOptions.length > 0 ? (
+              <div className="mt-8">
+                <h3 className="label-mono mt-0 mb-4 font-normal text-ink-subtle">Also listed for {t.name.toLowerCase()}</h3>
+                <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-x-6 gap-y-2.5 p-0">
+                  {moreHospitalOptions.map((h) => (
+                    <li key={h.slug} className="text-[15px]">
+                      <Link href={`/hospitals/${h.slug}`} className="text-ink no-underline hover:text-brand">
+                        {h.name}
+                      </Link>
+                      <span className="text-ink-subtle">, {getCity(h.city).name}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             {hasSampleHospitals ? (
               <p className="mt-5 mb-0 text-[13px] text-ink-subtle">
                 Sample listings shown while verified hospital profiles are prepared. Real options are sourced for your

@@ -41,6 +41,7 @@ export type City = {
   slug: CitySlug;
   name: string;
   airportCode: string;
+  airportName: string;
   description: string;
   image: string;
 };
@@ -54,6 +55,8 @@ export type Destination = {
   image?: string;
   href?: string;
 };
+
+export type InternationalService = "coordinator" | "visa-letter" | "airport-pickup" | "accommodation" | "interpreters";
 
 export type Hospital = {
   slug: string;
@@ -73,6 +76,23 @@ export type Hospital = {
   imageCredit?: string;
   /** The hospital's official website. */
   website?: string;
+  /** Street address as given on the hospital's own website. */
+  address?: string;
+  /** Map position (OpenStreetMap), used for the map link and structured data. */
+  geo?: { lat: number; lng: number };
+  /** Road distance from the city's international airport, rounded to the km (OpenStreetMap routing). */
+  airportDistanceKm?: number;
+  /** Year the hospital opened, only when stated on its own website. */
+  established?: number;
+  /** JCI directory record: name as listed, programme and effective date (ISO). */
+  jci?: { listedAs: string; program: string; effectiveDate: string };
+  /** NABH directory record: accreditation number (hospitals start with "H-"). */
+  nabh?: { number: string };
+  /**
+   * International patient services listed on the hospital's (or its
+   * group's) own international patients page. Only what the page states.
+   */
+  international?: { url?: string; services: InternationalService[]; languages?: string[] };
   /** ISO date the listing (name, city, accreditations) was last checked against official sources. */
   verifiedOn?: string;
   /**

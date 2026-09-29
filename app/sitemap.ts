@@ -29,6 +29,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Sample hospital listings are excluded (they are noindex).
     ...hospitals
       .filter((h) => !h.isSample)
-      .map((h) => ({ url: absoluteUrl(`/hospitals/${h.slug}`), changeFrequency: "monthly" as const, priority: 0.6 })),
+      .map((h) => ({
+        url: absoluteUrl(`/hospitals/${h.slug}`),
+        ...(h.verifiedOn ? { lastModified: h.verifiedOn } : {}),
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+      })),
   ];
 }
