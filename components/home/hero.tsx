@@ -40,7 +40,7 @@ export function Hero() {
           </ul>
         </div>
 
-        <div className="relative pb-[120px] md:pb-0">
+        <div className="relative pb-[120px] md:pb-10 min-[67.5rem]:pb-12">
           <div className="relative aspect-[4/4.4] overflow-hidden rounded-3xl border border-line bg-[#e8e4dc] md:aspect-[16/10] min-[67.5rem]:aspect-[4/4.4]">
             <Image
               src="/images/hero.jpg"
@@ -62,7 +62,7 @@ function JourneyCard() {
   return (
     <figure
       aria-label="Illustration of a coordinated patient journey"
-      className="absolute bottom-0 left-3 m-0 w-[min(360px,calc(100%-24px))] rounded-[18px] border border-line bg-surface p-5 shadow-card motion-safe:animate-rise motion-safe:[animation-delay:250ms] md:left-6 min-[67.5rem]:-left-8"
+      className="absolute bottom-0 left-3 m-0 w-[min(360px,calc(100%-24px))] rounded-[18px] border border-line bg-surface p-5 shadow-card motion-safe:animate-rise motion-safe:[animation-delay:250ms] md:left-6 min-[67.5rem]:-left-12"
     >
       <div className="mb-4 flex items-baseline justify-between gap-3">
         <span className="label-mono text-ink-subtle">Your journey</span>
