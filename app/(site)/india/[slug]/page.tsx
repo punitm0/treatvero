@@ -8,7 +8,7 @@ import { hospitals } from "@/data/hospitals";
 import { indiaFaqs } from "@/data/faqs";
 import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/ui/page-hero";
-import { Container, Eyebrow, SampleBadge } from "@/components/ui/primitives";
+import { Container, Eyebrow } from "@/components/ui/primitives";
 import { TreatmentGuide } from "@/components/treatments/treatment-guide";
 import { HospitalCardCompact } from "@/components/hospitals/hospital-card";
 import { IndiaStayAndJourney, IndiaVisa } from "@/components/destinations/india-sections";
@@ -99,7 +99,6 @@ function CityPage({ page }: { page: IndiaCityPage }) {
                   Hospitals in {city.name}
                 </h2>
               </div>
-              {cityHospitals.some((h) => h.isSample) ? <SampleBadge>Sample listings — not partners</SampleBadge> : null}
             </div>
             <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-4 p-0">
               {cityHospitals.map((h) => (

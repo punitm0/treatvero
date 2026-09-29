@@ -41,6 +41,7 @@ export type City = {
   slug: CitySlug;
   name: string;
   airportCode: string;
+  airportName: string;
   description: string;
   image: string;
 };
@@ -55,6 +56,8 @@ export type Destination = {
   href?: string;
 };
 
+export type InternationalService = "coordinator" | "visa-letter" | "airport-pickup" | "accommodation" | "interpreters";
+
 export type Hospital = {
   slug: string;
   name: string;
@@ -62,7 +65,6 @@ export type Hospital = {
   /**
    * Accreditations as shown to patients. Real listings only include
    * accreditations checked against the accrediting body's own directory.
-   * For sample data these are prefixed "e.g." and must never be presented as verified.
    */
   accreditations: string[];
   specialties: TreatmentSlug[];
@@ -73,13 +75,38 @@ export type Hospital = {
   imageCredit?: string;
   /** The hospital's official website. */
   website?: string;
+  /** Street address as given on the hospital's own website. */
+  address?: string;
+  /** Map position (OpenStreetMap), used for the map link and structured data. */
+  geo?: { lat: number; lng: number };
+  /** Road distance from the city's international airport, rounded to the km (OpenStreetMap routing). */
+  airportDistanceKm?: number;
+  /** Year the hospital opened (from a source in `sources` or its website). */
+  established?: number;
+  /** Bed count as published by the source cited in `sources`. */
+  beds?: number;
+  /** One to three neutral sentences on the hospital's history, from `sources`. */
+  history?: string;
+  /** Closest metro or rail station (OpenStreetMap), straight-line distance. */
+  nearestStation?: { name: string; network: string; km: number };
+  /** Published sources behind the listing, other than the official website. Shown on the page. */
+  sources?: {
+    title: string;
+    url: string;
+    /** The source is about this hospital itself (e.g. its own Wikipedia article); used as schema.org `sameAs`. */
+    isAbout?: boolean;
+  }[];
+  /** JCI directory record: name as listed, programme and effective date (ISO). */
+  jci?: { listedAs: string; program: string; effectiveDate: string };
+  /** NABH directory record: accreditation number (hospitals start with "H-"). */
+  nabh?: { number: string };
+  /**
+   * International patient services listed on the hospital's (or its
+   * group's) own international patients page. Only what the page states.
+   */
+  international?: { url?: string; services: InternationalService[]; languages?: string[] };
   /** ISO date the listing (name, city, accreditations) was last checked against official sources. */
   verifiedOn?: string;
-  /**
-   * Development/sample entry. Sample hospitals are labelled in the UI,
-   * excluded from the sitemap and served with noindex.
-   */
-  isSample: boolean;
   /**
    * Only true once a written partnership exists. The UI never implies a
    * partnership unless this is explicitly set.

@@ -1,8 +1,8 @@
 import { cities } from "@/data/destinations";
-import { hasSampleHospitals, hospitals } from "@/data/hospitals";
+import { hospitals } from "@/data/hospitals";
 import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/ui/page-hero";
-import { Container, SampleBadge } from "@/components/ui/primitives";
+import { Container } from "@/components/ui/primitives";
 import { HospitalCardCompact } from "@/components/hospitals/hospital-card";
 import { HospitalsBrowser } from "@/components/hospitals/hospitals-browser";
 import { ComparisonSection } from "@/components/home/comparison-section";
@@ -56,19 +56,11 @@ export default function HospitalsPage() {
             <h2 id="listings" className="text-h2-sm m-0">
               Browse by city
             </h2>
-            {hasSampleHospitals ? <SampleBadge>Sample listings — not partners</SampleBadge> : null}
           </div>
-          {hasSampleHospitals ? (
-            <p className="mt-0 mb-7 max-w-[760px] text-[15px] text-ink-muted">
-              These placeholder listings show how hospital options are presented. They are not real hospitals and do
-              not indicate any partnership with TreatVero. Verified profiles will replace them.
-            </p>
-          ) : (
-            <p className="mt-0 mb-7 max-w-[760px] text-[15px] text-ink-muted">
-              JCI- and NABH-accredited hospitals in each city. Options are requested for your case, and we&apos;re not
-              limited to the hospitals shown here.
-            </p>
-          )}
+          <p className="mt-0 mb-7 max-w-[760px] text-[15px] text-ink-muted">
+            JCI- and NABH-accredited hospitals in each city. Options are requested for your case, and we&apos;re not
+            limited to the hospitals shown here.
+          </p>
           <HospitalsBrowser
             cities={cities.map((c) => ({ slug: c.slug, name: c.name }))}
             cards={hospitals.map((h) => ({ key: h.slug, city: h.city, node: <HospitalCardCompact hospital={h} /> }))}
