@@ -17,6 +17,7 @@ const legal = [
   { label: "Terms of Service", href: "/terms" },
   { label: "Medical Disclaimer", href: "/medical-disclaimer" },
   { label: "Cookie Policy", href: "/privacy#cookies" },
+  { label: "Sitemap", href: "/sitemap" },
 ];
 
 const linkClass = "text-ink no-underline hover:text-brand";
