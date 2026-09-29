@@ -19,6 +19,7 @@ import {
   enquirySchema,
   type EnquiryInput,
 } from "@/lib/validation/enquiry";
+import { CONSENT_TEXT } from "@/data/legal";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 import { submitTreatmentRequest } from "@/app/(site)/get-treatment-options/actions";
@@ -32,8 +33,6 @@ type FormInput = z.input<typeof enquirySchema>;
 
 const comingSoon = ["Turkey", "Thailand", "UAE", "Singapore"];
 const VERIFY_ERROR = "We couldn't verify your browser. Please refresh the page and try again, or reach us on WhatsApp.";
-const CONSENT_LABEL =
-  "I consent to TreatVero processing my information and sharing relevant medical information with healthcare providers when necessary to obtain treatment options.";
 
 export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
   const [step, setStep] = useState(0);
@@ -364,24 +363,9 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
                       <FieldError id="phoneCode-error" message={err("phoneCode")} />
                       <FieldError id="phoneNumber-error" message={err("phoneNumber")} />
                     </fieldset>
-                    <div>
-                      <label className="flex w-full cursor-pointer items-start gap-3 rounded-xl border border-line-faint bg-sand-2 px-4 py-3.5 text-sm leading-normal">
-                        <input
-                          type="checkbox"
-                          className="peer sr-only"
-                          {...aria("consent")}
-                          {...register("consent")}
-                        />
-                        <span
-                          aria-hidden="true"
-                          className="mt-px flex size-[22px] shrink-0 items-center justify-center rounded-md border-[1.5px] border-line-hover bg-surface text-transparent peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand"
-                        >
-                          <Check className="size-4" strokeWidth={2.5} />
-                        </span>
-                        <span>{CONSENT_LABEL}</span>
-                      </label>
-                      <FieldError id="consent-error" message={err("consent")} />
-                    </div>
+                    <CheckboxField name="consent" error={err("consent")} input={{ ...aria("consent"), ...register("consent") }}>
+                      {CONSENT_TEXT}
+                    </CheckboxField>
                     <p className="m-0 text-[13px] text-ink-subtle">
                       See our{" "}
                       <Link href="/privacy" target="_blank">
@@ -455,6 +439,21 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
                         Compare plans
                       </Link>
                     </p>
+                    <CheckboxField name="terms" error={err("terms")} input={{ ...aria("terms"), ...register("terms") }}>
+                      I agree to the{" "}
+                      <Link href="/terms" target="_blank">
+                        Terms of Service
+                      </Link>
+                      , including the{" "}
+                      <Link href="/terms#refunds" target="_blank">
+                        refund policy
+                      </Link>
+                      , and I understand that TreatVero is a coordinator, not a healthcare provider, and{" "}
+                      <Link href="/medical-disclaimer" target="_blank">
+                        does not give medical advice
+                      </Link>
+                      .
+                    </CheckboxField>
                   </>
                 )}
               </motion.div>
@@ -495,6 +494,35 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
           </div>
         </form>
       )}
+    </div>
+  );
+}
+
+/** A required checkbox. The stored wording lives in data/legal.ts — keep the visible text identical to it. */
+function CheckboxField({
+  name,
+  error,
+  input,
+  children,
+}: {
+  name: "consent" | "terms";
+  error: string | undefined;
+  input: React.InputHTMLAttributes<HTMLInputElement> & { ref?: React.Ref<HTMLInputElement> };
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="flex w-full cursor-pointer items-start gap-3 rounded-xl border border-line-faint bg-sand-2 px-4 py-3.5 text-sm leading-normal">
+        <input type="checkbox" className="peer sr-only" {...input} />
+        <span
+          aria-hidden="true"
+          className="mt-px flex size-[22px] shrink-0 items-center justify-center rounded-md border-[1.5px] border-line-hover bg-surface text-transparent peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand"
+        >
+          <Check className="size-4" strokeWidth={2.5} />
+        </span>
+        <span>{children}</span>
+      </label>
+      <FieldError id={`${name}-error`} message={error} />
     </div>
   );
 }

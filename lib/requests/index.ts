@@ -2,6 +2,7 @@ import "server-only";
 import { cfEnv } from "@/lib/cloudflare";
 import type { StoredReport } from "@/lib/uploads/storage";
 import type { EnquiryInput } from "@/lib/validation/enquiry";
+import { CONSENT_TEXT, TERMS_ACCEPTANCE_TEXT, TERMS_VERSION } from "@/data/legal";
 
 /**
  * Persistence for treatment requests in Cloudflare D1 (binding `DB`,
@@ -23,9 +24,6 @@ export type TreatmentRequestRecord = {
   reports: StoredReport[];
 };
 
-export const CONSENT_TEXT =
-  "I consent to TreatVero processing my information and sharing relevant medical information with healthcare providers when necessary to obtain treatment options.";
-
 class D1RequestStore implements TreatmentRequestStore {
   constructor(private readonly db: D1Database) {}
 
@@ -34,8 +32,9 @@ class D1RequestStore implements TreatmentRequestStore {
       .prepare(
         `INSERT INTO treatment_requests
           (reference, created_at, status, plan, country, age, treatment, description,
-           destination, city, timing, budget, full_name, email, whatsapp, consent_text, consent_at)
-         VALUES (?1, ?2, 'new', ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?2)`,
+           destination, city, timing, budget, full_name, email, whatsapp, consent_text, consent_at,
+           terms_version, terms_text, terms_accepted_at)
+         VALUES (?1, ?2, 'new', ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?2, ?16, ?17, ?2)`,
       )
       .bind(
         reference,
@@ -53,6 +52,8 @@ class D1RequestStore implements TreatmentRequestStore {
         input.email,
         whatsapp,
         CONSENT_TEXT,
+        TERMS_VERSION,
+        TERMS_ACCEPTANCE_TEXT,
       );
     const insertReports = reports.map((r) =>
       this.db

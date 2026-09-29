@@ -232,6 +232,11 @@ export default async function AdminRequestsPage({ searchParams }: { searchParams
                       <td className="px-4 py-3">
                         {planLabel(r.plan)}
                         {r.paid_at ? <span className="block text-xs text-brand">Paid</span> : null}
+                        {r.agreement_status === "signed" ? (
+                          <span className="block text-xs text-brand">Agreement signed</span>
+                        ) : r.agreement_status === "awaiting" ? (
+                          <span className="block text-xs text-ink-subtle">Awaiting signature</span>
+                        ) : null}
                       </td>
                       <td className="max-w-[180px] truncate px-4 py-3 text-ink-muted">
                         {r.assigned_to ? r.assigned_to.split("@")[0] : <span className="text-ink-subtle">—</span>}

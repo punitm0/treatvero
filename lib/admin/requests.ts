@@ -51,6 +51,8 @@ export type RequestSummary = {
   follow_up_on: string | null;
   paid_at: string | null;
   report_count: number;
+  terms_version: string | null;
+  agreement_status: "none" | "awaiting" | "signed";
 };
 
 export type RequestDetail = {
@@ -71,6 +73,10 @@ export type RequestDetail = {
   whatsapp: string;
   consent_text: string;
   consent_at: string;
+  /** NULL for requests received before the Terms checkbox. */
+  terms_version: string | null;
+  terms_text: string | null;
+  terms_accepted_at: string | null;
   assigned_to: string | null;
   follow_up_on: string | null;
   paid_at: string | null;
@@ -94,6 +100,8 @@ export type EventKind =
   | "patient_view"
   | "patient_reply"
   | "patient_upload"
+  | "patient_sign"
+  | "agreement"
   | "purge";
 
 export type RequestEvent = {
@@ -115,6 +123,7 @@ export const VIEWS = [
   { id: "due", label: "Follow-ups due" },
   { id: "uncontacted", label: `New > ${FIRST_CONTACT_SLA_HOURS}h` },
   { id: "replied", label: "Patient replied" },
+  { id: "unsigned", label: "Agreement unsigned" },
 ] as const;
 export type View = (typeof VIEWS)[number]["id"];
 export function isView(v: unknown): v is View {
@@ -194,16 +203,27 @@ function buildWhere(f: RequestFilters): { sql: string; params: unknown[] } {
     params.push(new Date(Date.now() - FIRST_CONTACT_SLA_HOURS * 3600_000).toISOString());
   } else if (f.view === "replied") {
     // Patient replied after the last time a coordinator did anything on the request.
-    where.push(`EXISTS (SELECT 1 FROM request_events pe WHERE pe.reference = r.reference AND pe.kind IN ('patient_reply', 'patient_upload')
+    where.push(`EXISTS (SELECT 1 FROM request_events pe WHERE pe.reference = r.reference AND pe.kind IN ('patient_reply', 'patient_upload', 'patient_sign')
       AND pe.created_at > COALESCE((SELECT MAX(ae.created_at) FROM request_events ae WHERE ae.reference = r.reference
         AND ae.actor_email <> '${PATIENT_ACTOR}' AND ae.kind <> 'download'), ''))`);
+  } else if (f.view === "unsigned") {
+    // Sent for signature and still open, on a request that is still being worked.
+    where.push(`EXISTS (SELECT 1 FROM service_agreements sa WHERE sa.reference = r.reference AND sa.signed_at IS NULL AND sa.withdrawn_at IS NULL)
+      AND NOT EXISTS (SELECT 1 FROM service_agreements ss WHERE ss.reference = r.reference AND ss.signed_at IS NOT NULL)
+      AND r.status IN (${OPEN_STATUSES.map(() => "?").join(",")})`);
+    params.push(...OPEN_STATUSES);
   }
   return { sql: where.length ? `WHERE ${where.join(" AND ")}` : "", params };
 }
 
 const SUMMARY_COLUMNS = `r.reference, r.created_at, r.status, r.plan, r.treatment, r.destination, r.city, r.country, r.full_name,
-  r.assigned_to, r.follow_up_on, r.paid_at,
-  (SELECT COUNT(*) FROM request_reports rr WHERE rr.reference = r.reference) AS report_count`;
+  r.assigned_to, r.follow_up_on, r.paid_at, r.terms_version,
+  (SELECT COUNT(*) FROM request_reports rr WHERE rr.reference = r.reference) AS report_count,
+  CASE
+    WHEN EXISTS (SELECT 1 FROM service_agreements sa WHERE sa.reference = r.reference AND sa.signed_at IS NOT NULL) THEN 'signed'
+    WHEN EXISTS (SELECT 1 FROM service_agreements sa WHERE sa.reference = r.reference AND sa.withdrawn_at IS NULL) THEN 'awaiting'
+    ELSE 'none'
+  END AS agreement_status`;
 
 export async function listRequests(
   filters: RequestFilters & { page: number },
@@ -230,6 +250,7 @@ export type ExportRow = RequestSummary & {
   timing: string | null;
   budget: string | null;
   payment_note: string | null;
+  terms_accepted_at: string | null;
 };
 
 /** Every matching request (no paging) for CSV export. Excludes the medical description. */
@@ -237,7 +258,7 @@ export async function exportRequests(filters: RequestFilters): Promise<ExportRow
   const { sql, params } = buildWhere(filters);
   const { results } = await db()
     .prepare(
-      `SELECT ${SUMMARY_COLUMNS}, r.age, r.email, r.whatsapp, r.timing, r.budget, r.payment_note
+      `SELECT ${SUMMARY_COLUMNS}, r.age, r.email, r.whatsapp, r.timing, r.budget, r.payment_note, r.terms_accepted_at
        FROM treatment_requests r ${sql} ORDER BY r.created_at DESC LIMIT 10000`,
     )
     .bind(...params)
