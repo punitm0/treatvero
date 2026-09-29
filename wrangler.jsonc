@@ -63,6 +63,9 @@
 		// New-enquiry alerts (sent with Resend). Comma-separated recipients; alerts carry no patient details.
 		"ENQUIRY_ALERT_TO": "hello@treatvero.com",
 		"ENQUIRY_ALERT_FROM": "alerts@treatvero.com",
+		// Emails coordinators send to patients from the admin; patient replies go to PATIENT_EMAIL_REPLY_TO.
+		"PATIENT_EMAIL_FROM": "hello@treatvero.com",
+		"PATIENT_EMAIL_REPLY_TO": "hello@treatvero.com",
 		// Cloudflare Access protecting the admin path (lib/admin/path.ts).
 		// Team domain, e.g. "treatvero.cloudflareaccess.com", and the application's AUD tag.
 		// The admin denies everyone until both are set.
@@ -85,6 +88,8 @@
 			"PAYMENTS_PROVIDER": "manual",
 			"ENQUIRY_ALERT_TO": "hello@treatvero.com",
 			"ENQUIRY_ALERT_FROM": "alerts@treatvero.com",
+			"PATIENT_EMAIL_FROM": "hello@treatvero.com",
+			"PATIENT_EMAIL_REPLY_TO": "hello@treatvero.com",
 			"CF_ACCESS_TEAM_DOMAIN": "quiet-bar-ac59.cloudflareaccess.com",
 			"CF_ACCESS_AUD": "ac98b0ba6d1cd7cf2f5ea0ebf97767f2897f5450f730c67ea120086ffed58e02"
 		},

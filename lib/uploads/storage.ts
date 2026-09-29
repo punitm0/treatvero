@@ -34,6 +34,10 @@ export interface ReportStorage {
   attach(ids: string[], reference: string): Promise<void>;
   /** Reads a report attached to a request (admin downloads). */
   open(reference: string, id: string): Promise<R2ObjectBody | null>;
+  /** Stores a report straight under a submitted request (patient link uploads). */
+  saveToRequest(reference: string, file: { bytes: Uint8Array; fileName: string; mimeType: AllowedMime }): Promise<StoredReport>;
+  /** Permanently deletes the given reports of a request (retention, erasure requests). */
+  removeFromRequest(reference: string, ids: string[]): Promise<void>;
 }
 
 const ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -95,6 +99,29 @@ class R2ReportStorage implements ReportStorage {
     if (!ID_RE.test(id)) return null;
     // Falls back to pending/ in case moving the file failed at submission time.
     return (await this.bucket.get(`requests/${reference}/${id}`)) ?? (await this.bucket.get(key(id)));
+  }
+
+  async saveToRequest(reference: string, { bytes, fileName, mimeType }: { bytes: Uint8Array; fileName: string; mimeType: AllowedMime }) {
+    const meta: StoredReport = {
+      id: crypto.randomUUID(),
+      fileName,
+      mimeType,
+      size: bytes.byteLength,
+      createdAt: new Date().toISOString(),
+      sessionId: "",
+    };
+    await this.bucket.put(`requests/${reference}/${meta.id}`, bytes, {
+      httpMetadata: { contentType: mimeType, contentDisposition: "attachment" },
+      customMetadata: { fileName, createdAt: meta.createdAt, reference },
+    });
+    return meta;
+  }
+
+  async removeFromRequest(reference: string, ids: string[]) {
+    const valid = ids.filter((i) => ID_RE.test(i));
+    // Also clears copies left in pending/ if moving them failed at submission.
+    const keys = valid.flatMap((id) => [`requests/${reference}/${id}`, key(id)]);
+    for (let i = 0; i < keys.length; i += 1000) await this.bucket.delete(keys.slice(i, i + 1000));
   }
 }
 

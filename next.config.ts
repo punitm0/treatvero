@@ -14,8 +14,8 @@ const TURNSTILE = "https://challenges.cloudflare.com";
  * Public pages are prerendered at build time and served as static assets, so
  * they can't carry a per-request nonce; 'unsafe-inline' scripts stay allowed
  * here (Next.js inlines its RSC payload). These pages render no user-supplied
- * content. The admin area (lib/admin/path.ts), which does, gets a strict
- * nonce-based policy from proxy.ts instead.
+ * content. The admin area (lib/admin/path.ts) and patients' private pages
+ * (/p/<token>), which do, get a strict nonce-based policy from proxy.ts instead.
  */
 const publicCsp = [
   "default-src 'self'",
@@ -82,12 +82,16 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
-      // Everything except the admin area, whose CSP is set per request in proxy.ts.
-      { source: `/((?!${ADMIN}(?:/|$)).*)`, headers: [{ key: "Content-Security-Policy", value: publicCsp }] },
+      // Everything except the admin area and patient pages, whose CSP is set per request in proxy.ts.
+      { source: `/((?!${ADMIN}(?:/|$)|p/).*)`, headers: [{ key: "Content-Security-Policy", value: publicCsp }] },
       // Never cache or index API responses or the admin area.
       { source: "/api/:path*", headers: privateHeaders },
       { source: `/${ADMIN}`, headers: privateHeaders },
       { source: `/${ADMIN}/:path*`, headers: privateHeaders },
+      // Patient pages: the URL token is the credential, so never cache or index them, and never send
+      // them as a referrer to other sites ("same-origin" rather than "no-referrer", which would make
+      // browsers send `Origin: null` on the page's own form posts).
+      { source: "/p/:path*", headers: [...privateHeaders, { key: "Referrer-Policy", value: "same-origin" }] },
     ];
   },
 };

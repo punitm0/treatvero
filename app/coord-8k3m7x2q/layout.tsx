@@ -20,13 +20,26 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!auth.ok && auth.reason === "unauthorized") notFound();
 
   return (
-    <div className="min-h-dvh bg-canvas">
-      <header className="border-b border-line bg-surface">
+    <div className="min-h-dvh bg-canvas print:min-h-0 print:bg-white">
+      <header className="border-b border-line bg-surface print:hidden">
         <div className="mx-auto flex h-14 max-w-[1200px] items-center gap-3 px-4 md:px-6">
           <Link href={ADMIN_PATH} className="flex items-center gap-2.5 text-ink no-underline">
             <LogoMark className="size-[18px]" dotClassName="top-[3px] right-[3px] size-1.5 bg-white" />
             <span className="text-sm font-medium">TreatVero admin</span>
           </Link>
+          {auth.ok ? (
+            <nav aria-label="Admin" className="ml-4 flex items-center gap-4 text-[13px] max-sm:ml-1 max-sm:gap-3">
+              <Link href={ADMIN_PATH} className="text-ink-muted no-underline hover:text-ink">
+                Enquiries
+              </Link>
+              <Link href={`${ADMIN_PATH}/insights`} className="text-ink-muted no-underline hover:text-ink">
+                Insights
+              </Link>
+              <Link href={`${ADMIN_PATH}/data`} className="text-ink-muted no-underline hover:text-ink">
+                Data
+              </Link>
+            </nav>
+          ) : null}
           <div className="flex-1" />
           {auth.ok ? (
             <>
@@ -39,7 +52,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           ) : null}
         </div>
       </header>
-      <main className="mx-auto max-w-[1200px] px-4 py-6 md:px-6 md:py-8">
+      <main className="mx-auto max-w-[1200px] px-4 py-6 md:px-6 md:py-8 print:max-w-none print:p-0">
         {auth.ok ? (
           children
         ) : (

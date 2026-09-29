@@ -52,7 +52,22 @@ Then `npm run deploy`. Build-time `NEXT_PUBLIC_*` values must be present in the 
 
 ## Admin
 
-The coordination-team admin lives at an unlisted path, `ADMIN_PATH` in `lib/admin/path.ts` (never linked, not in robots.txt or the sitemap). It lists enquiries with status filters and search, shows full request details, streams medical reports from R2, and records status changes, internal notes and report downloads with the signed-in user's email.
+The coordination-team admin lives at an unlisted path, `ADMIN_PATH` in `lib/admin/path.ts` (never linked, not in robots.txt or the sitemap). Every change is recorded in the request's activity with the signed-in user's email.
+
+- **Enquiries:** status tabs, search, and filters (treatment, plan, owner, date range). There are work queues for follow-ups due, new enquiries not contacted within 24 hours, and patient replies. Export the filtered list as CSV; the CSV has no medical description, and every export is audited.
+- **Request page:**
+  - Correct the request's details; changes are logged with the old values.
+  - Set an owner and a follow-up date, mark the plan fee as paid, and add internal notes.
+  - Download reports from R2; each download is logged.
+- **Treatment options:** enter one quote per hospital (hospital picker from `data/hospitals.ts`, doctor, cost range, stay, inclusions, validity). They produce:
+  - a **comparison PDF** (`…/comparison`, saved as PDF from the browser's print dialog, A4)
+  - the patient's **private link** (`/p/<token>`, valid 7–60 days). The patient compares the options, replies with a choice or asks for a call, and uploads more reports without an account. Views, replies and uploads appear in the activity, and the team gets an email that contains only the reference.
+- **Hospitals:** an anonymised **case summary PDF** (`…/case-summary`, no name or contact details) to send to international desks, plus a log of which hospitals were sent the case and how each replied.
+- **Messages:** templates (first contact, options ready, request more reports, follow-up) that can be edited before sending, then opened in WhatsApp or sent by email through Resend from `PATIENT_EMAIL_FROM`. Both are logged.
+- **Insights:** enquiries per week, pipeline conversion, time to first contact, top treatments/countries/cities and open work per owner.
+- **Data & privacy:** delete the reports of closed/lost requests after 6/12/24 months without activity, and view the audit log (exports, deletions, purges). To erase a whole request after a deletion request, use **Delete request** on its page.
+
+Patient links are an HMAC of a random link id keyed by `SESSION_SECRET`, and only a hash of each token is stored. Creating a new link revokes the previous one. Patient pages are never cached or indexed and get the strict nonce CSP.
 
 Access is enforced by **Cloudflare Access**, and the app verifies the Access JWT itself (`lib/admin/auth.ts`), so the admin stays closed even if the Worker is reached another way. Without a valid token the path returns 404. To set it up:
 
@@ -63,7 +78,7 @@ Access is enforced by **Cloudflare Access**, and the app verifies the Access JWT
 ## Security
 
 - **Bot protection:** the enquiry form runs Cloudflare Turnstile (invisible unless a challenge is needed). Passing it issues a short-lived signed session cookie (`lib/security`) that uploads, upload deletion and submission all require; uploads are tied to that session. Workers rate limits are a backstop.
-- **Headers** (`next.config.ts`, `proxy.ts`): HSTS, CSP, COOP/CORP, frame denial, nosniff, Permissions-Policy. Public pages are prerendered, so their CSP keeps `'unsafe-inline'` scripts; the admin — which renders patient-supplied text — gets a strict per-request nonce CSP with `'strict-dynamic'`.
+- **Headers** (`next.config.ts`, `proxy.ts`): HSTS, CSP, COOP/CORP, frame denial, nosniff, Permissions-Policy. Public pages are prerendered, so their CSP keeps `'unsafe-inline'` scripts; the admin — which renders patient-supplied text — — and patients' private pages (`/p/<token>`) get a strict per-request nonce CSP with `'strict-dynamic'`.
 
 ## Where things live
 
@@ -83,7 +98,8 @@ Access is enforced by **Cloudflare Access**, and the app verifies the Access JWT
 | `lib/rate-limit.ts` | Workers Rate Limiting bindings (enquiries 5/min, uploads 20/min, bot checks 10/min per IP) |
 | `lib/security` | Turnstile verification and the signed visitor session |
 | `lib/admin`, `app/coord-*` | Admin auth (Cloudflare Access JWT), data access and pages |
-| `lib/notifications` | New-enquiry alert email (Resend) |
+| `lib/notifications` | Resend email: new-enquiry and patient-activity alerts, patient messages |
+| `lib/patient-links.ts`, `app/p` | Patients' private options/reply/upload pages |
 | `app/(site)` | Public pages (share the header/footer layout) |
 
 ## Content and trust rules
