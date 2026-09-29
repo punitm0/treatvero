@@ -26,6 +26,10 @@ import { getCity } from "@/data/destinations";
  *   are for cross-checking only, never the sole source.
  * - `address`: the hospital's street address (its own site, or a directory
  *   that matches it).
+ * - `googleMapsCid`: the hospital's own Google Maps listing — the second hex
+ *   number in its place URL's `!1s0x…:0x…` part, as a decimal string. Check
+ *   the listing's name and position match the hospital. The map link falls
+ *   back to a name-and-address search when it's missing.
  * - `geo`, `nearestStation`: OpenStreetMap (nominatim.openstreetmap.org;
  *   stations via overpass-api.de, straight-line km to one decimal).
  *   `airportDistanceKm`: road distance from the city's airport
@@ -60,6 +64,7 @@ export const hospitals: Hospital[] = [
     website: "https://www.medanta.org/hospitals-near-me/gurugram-hospital",
     address: "CH Baktawar Singh Road, Sector 38, Gurugram, Haryana 122001",
     geo: { lat: 28.43895, lng: 77.04027 },
+    googleMapsCid: "15864689655105936556",
     airportDistanceKm: 19,
     nearestStation: { name: "Millennium City Centre Gurugram", network: "Delhi Metro", km: 3.9 },
     history:
@@ -103,6 +108,7 @@ export const hospitals: Hospital[] = [
     website: "https://www.apollohospitals.com/hospitals/apollo-hospitals-delhi",
     address: "Delhi–Mathura Road, Sarita Vihar, New Delhi, Delhi 110076",
     geo: { lat: 28.54111, lng: 77.28333 },
+    googleMapsCid: "4305576296709909879",
     airportDistanceKm: 24,
     nearestStation: { name: "Jasola Apollo", network: "Delhi Metro", km: 0.3 },
     established: 1996,
@@ -149,6 +155,7 @@ export const hospitals: Hospital[] = [
     website: "https://www.fortishealthcare.com/location/fortis-memorial-research-institute-gurgaon",
     address: "Sector 44, opposite HUDA City Centre, Gurugram, Haryana 122002",
     geo: { lat: 28.45712, lng: 77.07277 },
+    googleMapsCid: "1832866585662167508",
     airportDistanceKm: 17,
     nearestStation: { name: "Millennium City Centre Gurugram", network: "Delhi Metro", km: 0.3 },
     beds: 330,
@@ -189,6 +196,7 @@ export const hospitals: Hospital[] = [
     website: "https://www.kokilabenhospital.com",
     address: "Rao Saheb Achutrao Patwardhan Marg, Four Bungalows, Andheri West, Mumbai, Maharashtra 400053",
     geo: { lat: 19.13126, lng: 72.82467 },
+    googleMapsCid: "4062463546458844196",
     airportDistanceKm: 10,
     nearestStation: { name: "Versova", network: "Mumbai Metro", km: 0.4 },
     established: 2009,
@@ -237,6 +245,7 @@ export const hospitals: Hospital[] = [
     website: "https://www.rfhospital.org",
     address: "Raja Rammohan Roy Road, Prarthana Samaj, Girgaon, Mumbai, Maharashtra 400004",
     geo: { lat: 18.95877, lng: 72.82021 },
+    googleMapsCid: "11414850953447392538",
     airportDistanceKm: 18,
     nearestStation: { name: "Grant Road", network: "Mumbai Metro", km: 0.5 },
     established: 1925,
@@ -285,6 +294,7 @@ export const hospitals: Hospital[] = [
     website: "https://www.apollohospitals.com/hospitals/apollo-hospitals-greams-road-chennai",
     address: "21 Greams Lane, off Greams Road, Thousand Lights, Chennai, Tamil Nadu 600006",
     geo: { lat: 13.06322, lng: 80.25158 },
+    googleMapsCid: "3318338258758298927",
     airportDistanceKm: 15,
     nearestStation: { name: "Thousand Lights", network: "Chennai Metro", km: 0.9 },
     history:
@@ -318,6 +328,7 @@ export const hospitals: Hospital[] = [
     website: "https://mgmhealthcare.in",
     address: "Nelson Manickam Road, Aminjikarai, Chennai, Tamil Nadu 600029",
     geo: { lat: 13.07095, lng: 80.22173 },
+    googleMapsCid: "10666141597593509124",
     airportDistanceKm: 13,
     nearestStation: { name: "Shenoy Nagar", network: "Chennai Metro", km: 1.0 },
     established: 2019,
@@ -352,6 +363,7 @@ export const hospitals: Hospital[] = [
     website: "https://www.narayanahealth.org/hospitals-clinics/bangalore/narayana-institute-cardiac-sciences-bommasandra",
     address: "258/A, Bommasandra Industrial Area, Hosur Road, Anekal Taluk, Bengaluru, Karnataka 560099",
     geo: { lat: 12.80802, lng: 77.69478 },
+    googleMapsCid: "15096177953380905248",
     airportDistanceKm: 58,
     nearestStation: { name: "Delta Electronics Bommasandra", network: "Namma Metro", km: 1.4 },
     established: 2000,
@@ -394,6 +406,7 @@ export const hospitals: Hospital[] = [
     website: "https://www.apollohospitals.com/hospitals/apollo-hospitals-bannerghatta-road",
     address: "154/11 Bannerghatta Road, Bengaluru, Karnataka 560076",
     geo: { lat: 12.8963, lng: 77.59829 },
+    googleMapsCid: "9479001938627533447",
     airportDistanceKm: 45,
     nearestStation: { name: "Jayadeva Hospital", network: "Namma Metro", km: 2.3 },
     beds: 350,
@@ -431,6 +444,7 @@ export const hospitals: Hospital[] = [
     website: "https://www.apollohospitals.com/hospitals/apollo-health-city-jubilee-hills",
     address: "Road No. 72, opposite Bharatiya Vidya Bhavan School, Film Nagar, Jubilee Hills, Hyderabad, Telangana 500033",
     geo: { lat: 17.41494, lng: 78.41318 },
+    googleMapsCid: "16967188152330343871",
     airportDistanceKm: 35,
     nearestStation: { name: "Jubilee Hills Checkpost", network: "Hyderabad Metro", km: 1.5 },
     established: 1988,
@@ -465,6 +479,7 @@ export const hospitals: Hospital[] = [
     website: "https://aighospitals.com",
     address: "1-66/AIG/2 to 5, Mindspace Road, Gachibowli, Hyderabad, Telangana 500032",
     geo: { lat: 17.44318, lng: 78.36601 },
+    googleMapsCid: "10049650800569619927",
     airportDistanceKm: 31,
     nearestStation: { name: "Raidurg", network: "Hyderabad Metro", km: 1.2 },
     established: 2018,
@@ -509,6 +524,7 @@ export const hospitals: Hospital[] = [
     website: "https://www.marengoasiahospitals.com/hospital/marengo-cims-hospital-ahmedabad",
     address: "Off Science City Road, Sola, Ahmedabad, Gujarat 380060",
     geo: { lat: 23.07003, lng: 72.5174 },
+    googleMapsCid: "2872890841050413549",
     airportDistanceKm: 19,
     nearestStation: { name: "Thaltej", network: "Ahmedabad Metro", km: 2.3 },
     established: 2010,
@@ -546,6 +562,7 @@ export const hospitals: Hospital[] = [
     website: "https://www.apexheart.in",
     address: "Block G-K, Mondeal Business Park, near Gurudwara, S G Road, Ahmedabad, Gujarat 380059",
     geo: { lat: 23.04574, lng: 72.51393 },
+    googleMapsCid: "398998976772885426",
     airportDistanceKm: 18,
     nearestStation: { name: "Thaltej", network: "Ahmedabad Metro", km: 0.5 },
     established: 2012,
@@ -589,9 +606,14 @@ export const internationalServiceLabels: Record<InternationalService, string> = 
   interpreters: "Interpreters",
 };
 
-/** Google Maps link for the hospital's position, when known. */
+/**
+ * Google Maps link for the hospital: its own listing when we have the CID,
+ * else a name-and-address search, else a pin at its coordinates.
+ */
 export function hospitalMapUrl(h: Hospital): string | undefined {
-  return h.geo ? `https://www.google.com/maps/search/?api=1&query=${h.geo.lat},${h.geo.lng}` : undefined;
+  if (h.googleMapsCid) return `https://maps.google.com/?cid=${h.googleMapsCid}`;
+  const query = h.address ? `${h.name}, ${h.address}` : h.geo ? `${h.geo.lat},${h.geo.lng}` : undefined;
+  return query ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}` : undefined;
 }
 
 /** Photo for a listing: the hospital's own photo, else the city photo. */
