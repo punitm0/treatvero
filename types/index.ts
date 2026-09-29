@@ -77,7 +77,9 @@ export type Hospital = {
   website?: string;
   /** Street address as given on the hospital's own website. */
   address?: string;
-  /** Map position (OpenStreetMap), used for the map link and structured data. */
+  /** Google Maps listing ID (CID, decimal string), used for the map link. */
+  googleMapsCid?: string;
+  /** Map position (OpenStreetMap), used for structured data and as a map-link fallback. */
   geo?: { lat: number; lng: number };
   /** Road distance from the city's international airport, rounded to the km (OpenStreetMap routing). */
   airportDistanceKm?: number;
