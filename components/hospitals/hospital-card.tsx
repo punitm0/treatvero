@@ -2,9 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import type { Hospital } from "@/types";
-import { getCity } from "@/data/destinations";
 import { getTreatmentOrThrow } from "@/data/treatments";
-import { hospitalImage } from "@/data/hospitals";
+import { hospitalImage, hospitalPlace } from "@/data/hospitals";
 import { ENQUIRY_PATH } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import { buttonClasses } from "@/components/ui/button";
@@ -39,7 +38,7 @@ export function HospitalCard({ hospital: h, headingLevel = "h3" }: { hospital: H
           </H>
           <p className="mt-1 mb-0 flex items-center gap-1 text-sm text-ink-muted">
             <MapPin aria-hidden="true" className="size-4" strokeWidth={1.75} />
-            {getCity(h.city).name}
+            {hospitalPlace(h)}
           </p>
         </div>
         <Accreditations h={h} />
@@ -72,7 +71,7 @@ export function HospitalCardCompact({ hospital: h, className }: { hospital: Hosp
           </h3>
           <p className="m-0 flex items-center gap-1 text-sm text-ink-muted">
             <MapPin aria-hidden="true" className="size-4" strokeWidth={1.75} />
-            {getCity(h.city).name}
+            {hospitalPlace(h)}
           </p>
         </div>
       </div>

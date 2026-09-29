@@ -4,7 +4,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin } from "lucide-react";
 import type { FAQ, Hospital } from "@/types";
-import { getHospital, getRelatedHospitals, hospitalImage, hospitalMapUrl, hospitals } from "@/data/hospitals";
+import {
+  getHospital,
+  getRelatedHospitals,
+  hospitalImage,
+  hospitalMapUrl,
+  hospitalPlace,
+  hospitals,
+  hotelsNearUrl,
+} from "@/data/hospitals";
 import { getCity } from "@/data/destinations";
 import { indiaCityPageHref } from "@/data/seo-pages";
 import { getTreatmentOrThrow } from "@/data/treatments";
@@ -103,19 +111,20 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/hospitals/[slug]">): Promise<Metadata> {
   const h = getHospital((await params).slug);
   if (!h) return {};
+  const place = hospitalPlace(h);
   const city = getCity(h.city);
   const specialties = h.specialties.slice(0, 4).map((s) => getTreatmentOrThrow(s).shortName.toLowerCase());
   return pageMetadata({
-    title: `${h.name}, ${city.name} · ${accreditationText(h)} Accredited`,
+    title: `${h.name}, ${place} · ${accreditationText(h)} Accredited`,
     description: [
-      `${accreditationText(h)} accredited hospital in ${city.name} for ${listText(specialties)} care${h.established ? `, open since ${h.established}` : ""}.`,
+      `${accreditationText(h)} accredited hospital in ${place} for ${listText(specialties)} care${h.established ? `, open since ${h.established}` : ""}.`,
       h.airportDistanceKm ? `About ${h.airportDistanceKm} km from ${city.airportCode} airport.` : null,
       "Request treatment options through TreatVero.",
     ]
       .filter(Boolean)
       .join(" "),
     path: `/hospitals/${h.slug}`,
-    image: h.image ? { path: h.image, alt: `${h.name}, ${city.name}` } : undefined,
+    image: h.image ? { path: h.image, alt: `${h.name}, ${place}` } : undefined,
   });
 }
 
@@ -123,6 +132,7 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
   const h = getHospital((await params).slug);
   if (!h) notFound();
   const city = getCity(h.city);
+  const place = hospitalPlace(h);
   const cityHref = indiaCityPageHref(h.city);
   const mapUrl = hospitalMapUrl(h);
   const faqs = hospitalFaqs(h);
@@ -139,7 +149,7 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
           <div className="mb-5 flex flex-wrap items-center gap-3">
             <span className="flex items-center gap-1 text-sm text-ink-muted">
               <MapPin aria-hidden="true" className="size-4" strokeWidth={1.75} />
-              {city.name}, India
+              {place}, India
             </span>
           </div>
         }
@@ -150,7 +160,7 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
             <div className="relative aspect-[16/11] overflow-hidden rounded-3xl border border-line bg-[#e8e4dc]">
               <Image
                 src={hospitalImage(h)}
-                alt={h.image ? `${h.name}, ${city.name}` : ""}
+                alt={h.image ? `${h.name}, ${place}` : ""}
                 fill
                 preload
                 sizes="(min-width: 1100px) 560px, 100vw"
@@ -214,40 +224,8 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
             ) : null}
           </div>
           <div className="rounded-[20px] border border-line bg-surface p-[22px]">
-            <h2 className="label-mono mt-0 mb-4 font-normal text-ink-subtle">Specialties</h2>
-            <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
-              {h.specialties.map((s) => {
-                const t = getTreatmentOrThrow(s);
-                return (
-                  <li key={s}>
-                    <Link href={`/treatments/${t.slug}`} className="flex items-center gap-2 text-[15px] text-ink no-underline hover:text-brand">
-                      <Icon name={t.icon} className="size-5 text-brand" />
-                      {t.name}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-          <div className="rounded-[20px] border border-line bg-surface p-[22px]">
             <h2 className="label-mono mt-0 mb-4 font-normal text-ink-subtle">Location</h2>
-            <address className="m-0 text-[15px] not-italic">{h.address ?? `${city.name}, India`}</address>
-            <dl className="mt-3 mb-0 flex flex-col gap-2.5 text-[15px]">
-              {h.airportDistanceKm ? (
-                <div>
-                  <dt className="text-xs text-ink-subtle">From the airport</dt>
-                  <dd className="m-0">
-                    About {h.airportDistanceKm} km by road from {city.airportName} ({city.airportCode})
-                  </dd>
-                </div>
-              ) : null}
-              {h.nearestStation ? (
-                <div>
-                  <dt className="text-xs text-ink-subtle">Nearest station</dt>
-                  <dd className="m-0">{stationText(h.nearestStation)}</dd>
-                </div>
-              ) : null}
-            </dl>
+            <address className="m-0 text-[15px] not-italic">{h.address ?? `${place}, India`}</address>
             {h.isConfirmedPartner ? (
               <p className="mt-3 mb-0 text-[15px] text-ink-muted">TreatVero has a confirmed working agreement with this hospital.</p>
             ) : null}
@@ -260,13 +238,81 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
             ) : null}
           </div>
         </Container>
-        {h.geo ? (
-          <Container className="mt-5">
-            <p className="m-0 text-[13px] text-ink-subtle">
-              Location, station and road distances from OpenStreetMap data © OpenStreetMap contributors.
-            </p>
-          </Container>
-        ) : null}
+      </section>
+
+      <section aria-labelledby="hospital-treatments" className="pb-[clamp(56px,7vw,96px)]">
+        <Container>
+          <Eyebrow>Specialties</Eyebrow>
+          <h2 id="hospital-treatments" className="text-h2-sm mt-0 mb-7">
+            Treatments at {h.name}
+          </h2>
+          <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-4 p-0">
+            {h.specialties.map((s) => {
+              const t = getTreatmentOrThrow(s);
+              const note = h.specialtyNotes?.[s];
+              return (
+                <li key={s} className="rounded-[20px] border border-line bg-surface p-[22px]">
+                  <h3 className="m-0 text-[17px] font-medium">
+                    <Link href={`/treatments/${t.slug}`} className="flex items-center gap-2 text-ink no-underline hover:text-brand">
+                      <Icon name={t.icon} className="size-5 shrink-0 text-brand" />
+                      {t.name}
+                    </Link>
+                  </h3>
+                  {note ? <p className="mt-2.5 mb-0 text-[15px] text-pretty text-ink-muted">{note}</p> : null}
+                </li>
+              );
+            })}
+          </ul>
+        </Container>
+      </section>
+
+      <section aria-labelledby="plan-visit" className="pb-[clamp(56px,7vw,96px)]">
+        <Container className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] items-start gap-x-20 gap-y-5">
+          <h2 id="plan-visit" className="text-h2-sm m-0">
+            Planning your visit
+          </h2>
+          <div>
+            <dl className="m-0 flex flex-col gap-5">
+              {h.airportDistanceKm ? (
+                <div>
+                  <dt className="text-xs text-ink-subtle">Arriving by air</dt>
+                  <dd className="m-0 text-[15px]">
+                    {h.name} is about {h.airportDistanceKm} km by road from {city.airportName} ({city.airportCode}). Travel time
+                    depends on traffic, so allow extra time at peak hours.
+                  </dd>
+                </div>
+              ) : null}
+              {h.nearestStation ? (
+                <div>
+                  <dt className="text-xs text-ink-subtle">Nearest station</dt>
+                  <dd className="m-0 text-[15px]">{stationText(h.nearestStation)} (straight-line distance).</dd>
+                </div>
+              ) : null}
+              <div>
+                <dt className="text-xs text-ink-subtle">Staying nearby</dt>
+                <dd className="m-0 text-[15px]">
+                  Patients and companions often stay close to the hospital for follow-up visits.{" "}
+                  <a href={hotelsNearUrl(h)} target="_blank" rel="noopener noreferrer nofollow">
+                    See hotels near {h.name} on Google Maps
+                  </a>
+                  .
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-ink-subtle">Help from TreatVero</dt>
+                <dd className="m-0 text-[15px]">
+                  With <Link href="/concierge">TreatVero Concierge</Link>, we coordinate your airport pickup, a stay near {h.name}, local
+                  transport and visits to the hospital.
+                </dd>
+              </div>
+            </dl>
+            {h.geo ? (
+              <p className="mt-5 mb-0 text-[13px] text-ink-subtle">
+                Station and road distances from OpenStreetMap data © OpenStreetMap contributors.
+              </p>
+            ) : null}
+          </div>
+        </Container>
       </section>
 
       {faqs.length > 0 ? <FaqSection faqs={faqs} eyebrow="Hospital FAQ" title={`${h.name}: common questions`} /> : null}
