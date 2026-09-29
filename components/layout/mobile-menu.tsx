@@ -41,27 +41,31 @@ export function MobileMenu({ items, ctaHref }: { items: { label: string; href: s
         aria-controls={panelId}
         aria-label={open ? "Close menu" : "Open menu"}
         onClick={() => setOpen((o) => !o)}
-        className="flex size-11 items-center justify-center rounded-full border border-line bg-surface text-ink"
+        className="flex size-11 items-center justify-center rounded-full border border-line bg-surface text-ink transition-[scale] active:scale-95"
       >
-        {open ? <X aria-hidden="true" className="size-[22px]" strokeWidth={1.75} /> : <Menu aria-hidden="true" className="size-[22px]" strokeWidth={1.75} />}
+        {open ? (
+          <X aria-hidden="true" className="size-[22px] motion-safe:animate-spin-in" strokeWidth={1.75} />
+        ) : (
+          <Menu aria-hidden="true" className="size-[22px] motion-safe:animate-spin-in" strokeWidth={1.75} />
+        )}
       </button>
       <div
         id={panelId}
         hidden={!open}
-        className="absolute inset-x-0 top-full max-h-[calc(100dvh-68px)] overflow-y-auto border-t border-line bg-canvas shadow-[0_24px_40px_-24px_rgba(20,32,29,0.25)]"
+        className="absolute inset-x-0 top-full max-h-[calc(100dvh-68px)] overflow-y-auto border-t border-line bg-canvas shadow-[0_24px_40px_-24px_rgba(20,32,29,0.25)] motion-safe:animate-drop-in"
       >
         <nav aria-label="Mobile" className="container-site flex flex-col pt-2 pb-5">
           <ul className="m-0 list-none p-0">
-            {items.map((item) => (
-              <li key={item.href}>
+            {items.map((item, i) => (
+              <li key={item.href} className="motion-safe:animate-drop-in" style={{ animationDelay: `${60 + i * 35}ms` }}>
                 <Link
                   href={item.href}
                   aria-current={isActivePath(pathname, item.href) ? "page" : undefined}
                   onClick={() => setOpen(false)}
-                  className="flex min-h-[52px] items-center justify-between border-b border-line-faint text-[17px] font-medium text-ink no-underline hover:text-brand"
+                  className="group flex min-h-[52px] items-center justify-between border-b border-line-faint text-[17px] font-medium text-ink no-underline hover:text-brand"
                 >
                   {item.label}
-                  <ChevronRight aria-hidden="true" className="size-5 text-ink-subtle" strokeWidth={1.75} />
+                  <ChevronRight aria-hidden="true" className="size-5 text-ink-subtle transition-transform group-hover:translate-x-0.5 group-active:translate-x-1" strokeWidth={1.75} />
                 </Link>
               </li>
             ))}

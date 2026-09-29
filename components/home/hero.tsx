@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ArrowRight, Check, Headset, MessageCircle } from "lucide-react";
 import { ENQUIRY_PATH } from "@/lib/config";
 import { ButtonLink } from "@/components/ui/button";
+import { LiveDot } from "@/components/ui/primitives";
 import { WhatsAppButton } from "@/components/ui/whatsapp-link";
 
 const trustIndicators = ["Independent patient support", "Transparent pricing", "Dedicated coordination"];
@@ -12,7 +13,7 @@ export function Hero() {
       <div className="container-site grid grid-cols-1 items-center gap-[clamp(48px,6vw,88px)] min-[67.5rem]:grid-cols-2">
         <div>
           <p className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-line bg-surface py-1.5 pr-3.5 pl-2.5 text-[13px] text-ink-muted">
-            <span aria-hidden="true" className="block size-2 rounded-full bg-live shadow-[0_0_0_3px_rgba(47,163,107,0.15)]" />
+            <LiveDot pulse className="shadow-[0_0_0_3px_rgba(47,163,107,0.15)]" />
             Now coordinating treatment in India
           </p>
           <h1 className="text-display mb-6">
@@ -61,7 +62,7 @@ function JourneyCard() {
   return (
     <figure
       aria-label="Illustration of a coordinated patient journey"
-      className="absolute bottom-0 left-3 m-0 w-[min(360px,calc(100%-24px))] rounded-[18px] border border-line bg-surface p-5 shadow-card md:left-6 min-[67.5rem]:-left-8"
+      className="absolute bottom-0 left-3 m-0 w-[min(360px,calc(100%-24px))] rounded-[18px] border border-line bg-surface p-5 shadow-card motion-safe:animate-rise motion-safe:[animation-delay:250ms] md:left-6 min-[67.5rem]:-left-8"
     >
       <div className="mb-4 flex items-baseline justify-between gap-3">
         <span className="label-mono text-ink-subtle">Your journey</span>
@@ -72,7 +73,7 @@ function JourneyCard() {
         </span>
       </div>
       <ol className="m-0 flex list-none flex-col gap-3.5 p-0">
-        <li className="flex items-center gap-3">
+        <li className="flex items-center gap-3 motion-safe:animate-rise motion-safe:[animation-delay:450ms]">
           <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand text-white">
             <Check aria-hidden="true" className="size-4" strokeWidth={2.25} />
           </span>
@@ -81,16 +82,16 @@ function JourneyCard() {
             <div className="text-[13px] text-ink-subtle">Hospital estimates to compare</div>
           </div>
         </li>
-        <li className="flex items-center gap-3">
+        <li className="flex items-center gap-3 motion-safe:animate-rise motion-safe:[animation-delay:570ms]">
           <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-brand-line bg-brand-tint">
-            <span className="block size-2 rounded-full bg-brand" />
+            <span className="relative block size-2 rounded-full bg-brand after:absolute after:inset-0 after:rounded-full after:bg-inherit motion-safe:after:animate-ping-soft" />
           </span>
           <div className="leading-[1.35]">
             <div className="text-sm font-medium">Medical visa</div>
             <div className="text-[13px] text-ink-subtle">Invitation letter in progress</div>
           </div>
         </li>
-        <li className="flex items-center gap-3">
+        <li className="flex items-center gap-3 motion-safe:animate-rise motion-safe:[animation-delay:690ms]">
           <span className="block size-7 shrink-0 rounded-full border border-dashed border-line-dash" />
           <div className="leading-[1.35]">
             <div className="text-sm font-medium">Arrival</div>

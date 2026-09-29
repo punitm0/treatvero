@@ -8,9 +8,9 @@ export function TreatmentCard({ treatment, headingLevel = "h3" }: { treatment: T
   return (
     <Link
       href={`/treatments/${treatment.slug}`}
-      className="group flex min-h-[196px] flex-col gap-2.5 rounded-2xl border border-line bg-surface p-[22px] text-ink no-underline transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-brand-line hover:text-ink hover:shadow-lift"
+      className="group flex min-h-[196px] flex-col gap-2.5 rounded-2xl border border-line bg-surface p-[22px] text-ink no-underline transition-[border-color,box-shadow,translate,scale] duration-200 hover:-translate-y-0.5 active:scale-[0.99] hover:border-brand-line hover:text-ink hover:shadow-lift"
     >
-      <span className="mb-1.5 flex size-[42px] items-center justify-center rounded-xl bg-brand-tint text-brand">
+      <span className="mb-1.5 flex size-[42px] items-center justify-center rounded-xl bg-brand-tint text-brand transition-colors duration-200 group-hover:bg-brand group-hover:text-white">
         <Icon name={treatment.icon} className="size-[22px]" />
       </span>
       <H className="m-0 text-[17px] leading-[1.3] font-medium">{treatment.name}</H>

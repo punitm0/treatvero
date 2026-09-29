@@ -61,11 +61,16 @@ export function SplitHeading({
   );
 }
 
-export function LiveDot({ className, bright = false }: { className?: string; bright?: boolean }) {
+export function LiveDot({ className, bright = false, pulse = false }: { className?: string; bright?: boolean; pulse?: boolean }) {
   return (
     <span
       aria-hidden="true"
-      className={cn("block size-2 shrink-0 rounded-full", bright ? "bg-live-bright" : "bg-live", className)}
+      className={cn(
+        "block size-2 shrink-0 rounded-full",
+        bright ? "bg-live-bright" : "bg-live",
+        pulse && "relative after:absolute after:inset-0 after:rounded-full after:bg-inherit motion-safe:after:animate-ping-soft",
+        className,
+      )}
     />
   );
 }
@@ -78,7 +83,7 @@ export function StatusPill({ children, className }: { children: ReactNode; class
         className,
       )}
     >
-      <LiveDot className="size-[7px]" />
+      <LiveDot pulse className="size-[7px]" />
       {children}
     </span>
   );
