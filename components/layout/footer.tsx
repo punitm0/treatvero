@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { treatments } from "@/data/treatments";
 import { destinations } from "@/data/destinations";
+import { publishedSourceCountryPages } from "@/data/seo-pages";
 import { siteConfig } from "@/lib/config";
 import { LogoMark } from "@/components/ui/logo";
 
@@ -76,6 +77,17 @@ export function Footer() {
                 ),
               )}
           </Column>
+          {publishedSourceCountryPages.length ? (
+            <Column title="Patients from">
+              {publishedSourceCountryPages.map((p) => (
+                <li key={p.slug}>
+                  <Link href={`/from/${p.slug}`} className={linkClass}>
+                    {p.country.replace(/^the /, "")}
+                  </Link>
+                </li>
+              ))}
+            </Column>
+          ) : null}
           <Column title="Company">
             {company.map((l) => (
               <li key={l.href}>

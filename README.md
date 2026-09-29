@@ -116,5 +116,5 @@ Access is enforced by **Cloudflare Access**, and the app verifies the Access JWT
 - **Cache interception** is disabled in `open-next.config.ts` (it caused an RSC prefetch loop with Next 16.3); re-test before enabling.
 - **Payments:** set real prices in `data/pricing.ts`; if using Stripe, add a signature-verified webhook before relying on payment status.
 - **CSP:** public pages still allow `'unsafe-inline'` scripts (static prerendering can't carry a nonce); revisit if they ever render user content, and consider CSP reporting.
-- **`/from/*` pages** need verified country-specific content before publishing (a scheduled job adds one country every two weeks as a PR).
+- **`/from/*` pages** are country guides (medical visa, flights to each city, practical notes, country FAQs and official sources). A page only builds when `published: true` and `isSubstantial()` in `data/seo-pages.ts` passes; a local scheduled task adds one country every two weeks as a PR.
 - **Hospitals:** a scheduled job adds one verified hospital a week as a PR; re-check existing `verifiedOn` dates periodically.
