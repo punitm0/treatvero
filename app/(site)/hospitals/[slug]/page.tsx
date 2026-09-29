@@ -17,7 +17,7 @@ import { indiaCityPageHref } from "@/data/seo-pages";
 import { getTreatmentOrThrow } from "@/data/treatments";
 import { hospitalJsonLd, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/ui/page-hero";
-import { Container, Eyebrow, SampleBadge } from "@/components/ui/primitives";
+import { Container, Eyebrow } from "@/components/ui/primitives";
 import { Icon } from "@/components/ui/icon";
 import { JsonLd } from "@/components/ui/json-ld";
 import { HospitalCardCompact } from "@/components/hospitals/hospital-card";
@@ -33,6 +33,10 @@ function formatDate(iso: string) {
 /** "A, B and C" */
 function listText(items: string[]) {
   return items.length > 1 ? `${items.slice(0, -1).join(", ")} and ${items.at(-1)}` : (items[0] ?? "");
+}
+
+function stationText(s: NonNullable<Hospital["nearestStation"]>) {
+  return `${s.name} (${s.network}), about ${s.km} km away`;
 }
 
 function accreditationText(h: Hospital) {
@@ -65,9 +69,17 @@ function hospitalFaqs(h: Hospital): FAQ[] {
         h.airportDistanceKm
           ? `It is about ${h.airportDistanceKm} km by road from ${city.airportName} (${city.airportCode}); travel time depends on traffic.`
           : null,
+        h.nearestStation ? `The nearest station is ${stationText(h.nearestStation)}.` : null,
       ]
         .filter(Boolean)
         .join(" "),
+    });
+  }
+
+  if (h.established || h.history) {
+    faqs.push({
+      question: `When did ${h.name} open?`,
+      answer: h.history ?? `${h.name} opened in ${h.established}.`,
     });
   }
 
@@ -92,7 +104,7 @@ function hospitalFaqs(h: Hospital): FAQ[] {
   if (!h.isConfirmedPartner) {
     faqs.push({
       question: `Is TreatVero part of ${h.name}?`,
-      answer: `No. TreatVero is a medical travel facilitator, not a hospital, and has no agreement with ${h.name}. This page lists publicly available information, checked against the hospital's website and the accreditation directories.`,
+      answer: `No. TreatVero is a medical travel facilitator, not a hospital, and has no agreement with ${h.name}. This page lists publicly available information, checked against the hospital's website, the accreditation directories and the sources listed on this page.`,
     });
   }
 
@@ -108,11 +120,10 @@ export async function generateMetadata({ params }: PageProps<"/hospitals/[slug]"
   if (!h) return {};
   const city = getCity(h.city);
   const specialties = h.specialties.slice(0, 4).map((s) => getTreatmentOrThrow(s).shortName.toLowerCase());
-  const accredited = h.isSample ? "" : `${accreditationText(h)} accredited `;
   return pageMetadata({
-    title: h.isSample ? `${h.name}, ${city.name}` : `${h.name}, ${city.name} · ${accreditationText(h)} Accredited`,
+    title: `${h.name}, ${city.name} · ${accreditationText(h)} Accredited`,
     description: [
-      `${accredited}hospital in ${city.name} for ${listText(specialties)} care.`.replace(/^./, (c) => c.toUpperCase()),
+      `${accreditationText(h)} accredited hospital in ${city.name} for ${listText(specialties)} care${h.established ? `, open since ${h.established}` : ""}.`,
       h.airportDistanceKm ? `About ${h.airportDistanceKm} km from ${city.airportCode} airport.` : null,
       "Request treatment options through TreatVero.",
     ]
@@ -120,8 +131,6 @@ export async function generateMetadata({ params }: PageProps<"/hospitals/[slug]"
       .join(" "),
     path: `/hospitals/${h.slug}`,
     image: h.image ? { path: h.image, alt: `${h.name}, ${city.name}` } : undefined,
-    // Sample listings must never be indexed.
-    noindex: h.isSample,
   });
 }
 
@@ -131,11 +140,11 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
   const city = getCity(h.city);
   const cityHref = indiaCityPageHref(h.city);
   const mapUrl = hospitalMapUrl(h);
-  const faqs = h.isSample ? [] : hospitalFaqs(h);
+  const faqs = hospitalFaqs(h);
   const related = getRelatedHospitals(h);
   return (
     <>
-      {h.isSample ? null : <JsonLd data={hospitalJsonLd(h)} />}
+      <JsonLd data={hospitalJsonLd(h)} />
       <PageHero
         crumbs={[
           { name: "Hospitals", path: "/hospitals" },
@@ -143,7 +152,6 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
         ]}
         eyebrow={
           <div className="mb-5 flex flex-wrap items-center gap-3">
-            {h.isSample ? <SampleBadge>Sample listing — not a real hospital</SampleBadge> : null}
             <span className="flex items-center gap-1 text-sm text-ink-muted">
               <MapPin aria-hidden="true" className="size-4" strokeWidth={1.75} />
               {city.name}, India
@@ -173,6 +181,30 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
         }
       />
       <section aria-label="Hospital details" className="pb-[clamp(56px,7vw,96px)]">
+        {h.history || h.established || h.beds ? (
+          <Container className="mb-[clamp(32px,4vw,48px)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] items-start gap-x-20 gap-y-5">
+            <h2 className="text-h2-sm m-0">About {h.name}</h2>
+            <div>
+              {h.history ? <p className="mt-0 mb-4 text-base text-pretty text-ink-muted">{h.history}</p> : null}
+              {h.established || h.beds ? (
+                <dl className="m-0 flex flex-wrap gap-x-10 gap-y-3">
+                  {h.established ? (
+                    <div>
+                      <dt className="text-xs text-ink-subtle">Opened</dt>
+                      <dd className="m-0 text-[15px]">{h.established}</dd>
+                    </div>
+                  ) : null}
+                  {h.beds ? (
+                    <div>
+                      <dt className="text-xs text-ink-subtle">Beds (published)</dt>
+                      <dd className="m-0 text-[15px]">{h.beds.toLocaleString("en-IN")}</dd>
+                    </div>
+                  ) : null}
+                </dl>
+              ) : null}
+            </div>
+          </Container>
+        ) : null}
         <Container className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-4">
           <div className="rounded-[20px] border border-line bg-surface p-[22px]">
             <h2 className="label-mono mt-0 mb-4 font-normal text-ink-subtle">Accreditations</h2>
@@ -195,9 +227,7 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
                 ) : null}
               </dl>
             ) : null}
-            {h.isSample ? (
-              <p className="mt-3 mb-0 text-[13px] text-ink-subtle">Illustrative only. Verified accreditations are shown on real listings.</p>
-            ) : h.verifiedOn ? (
+            {h.verifiedOn ? (
               <p className="mt-3 mb-0 text-[13px] text-ink-subtle">
                 Checked against the {h.accreditations.join(" and ")} {h.accreditations.length > 1 ? "directories" : "directory"} on{" "}
                 {formatDate(h.verifiedOn)}.
@@ -232,10 +262,10 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
                   </dd>
                 </div>
               ) : null}
-              {h.established ? (
+              {h.nearestStation ? (
                 <div>
-                  <dt className="text-xs text-ink-subtle">Opened</dt>
-                  <dd className="m-0">{h.established}</dd>
+                  <dt className="text-xs text-ink-subtle">Nearest station</dt>
+                  <dd className="m-0">{stationText(h.nearestStation)}</dd>
                 </div>
               ) : null}
             </dl>
@@ -256,6 +286,27 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
             </p>
           </div>
         </Container>
+        {h.sources?.length || h.geo ? (
+          <Container className="mt-5">
+            <p className="m-0 text-[13px] text-ink-subtle">
+              {h.sources?.length ? (
+                <>
+                  Sources:{" "}
+                  {h.sources.map((src, i) => (
+                    <span key={src.url}>
+                      {i > 0 ? "; " : null}
+                      <a href={src.url} target="_blank" rel="noopener noreferrer nofollow" className="text-ink-subtle">
+                        {src.title}
+                      </a>
+                    </span>
+                  ))}
+                  .{" "}
+                </>
+              ) : null}
+              {h.geo ? "Location, station and road distances from OpenStreetMap data © OpenStreetMap contributors." : null}
+            </p>
+          </Container>
+        ) : null}
       </section>
 
       {h.international?.services.length ? (
@@ -324,7 +375,7 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
         </section>
       ) : null}
 
-      <FinalCta title={h.isSample ? "Request options for your case." : `Request options from ${h.name} and similar hospitals.`} />
+      <FinalCta title={`Request options from ${h.name} and similar hospitals.`} />
     </>
   );
 }

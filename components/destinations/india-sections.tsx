@@ -11,7 +11,7 @@ import {
   whyIndia,
 } from "@/data/destinations";
 import { treatments } from "@/data/treatments";
-import { hasSampleHospitals, hospitals } from "@/data/hospitals";
+import { hospitals } from "@/data/hospitals";
 import { indiaCityPageHref } from "@/data/seo-pages";
 import { formatPlanPrice, plans } from "@/data/pricing";
 import { cn } from "@/lib/utils";
@@ -141,7 +141,7 @@ export function IndiaHospitals() {
           </div>
           <p className="m-0 text-base text-pretty text-ink-muted">
             Treatment options may be sourced from leading hospitals based on your medical requirements. Listings show
-            accreditations held — not rankings.{hasSampleHospitals ? " Current listings are samples." : null}
+            accreditations held — not rankings.
           </p>
         </div>
         <HospitalsBrowser

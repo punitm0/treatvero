@@ -26,9 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...treatments.map((t) => ({ url: absoluteUrl(`/treatments/${t.slug}`), changeFrequency: "monthly" as const, priority: 0.8 })),
     ...publishedIndiaPages.map((p) => ({ url: absoluteUrl(`/india/${p.slug}`), changeFrequency: "monthly" as const, priority: 0.7 })),
     ...publishedSourceCountryPages.map((p) => ({ url: absoluteUrl(`/from/${p.slug}`), changeFrequency: "monthly" as const, priority: 0.6 })),
-    // Sample hospital listings are excluded (they are noindex).
     ...hospitals
-      .filter((h) => !h.isSample)
       .map((h) => ({
         url: absoluteUrl(`/hospitals/${h.slug}`),
         ...(h.verifiedOn ? { lastModified: h.verifiedOn } : {}),

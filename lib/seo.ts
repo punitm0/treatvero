@@ -113,6 +113,7 @@ export function hospitalJsonLd(h: Hospital) {
     h.jci ? { body: accreditors.JCI, name: `JCI accreditation (${h.jci.program})` } : null,
     h.nabh ? { body: accreditors.NABH, name: `NABH accreditation ${h.nabh.number}` } : null,
   ].filter((c) => c !== null);
+  const sameAs = [...(h.website ? [h.website] : []), ...(h.sources ?? []).filter((s) => s.isAbout).map((s) => s.url)];
   return {
     "@context": "https://schema.org",
     "@type": "Hospital",
@@ -120,7 +121,8 @@ export function hospitalJsonLd(h: Hospital) {
     name: h.name,
     description: h.description,
     image: absoluteUrl(hospitalImage(h)),
-    ...(h.website ? { url: h.website, sameAs: [h.website] } : {}),
+    ...(h.website ? { url: h.website } : {}),
+    ...(sameAs.length ? { sameAs } : {}),
     address: {
       "@type": "PostalAddress",
       ...(h.address ? { streetAddress: h.address } : {}),

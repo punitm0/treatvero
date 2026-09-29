@@ -8,8 +8,8 @@ import { getCity } from "@/data/destinations";
  * false`); only set it to true once a written agreement exists.
  *
  * Rules for every entry:
- * - Check the hospital's own website first: name, locality and that it is
- *   the specific hospital (not just the group). `website` links to the
+ * - Confirm name, locality and that it is the specific hospital (not just
+ *   the group) on the hospital's website and at least one other source. `website` links to the
  *   hospital's own page on that site.
  * - Accreditations only from the accrediting bodies' directories:
  *   JCI — jointcommission.org "Find JCI Accredited Organizations";
@@ -17,11 +17,23 @@ import { getCity } from "@/data/destinations";
  *   accreditation numbers start with "H-"). Record both in the comment above
  *   the entry and in `jci` / `nabh` (shown on the page). A hospital's own
  *   claim isn't enough.
- * - `address`: the street address from the hospital's own website.
- * - `geo`: the hospital's position on OpenStreetMap (nominatim.openstreetmap.org).
- *   `airportDistanceKm`: road distance from the city's airport (City.airportName),
- *   from router.project-osrm.org, rounded to the km.
- * - `established`: only when the hospital's own website states the year.
+ * - Other facts can come from any published source that isn't the
+ *   hospital's own marketing: Wikipedia, news reports, government or
+ *   regulator pages, the group's corporate pages. Add each source used to
+ *   `sources` (it's shown on the page). When sources disagree (bed counts
+ *   often do), use the most recent reliable one or leave the field out.
+ *   Directory/booking sites (Practo, Credihealth, medical-tourism agents)
+ *   are for cross-checking only, never the sole source.
+ * - `address`: the hospital's street address (its own site, or a directory
+ *   that matches it).
+ * - `geo`, `nearestStation`: OpenStreetMap (nominatim.openstreetmap.org;
+ *   stations via overpass-api.de, straight-line km to one decimal).
+ *   `airportDistanceKm`: road distance from the city's airport
+ *   (City.airportName), from router.project-osrm.org, rounded to the km.
+ * - `established`, `beds`, `history`: from `sources` (or the hospital's
+ *   own site for the year). `history` is 1–3 neutral sentences in our own
+ *   words: dates, founders, ownership. "First" claims only when a cited
+ *   source states them.
  * - `international`: only services the hospital's (or its group's)
  *   international patients page states; `languages` only when it names them.
  *   Omit the field if there is no such page.
@@ -49,6 +61,10 @@ export const hospitals: Hospital[] = [
     address: "CH Baktawar Singh Road, Sector 38, Gurugram, Haryana 122001",
     geo: { lat: 28.43895, lng: 77.04027 },
     airportDistanceKm: 19,
+    nearestStation: { name: "Millennium City Centre Gurugram", network: "Delhi Metro", km: 3.9 },
+    history:
+      "Opened in 2009 as the first hospital of Medanta, the network founded by cardiac surgeon Naresh Trehan, on a 43-acre campus in Sector 38, Gurugram.",
+    sources: [{ title: "Wikipedia: Medanta", url: "https://en.wikipedia.org/wiki/Medanta" }],
     established: 2009,
     jci: {
       listedAs: "Medanta - The Medicity",
@@ -61,7 +77,6 @@ export const hospitals: Hospital[] = [
       services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
       languages: ["Russian", "Arabic", "Bengali", "Burmese", "Persian"],
     },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -89,6 +104,18 @@ export const hospitals: Hospital[] = [
     address: "Delhi–Mathura Road, Sarita Vihar, New Delhi, Delhi 110076",
     geo: { lat: 28.54111, lng: 77.28333 },
     airportDistanceKm: 24,
+    nearestStation: { name: "Jasola Apollo", network: "Delhi Metro", km: 0.3 },
+    established: 1996,
+    beds: 695,
+    history:
+      "Opened in 1996 as the Apollo group's third tertiary-care hospital, set up jointly with the Government of Delhi on a 15-acre site. In 2005 it became the first hospital in India to be accredited by JCI.",
+    sources: [
+      {
+        title: "Wikipedia: Apollo Hospital, Indraprastha",
+        url: "https://en.wikipedia.org/wiki/Apollo_Hospital,_Indraprastha",
+        isAbout: true,
+      },
+    ],
     jci: {
       listedAs: "Indraprastha Apollo Hospitals",
       program: "Hospital Program",
@@ -97,7 +124,6 @@ export const hospitals: Hospital[] = [
     international: {
       services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
     },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -124,6 +150,17 @@ export const hospitals: Hospital[] = [
     address: "Sector 44, opposite HUDA City Centre, Gurugram, Haryana 122002",
     geo: { lat: 28.45712, lng: 77.07277 },
     airportDistanceKm: 17,
+    nearestStation: { name: "Millennium City Centre Gurugram", network: "Delhi Metro", km: 0.3 },
+    beds: 330,
+    history:
+      "Opened in 2013 on an 11-acre campus in Sector 44, Gurugram. It also houses the head office of Fortis Healthcare, which runs hospitals across India.",
+    sources: [
+      {
+        title: "Fortis Healthcare: Fortis Memorial Research Institute (international patients)",
+        url: "https://www.fortishealthcare.com/international-patients/hospitals/fortis-memorial-research-institute-gurgaon",
+      },
+      { title: "Wikipedia: Fortis Healthcare", url: "https://en.wikipedia.org/wiki/Fortis_Healthcare" },
+    ],
     established: 2013,
     jci: {
       listedAs: "Fortis Memorial Research Institute",
@@ -135,7 +172,6 @@ export const hospitals: Hospital[] = [
       url: "https://www.fortishealthcare.com/international-patients/hospitals/fortis-memorial-research-institute-gurgaon",
       services: ["coordinator"],
     },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -154,6 +190,18 @@ export const hospitals: Hospital[] = [
     address: "Rao Saheb Achutrao Patwardhan Marg, Four Bungalows, Andheri West, Mumbai, Maharashtra 400053",
     geo: { lat: 19.13126, lng: 72.82467 },
     airportDistanceKm: 10,
+    nearestStation: { name: "Versova", network: "Mumbai Metro", km: 0.4 },
+    established: 2009,
+    beds: 750,
+    history:
+      "Started in 1999 as a heart-hospital project and completed by the Reliance ADA Group, the hospital opened in January 2009. It is named after Kokilaben Ambani, wife of Reliance Industries founder Dhirubhai Ambani.",
+    sources: [
+      {
+        title: "Wikipedia: Kokilaben Dhirubhai Ambani Hospital",
+        url: "https://en.wikipedia.org/wiki/Kokilaben_Dhirubhai_Ambani_Hospital",
+        isAbout: true,
+      },
+    ],
     jci: {
       listedAs: "Kokilaben Dhirubhai Ambani Hospital & Medical Research Institute",
       program: "Hospital Program",
@@ -164,7 +212,6 @@ export const hospitals: Hospital[] = [
       url: "https://www.kokilabenhospital.com/patients/internationalpatients/what_to_expect.html",
       services: ["visa-letter", "airport-pickup"],
     },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -191,6 +238,18 @@ export const hospitals: Hospital[] = [
     address: "Raja Rammohan Roy Road, Prarthana Samaj, Girgaon, Mumbai, Maharashtra 400004",
     geo: { lat: 18.95877, lng: 72.82021 },
     airportDistanceKm: 18,
+    nearestStation: { name: "Grant Road", network: "Mumbai Metro", km: 0.5 },
+    established: 1925,
+    beds: 345,
+    history:
+      "Founded in 1925 as the Harkisondas Narottamdas Hospital, it was taken over by the Reliance Foundation in 2006, rebuilt, and reopened in October 2014.",
+    sources: [
+      {
+        title: "Wikipedia: Sir H. N. Reliance Foundation Hospital",
+        url: "https://en.wikipedia.org/wiki/Sir_H._N._Reliance_Foundation_Hospital",
+        isAbout: true,
+      },
+    ],
     jci: {
       listedAs: "Sir H N Reliance Foundation Hospital and Research Centre",
       program: "Hospital Program",
@@ -201,7 +260,6 @@ export const hospitals: Hospital[] = [
       url: "https://www.rfhospital.org/patients-visitors/international-patient",
       services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
     },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -228,6 +286,13 @@ export const hospitals: Hospital[] = [
     address: "21 Greams Lane, off Greams Road, Thousand Lights, Chennai, Tamil Nadu 600006",
     geo: { lat: 13.06322, lng: 80.25158 },
     airportDistanceKm: 15,
+    nearestStation: { name: "Thousand Lights", network: "Chennai Metro", km: 0.9 },
+    history:
+      "Opened in 1983 as the first hospital of the Apollo Hospitals group, founded by Dr Prathap C. Reddy. Its opening is widely described as the start of corporate hospitals in India.",
+    sources: [
+      { title: "Wikipedia: Apollo Hospitals", url: "https://en.wikipedia.org/wiki/Apollo_Hospitals" },
+      { title: "Wikipedia: Healthcare in Chennai", url: "https://en.wikipedia.org/wiki/Healthcare_in_Chennai" },
+    ],
     established: 1983,
     jci: {
       listedAs: "Apollo Hospital, Chennai",
@@ -237,7 +302,6 @@ export const hospitals: Hospital[] = [
     international: {
       services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
     },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -255,6 +319,11 @@ export const hospitals: Hospital[] = [
     address: "Nelson Manickam Road, Aminjikarai, Chennai, Tamil Nadu 600029",
     geo: { lat: 13.07095, lng: 80.22173 },
     airportDistanceKm: 13,
+    nearestStation: { name: "Shenoy Nagar", network: "Chennai Metro", km: 1.0 },
+    established: 2019,
+    beds: 400,
+    history: "Opened in 2019 as a quaternary-care hospital on Nelson Manickam Road, Aminjikarai.",
+    sources: [{ title: "MGM Healthcare: about the hospital", url: "https://mgmhealthcare.in/" }],
     jci: {
       listedAs: "MGM Healthcare Pvt. Ltd.",
       program: "Hospital Program",
@@ -265,7 +334,6 @@ export const hospitals: Hospital[] = [
       url: "https://mgmhealthcare.in/international-patients/",
       services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
     },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -285,13 +353,23 @@ export const hospitals: Hospital[] = [
     address: "258/A, Bommasandra Industrial Area, Hosur Road, Anekal Taluk, Bengaluru, Karnataka 560099",
     geo: { lat: 12.80802, lng: 77.69478 },
     airportDistanceKm: 58,
+    nearestStation: { name: "Delta Electronics Bommasandra", network: "Namma Metro", km: 1.4 },
+    established: 2000,
+    history:
+      "Commissioned in 2000 by cardiac surgeon Devi Shetty as part of Narayana Health City in Bommasandra. It has 23 cardiac operating theatres and a heart transplant programme.",
+    sources: [
+      {
+        title: "Wikipedia: Narayana Institute of Cardiac Sciences",
+        url: "https://en.wikipedia.org/wiki/Narayana_Institute_of_Cardiac_Sciences",
+        isAbout: true,
+      },
+    ],
     jci: {
       listedAs: "Narayana Institute of Cardiac Sciences",
       program: "Hospital Program",
       effectiveDate: "2026-06-19",
     },
     nabh: { number: "H-2007-0007" },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -317,6 +395,8 @@ export const hospitals: Hospital[] = [
     address: "154/11 Bannerghatta Road, Bengaluru, Karnataka 560076",
     geo: { lat: 12.8963, lng: 77.59829 },
     airportDistanceKm: 45,
+    nearestStation: { name: "Jayadeva Hospital", network: "Namma Metro", km: 2.3 },
+    beds: 350,
     jci: {
       listedAs: "Apollo Hospitals, Bangalore",
       program: "Hospital Program",
@@ -325,7 +405,6 @@ export const hospitals: Hospital[] = [
     international: {
       services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
     },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -353,6 +432,15 @@ export const hospitals: Hospital[] = [
     address: "Road No. 72, opposite Bharatiya Vidya Bhavan School, Film Nagar, Jubilee Hills, Hyderabad, Telangana 500033",
     geo: { lat: 17.41494, lng: 78.41318 },
     airportDistanceKm: 35,
+    nearestStation: { name: "Jubilee Hills Checkpost", network: "Hyderabad Metro", km: 1.5 },
+    established: 1988,
+    history: "Inaugurated in August 1988, the hospital is the centre of Apollo Health City, the Apollo group's campus in Jubilee Hills.",
+    sources: [
+      {
+        title: "Apollo Hospitals: About Apollo Hospitals, Jubilee Hills",
+        url: "https://www.apollohospitals.com/region/hyderabad/hospitals/jubilee-hills/about-us/",
+      },
+    ],
     jci: {
       listedAs: "Apollo Hospital, Hyderabad",
       program: "Hospital Program",
@@ -361,7 +449,6 @@ export const hospitals: Hospital[] = [
     international: {
       services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
     },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -379,6 +466,11 @@ export const hospitals: Hospital[] = [
     address: "1-66/AIG/2 to 5, Mindspace Road, Gachibowli, Hyderabad, Telangana 500032",
     geo: { lat: 17.44318, lng: 78.36601 },
     airportDistanceKm: 31,
+    nearestStation: { name: "Raidurg", network: "Hyderabad Metro", km: 1.2 },
+    established: 2018,
+    history:
+      "The Asian Institute of Gastroenterology began in 1994 as a day-care centre for digestive diseases, opened a 130-bed hospital in Somajiguda in 2004, and opened this multi-specialty hospital in Gachibowli in 2018.",
+    sources: [{ title: "AIG Hospitals: History", url: "https://www.aighospitals.com/history" }],
     jci: {
       listedAs: "AIG Hospitals (A Unit of Asian Institute of Gastroenterology, Private Limited)",
       program: "Hospital Program",
@@ -389,7 +481,6 @@ export const hospitals: Hospital[] = [
       url: "https://www.aighospitals.com/international-patients",
       services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
     },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -419,6 +510,17 @@ export const hospitals: Hospital[] = [
     address: "Off Science City Road, Sola, Ahmedabad, Gujarat 380060",
     geo: { lat: 23.07003, lng: 72.5174 },
     airportDistanceKm: 19,
+    nearestStation: { name: "Thaltej", network: "Ahmedabad Metro", km: 2.3 },
+    established: 2010,
+    beds: 500,
+    history:
+      "Opened in 2010 as CIMS Hospital by a group of cardiologists led by Dr Keyur Parikh. Marengo Asia Healthcare later invested in the hospital, which now carries the Marengo name.",
+    sources: [
+      {
+        title: "The Times of Udaipur: Marengo Asia Healthcare announces an investment of INR 450 crore in CIMS Hospital",
+        url: "https://thetimesofudaipur.com/marengo-asia-healthcare-announces-an-investment-of-inr-450crs-in-cims-hospital-ahmedabad/",
+      },
+    ],
     jci: {
       listedAs: "Marengo Asia Healthcare Private Limited",
       program: "Hospital Program",
@@ -429,7 +531,6 @@ export const hospitals: Hospital[] = [
       url: "https://www.marengoasiahospitals.com/internationalpatients",
       services: ["coordinator", "visa-letter", "airport-pickup", "accommodation", "interpreters"],
     },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -446,6 +547,7 @@ export const hospitals: Hospital[] = [
     address: "Block G-K, Mondeal Business Park, near Gurudwara, S G Road, Ahmedabad, Gujarat 380059",
     geo: { lat: 23.04574, lng: 72.51393 },
     airportDistanceKm: 18,
+    nearestStation: { name: "Thaltej", network: "Ahmedabad Metro", km: 0.5 },
     established: 2012,
     jci: {
       listedAs: "Apex Heart Institute (A Unit of TCVS Pvt. Ltd.)",
@@ -457,7 +559,6 @@ export const hospitals: Hospital[] = [
       url: "https://www.apexheart.in/international_patients.html",
       services: ["coordinator", "airport-pickup", "accommodation", "interpreters"],
     },
-    isSample: false,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -475,7 +576,7 @@ export function getHospitalsForTreatment(slug: TreatmentSlug, limit?: number): H
 export function getRelatedHospitals(h: Hospital, limit = 3): Hospital[] {
   const shared = (o: Hospital) => o.specialties.filter((s) => h.specialties.includes(s)).length;
   return hospitals
-    .filter((o) => o.slug !== h.slug && o.isSample === h.isSample)
+    .filter((o) => o.slug !== h.slug)
     .sort((a, b) => Number(b.city === h.city) - Number(a.city === h.city) || shared(b) - shared(a))
     .slice(0, limit);
 }
@@ -497,5 +598,3 @@ export function hospitalMapUrl(h: Hospital): string | undefined {
 export function hospitalImage(h: Hospital): string {
   return h.image ?? getCity(h.city).image;
 }
-
-export const hasSampleHospitals = hospitals.some((h) => h.isSample);

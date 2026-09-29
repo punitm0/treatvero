@@ -3,7 +3,7 @@ import { Check, CircleHelp, Info } from "lucide-react";
 import type { FAQ, Treatment } from "@/types";
 import type { Crumb } from "@/lib/seo";
 import { internationalPatientJourney } from "@/data/treatments";
-import { getHospitalsForTreatment, hasSampleHospitals } from "@/data/hospitals";
+import { getHospitalsForTreatment } from "@/data/hospitals";
 import { getCity } from "@/data/destinations";
 import { Icon } from "@/components/ui/icon";
 import { PageHero } from "@/components/ui/page-hero";
@@ -231,12 +231,6 @@ export function TreatmentGuide({
                   ))}
                 </ul>
               </div>
-            ) : null}
-            {hasSampleHospitals ? (
-              <p className="mt-5 mb-0 text-[13px] text-ink-subtle">
-                Sample listings shown while verified hospital profiles are prepared. Real options are sourced for your
-                case after you share your requirement.
-              </p>
             ) : null}
           </Container>
         </Section>

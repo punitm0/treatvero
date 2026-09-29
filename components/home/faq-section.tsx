@@ -23,7 +23,7 @@ export function FaqSection({
   return (
     <section id="faq" aria-labelledby="faq-title" className="section-y bg-sand">
       <Container className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] items-start gap-x-20 gap-y-10">
-        <div className={sticky ? "md:sticky md:top-[108px]" : undefined}>
+        <div className={sticky ? "lg:sticky lg:top-[108px]" : undefined}>
           <Eyebrow>{eyebrow}</Eyebrow>
           <h2 id="faq-title" className="text-h2 mb-5">
             {title}
