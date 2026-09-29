@@ -3,20 +3,25 @@
 import { useEffect } from "react";
 
 /**
- * What fades up as it scrolls into view: section headings and eyebrows, grid
- * list items (cards, steps) and articles. Opt in anywhere else with
- * `data-reveal`; opt a subtree out with `data-no-reveal`.
+ * What fades up as it scrolls into view: page titles and ledes, section
+ * headings and eyebrows, grid list items (cards, steps) and articles. Opt in
+ * anywhere else with `data-reveal`; opt a subtree out with `data-no-reveal`.
  */
-const SELECTOR = "main section :is(h2, .eyebrow, :is(ul, ol).grid > li, article), main [data-reveal]";
+const SELECTOR = "main section :is(h1, h2, .eyebrow, .text-lede, :is(ul, ol).grid > li, article), main [data-reveal]";
 const STAGGER_MS = 70;
 const MAX_STAGGER_MS = 350;
 
 /**
- * Progressive enhancement: content is visible in the server HTML and only
- * elements still below the fold are hidden (by `data-reveal="hidden"`), so
- * nothing above the fold ever flashes and no-JS / reduced-motion users see
- * the page as-is. A MutationObserver picks up content from client navigations
- * and filtering.
+ * Progressive enhancement: content is visible in the server HTML, and on the
+ * first load only elements still below the fold are hidden (by
+ * `data-reveal="hidden"`), so nothing above the fold flashes and no-JS /
+ * reduced-motion users see the page as-is.
+ *
+ * Content that arrives later (a client navigation from the menu, filtering)
+ * is hidden synchronously in the MutationObserver callback, before the browser
+ * paints it, and the IntersectionObserver fades in whatever is on screen once
+ * the router has reset the scroll position. So a new page animates in rather
+ * than being measured against the previous page's scroll offset.
  */
 export function RevealOnScroll() {
   useEffect(() => {
@@ -46,7 +51,7 @@ export function RevealOnScroll() {
       { rootMargin: "0px 0px -8% 0px", threshold: 0.12 },
     );
 
-    const scan = () => {
+    const scan = (initial: boolean) => {
       const fold = window.innerHeight;
       for (const el of main.querySelectorAll<HTMLElement>(SELECTOR)) {
         if (seen.has(el)) continue;
@@ -55,22 +60,17 @@ export function RevealOnScroll() {
         // Nested matches (an article inside a grid item) animate with their parent.
         const parent = el.parentElement?.closest(SELECTOR);
         if (parent && main.contains(parent)) continue;
-        if (el.getBoundingClientRect().top < fold) continue;
+        if (initial && el.getBoundingClientRect().top < fold) continue;
         el.dataset.reveal = "hidden";
         io.observe(el);
       }
     };
 
-    scan();
-    let frame = 0;
-    const mo = new MutationObserver(() => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(scan);
-    });
+    scan(true);
+    const mo = new MutationObserver(() => scan(false));
     mo.observe(main, { childList: true, subtree: true });
 
     return () => {
-      cancelAnimationFrame(frame);
       mo.disconnect();
       io.disconnect();
     };

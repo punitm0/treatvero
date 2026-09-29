@@ -169,7 +169,7 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
       {done ? (
         <SuccessState reference={done.reference} headingRef={headingRef} />
       ) : (
-        <form onSubmit={isLast ? onSubmit : (e) => (e.preventDefault(), void next())} noValidate className="flex flex-1 flex-col">
+        <form data-no-reveal onSubmit={isLast ? onSubmit : (e) => (e.preventDefault(), void next())} noValidate className="flex flex-1 flex-col">
           {/* Honeypot: hidden from people and assistive tech */}
           <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
             <label>
