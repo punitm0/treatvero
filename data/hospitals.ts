@@ -589,9 +589,9 @@ export const internationalServiceLabels: Record<InternationalService, string> = 
   interpreters: "Interpreters",
 };
 
-/** OpenStreetMap link for the hospital's position, when known. */
+/** Google Maps link for the hospital's position, when known. */
 export function hospitalMapUrl(h: Hospital): string | undefined {
-  return h.geo ? `https://www.openstreetmap.org/?mlat=${h.geo.lat}&mlon=${h.geo.lng}#map=17/${h.geo.lat}/${h.geo.lng}` : undefined;
+  return h.geo ? `https://www.google.com/maps/search/?api=1&query=${h.geo.lat},${h.geo.lng}` : undefined;
 }
 
 /** Photo for a listing: the hospital's own photo, else the city photo. */
