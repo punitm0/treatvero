@@ -7,7 +7,7 @@ export function JourneySection() {
   return (
     <section aria-labelledby="journey-title" className="section-y border-y border-line bg-surface">
       <Container className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] items-start gap-x-20 gap-y-12">
-        <div className="md:sticky md:top-[108px]">
+        <div className="lg:sticky lg:top-[108px]">
           <Eyebrow>Patient journey</Eyebrow>
           <h2 id="journey-title" className="text-h2 mb-5">
             From home, and back again — with someone beside you.

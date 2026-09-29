@@ -208,6 +208,105 @@ details:not([open]) .faq-minus {
   display: none;
 }
 
+/* ---------- Motion ---------- */
+@theme {
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-rise: rise 0.6s var(--ease-out-soft) both;
+  --animate-drop-in: drop-in 0.28s var(--ease-out-soft) both;
+  --animate-spin-in: spin-in 0.28s var(--ease-out-soft) both;
+  --animate-ping-soft: ping-soft 2.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-bar-up: bar-up 0.45s var(--ease-out-soft) both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+  @keyframes drop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+  @keyframes spin-in {
+    from {
+      opacity: 0;
+      transform: rotate(-90deg) scale(0.6);
+    }
+  }
+  @keyframes ping-soft {
+    0% {
+      transform: scale(1);
+      opacity: 0.55;
+    }
+    70%,
+    100% {
+      transform: scale(2.8);
+      opacity: 0;
+    }
+  }
+  @keyframes ring {
+    20%,
+    60% {
+      transform: rotate(14deg);
+    }
+    40%,
+    80% {
+      transform: rotate(-10deg);
+    }
+  }
+  @keyframes bar-up {
+    from {
+      transform: translateY(100%);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Scroll reveal — states set by components/layout/reveal-on-scroll.tsx. */
+  [data-reveal="hidden"] {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  [data-reveal="shown"] {
+    animation: rise 0.7s var(--ease-out-soft) backwards;
+  }
+
+  /* Header picks up a soft shadow once the page scrolls under it. */
+  @supports (animation-timeline: scroll()) {
+    .header-elevate {
+      animation: header-elevate linear both;
+      animation-timeline: scroll();
+      animation-range: 0 96px;
+    }
+  }
+
+  /* FAQ answers slide open (Chromium 131+; elsewhere they open instantly). */
+  :root {
+    interpolate-size: allow-keywords;
+  }
+  details.faq::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 0.3s var(--ease-out-soft),
+      content-visibility 0.3s allow-discrete;
+  }
+  details.faq[open]::details-content {
+    block-size: auto;
+  }
+  details.faq :is(.faq-plus, .faq-minus) {
+    animation: var(--animate-spin-in);
+  }
+}
+
+@keyframes header-elevate {
+  to {
+    box-shadow: 0 10px 28px -20px rgba(20, 32, 29, 0.45);
+  }
+}
+
 /* Documents printed / saved as PDF from the admin. */
 @media print {
   @page {

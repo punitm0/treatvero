@@ -11,7 +11,7 @@ import { MobileMenu } from "@/components/layout/mobile-menu";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-canvas/90 backdrop-blur-[14px] backdrop-saturate-[1.3]">
+    <header className="header-elevate sticky top-0 z-40 border-b border-line bg-canvas/90 backdrop-blur-[14px] backdrop-saturate-[1.3]">
       <div className="container-site flex h-[68px] items-center gap-7">
         <Logo />
         <nav aria-label="Main" className="hidden desk:block">
@@ -20,7 +20,7 @@ export function Header() {
         <div className="flex-1" />
         <div className="hidden items-center gap-2 desk:flex">
           <WhatsAppLink className="flex h-10 items-center gap-2 rounded-full px-3.5 text-sm font-medium text-ink no-underline transition-colors hover:bg-hover hover:text-ink">
-            <LiveDot className="size-[7px]" />
+            <LiveDot pulse className="size-[7px]" />
             <span className="hidden xl:inline">Chat on WhatsApp</span>
             <span className="xl:hidden">WhatsApp</span>
           </WhatsAppLink>
@@ -31,7 +31,7 @@ export function Header() {
         <div className="flex items-center gap-1.5 desk:hidden">
           <WhatsAppLink
             aria-label="Chat on WhatsApp"
-            className="flex size-11 items-center justify-center rounded-full border border-line bg-surface text-ink hover:text-ink"
+            className="flex size-11 items-center justify-center rounded-full border border-line bg-surface text-ink transition-[scale] hover:text-ink active:scale-95"
           >
             <MessageCircle aria-hidden="true" className="size-5" strokeWidth={1.75} />
           </WhatsAppLink>

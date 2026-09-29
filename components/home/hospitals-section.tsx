@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { hasSampleHospitals, hospitals } from "@/data/hospitals";
+import { hospitals } from "@/data/hospitals";
 import { HospitalCard } from "@/components/hospitals/hospital-card";
 import { Container, SplitHeading } from "@/components/ui/primitives";
 
@@ -27,14 +27,7 @@ export function HospitalsSection() {
           ))}
         </ul>
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-          {hasSampleHospitals ? (
-            <p className="m-0 max-w-[640px] text-[13px] text-ink-subtle">
-              Listings shown are sample placeholders while verified hospital profiles are prepared. They do not indicate
-              a partnership with TreatVero.
-            </p>
-          ) : (
-            <span />
-          )}
+          <span />
           <Link href="/hospitals" className="inline-flex items-center gap-1.5 text-[15px] font-medium no-underline">
             Browse hospital options
             <ArrowRight aria-hidden="true" className="size-[18px]" strokeWidth={1.75} />

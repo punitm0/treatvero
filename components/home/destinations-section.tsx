@@ -24,10 +24,10 @@ export function DestinationsSection() {
               {comingSoonDestinations.map((d) => (
                 <li
                   key={d.slug}
-                  className="relative isolate flex min-h-[180px] flex-col gap-1.5 overflow-hidden rounded-[18px] bg-[#2a3533] p-[clamp(18px,2.2vw,26px)] text-white"
+                  className="group relative isolate flex min-h-[180px] flex-col gap-1.5 overflow-hidden rounded-[18px] bg-[#2a3533] p-[clamp(18px,2.2vw,26px)] text-white"
                 >
                   {d.image ? (
-                    <Image src={d.image} alt="" fill sizes="(min-width: 1100px) 300px, 50vw" className="-z-20 object-cover" />
+                    <Image src={d.image} alt="" fill sizes="(min-width: 1100px) 300px, 50vw" className="-z-20 object-cover transition-transform duration-700 ease-out-soft group-hover:scale-105" />
                   ) : null}
                   <span aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(15,28,26,0.15)_0%,rgba(15,28,26,0.78)_100%)]" />
                   <span className="label-mono self-start rounded-md bg-[rgba(15,28,26,0.55)] px-2 py-1 text-white backdrop-blur-[6px]">
@@ -42,7 +42,7 @@ export function DestinationsSection() {
                     className="flex items-center gap-1 text-sm text-white no-underline hover:text-ondark-soft"
                   >
                     Get notified
-                    <Bell aria-hidden="true" className="size-4" strokeWidth={1.75} />
+                    <Bell aria-hidden="true" className="size-4 origin-top transition-transform group-hover:motion-safe:animate-[ring_0.6s_ease-in-out]" strokeWidth={1.75} />
                   </WhatsAppLink>
                 </li>
               ))}
@@ -59,9 +59,9 @@ export function DestinationsSection() {
 
 function IndiaCard() {
   return (
-    <article className="flex flex-col overflow-hidden rounded-[22px] border border-line bg-surface">
-      <div className="relative aspect-[16/8] bg-[#e8e4dc]">
-        <Image src="/images/india-card.jpg" alt="Mumbai skyline, India" fill sizes="(min-width: 1100px) 600px, 100vw" className="object-cover" />
+    <article className="group flex flex-col overflow-hidden rounded-[22px] border border-line bg-surface">
+      <div className="relative aspect-[16/8] overflow-hidden bg-[#e8e4dc]">
+        <Image src="/images/india-card.jpg" alt="Mumbai skyline, India" fill sizes="(min-width: 1100px) 600px, 100vw" className="object-cover transition-transform duration-700 ease-out-soft group-hover:scale-[1.03]" />
       </div>
       <div className="flex flex-col gap-4 p-[clamp(24px,3vw,36px)]">
         <div className="flex items-center justify-between gap-3">
