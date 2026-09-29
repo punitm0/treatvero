@@ -55,6 +55,7 @@ export async function deleteRequest(reference: string, reason: string, actor: st
     del("request_options"),
     del("patient_links"),
     del("hospital_sends"),
+    del("service_agreements"),
     del("request_reports"),
     del("treatment_requests"),
   ]);

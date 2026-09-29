@@ -53,6 +53,14 @@ export const MESSAGE_TEMPLATES: MessageTemplate[] = [
       `Hi ${c.firstName},\n\nThe hospitals reviewing your case have asked for some additional reports so they can give accurate advice and estimates. You can upload them securely here:\n${c.link ?? ""}\n\nPDF, JPG or PNG files are fine.${signOff}`,
   },
   {
+    id: "agreement",
+    label: "Agreement to sign",
+    needsLink: true,
+    subject: (c) => `Your ${siteConfig.name} service agreement (${c.reference})`,
+    body: (c) =>
+      `Hi ${c.firstName},\n\nBefore we go ahead, please read and sign your ${c.plan} service agreement on your private page. It sets out what we'll do, the fees, our refund policy and your authorisation for us to talk to hospitals for you:\n${c.link ?? ""}\n\nSigning takes a minute — you just type your name. If anything isn't clear, reply here and we'll talk it through.${signOff}`,
+  },
+  {
     id: "follow_up",
     label: "Follow-up",
     needsLink: false,

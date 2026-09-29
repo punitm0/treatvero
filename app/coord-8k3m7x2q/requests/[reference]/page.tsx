@@ -1,6 +1,19 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertTriangle, ArrowDown, ArrowLeft, ArrowUp, Download, FileText, Printer, Star, Trash2, UserRound } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowDown,
+  ArrowLeft,
+  ArrowUp,
+  CheckCircle2,
+  Download,
+  FileSignature,
+  FileText,
+  Printer,
+  Star,
+  Trash2,
+  UserRound,
+} from "lucide-react";
 import { requireAdmin } from "@/lib/admin/auth";
 import { ADMIN_PATH } from "@/lib/admin/path";
 import {
@@ -18,6 +31,9 @@ import { listOptions } from "@/lib/admin/options";
 import { SEND_STATUSES, listHospitalSends } from "@/lib/admin/hospital-sends";
 import { firstName, renderTemplates } from "@/lib/admin/messages";
 import { listPatientLinks } from "@/lib/patient-links";
+import { agreementStatus, currentAgreement, listAgreements } from "@/lib/agreements";
+import { CONCIERGE_EXTRA_WEEK_USD, CONCIERGE_INCLUDED_DAYS, plans } from "@/data/pricing";
+import { TERMS_VERSION } from "@/data/legal";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { formatCostRange, formatDate, formatDateTime, planLabel, todayIST } from "@/components/admin/format";
 import { Card, Disclosure, Field, Label, inputClass, textareaClass } from "@/components/admin/ui";
@@ -31,6 +47,7 @@ import { BUDGET_OPTIONS, CITY_OPTIONS, DESTINATION_OPTIONS, TIMING_OPTIONS, TREA
 import { cn, formatBytes } from "@/lib/utils";
 import {
   assign,
+  cancelAgreement,
   changeStatus,
   editDetails,
   eraseRequest,
@@ -38,6 +55,7 @@ import {
   logWhatsApp,
   newPatientLink,
   payment,
+  prepareAgreement,
   recordHospitalSend,
   removeHospitalSend,
   removeOption,
@@ -66,11 +84,12 @@ export default async function AdminRequestPage({ params }: { params: Promise<{ r
   const data = await getRequest(reference);
   if (!data) notFound();
   const { request: r, reports, events } = data;
-  const [options, links, sends, admins] = await Promise.all([
+  const [options, links, sends, admins, agreements] = await Promise.all([
     listOptions(reference),
     listPatientLinks(reference),
     listHospitalSends(reference),
     knownAdmins(),
+    listAgreements(reference),
   ]);
 
   const waDigits = r.whatsapp.replace(/\D/g, "");
@@ -83,6 +102,10 @@ export default async function AdminRequestPage({ params }: { params: Promise<{ r
   const uncontacted = missedFirstContact(r);
   const assignees = [...new Set([user.email, ...admins])];
   const base = `${ADMIN_PATH}/requests/${r.reference}`;
+  const agreement = currentAgreement(agreements);
+  const signing = agreementStatus(agreement);
+  const needsAgreement = signing !== "signed" && (r.status === "booked" || Boolean(r.paid_at));
+  const planFee = plans[r.plan === "concierge" ? "concierge" : "basic"].priceUSD;
   const optionById = new Map(options.map((o, i) => [o.id, `Option ${String.fromCharCode(65 + i)} — ${o.hospital_name}`]));
 
   return (
@@ -96,11 +119,24 @@ export default async function AdminRequestPage({ params }: { params: Promise<{ r
           <h1 className="m-0 font-serif text-[32px] leading-none font-normal tracking-[-0.02em]">{r.full_name}</h1>
           <StatusBadge status={r.status} />
           {r.paid_at ? <span className="rounded-full border border-brand-line bg-brand-tint px-2.5 py-0.5 text-xs font-medium text-brand">Paid</span> : null}
+          {signing === "signed" ? (
+            <span className="rounded-full border border-brand-line bg-brand-tint px-2.5 py-0.5 text-xs font-medium text-brand">Agreement signed</span>
+          ) : signing === "awaiting" ? (
+            <span className="rounded-full border border-line px-2.5 py-0.5 text-xs text-ink-muted">Awaiting signature</span>
+          ) : null}
         </div>
         <p className="m-0 text-sm text-ink-subtle">
           <span className="font-mono">{r.reference}</span> · received {formatDateTime(r.created_at)} · {planLabel(r.plan)} plan
           {r.assigned_to ? ` · owner ${r.assigned_to}` : " · unassigned"}
         </p>
+        {needsAgreement ? (
+          <p className="m-0 flex w-fit items-center gap-2 rounded-xl border border-warn-line bg-warn-bg px-3 py-2 text-sm text-warn-ink">
+            <AlertTriangle aria-hidden="true" className="size-4" />
+            {signing === "awaiting"
+              ? "The service agreement hasn't been signed yet. Remind the patient before on-ground work starts."
+              : "No service agreement yet. Prepare one below and send the patient their link to sign."}
+          </p>
+        ) : null}
         {uncontacted || followUpDue ? (
           <p className="m-0 flex w-fit items-center gap-2 rounded-xl border border-warn-line bg-warn-bg px-3 py-2 text-sm text-warn-ink">
             <AlertTriangle aria-hidden="true" className="size-4" />
@@ -341,9 +377,126 @@ export default async function AdminRequestPage({ params }: { params: Promise<{ r
             <p className="mt-3 mb-0 text-xs text-ink-subtle">Downloads are logged in the activity.</p>
           </Card>
 
-          <Card title="Consent">
-            <p className="mt-0 mb-2 text-sm text-ink-muted">{r.consent_text}</p>
-            <p className="m-0 text-xs text-ink-subtle">Given {formatDateTime(r.consent_at)}</p>
+          <Card
+            title="Consent & agreements"
+            action={
+              agreement?.signed_at ? (
+                <Link href={`${base}/agreement`} className={smallButton("outline", "gap-1.5")}>
+                  <Printer aria-hidden="true" className="size-4" />
+                  Signed agreement PDF
+                </Link>
+              ) : null
+            }
+          >
+            <ul className="m-0 flex list-none flex-col gap-4 p-0">
+              <li>
+                <p className="mt-0 mb-1 flex items-center gap-1.5 text-sm font-medium">
+                  <CheckCircle2 aria-hidden="true" className="size-4 text-brand" /> Data consent
+                </p>
+                <p className="mt-0 mb-1 text-sm text-ink-muted">{r.consent_text}</p>
+                <p className="m-0 text-xs text-ink-subtle">Given {formatDateTime(r.consent_at)}</p>
+              </li>
+              <li className="border-t border-line-soft pt-4">
+                {r.terms_accepted_at ? (
+                  <>
+                    <p className="mt-0 mb-1 flex items-center gap-1.5 text-sm font-medium">
+                      <CheckCircle2 aria-hidden="true" className="size-4 text-brand" /> Terms of Service accepted
+                    </p>
+                    <p className="mt-0 mb-1 text-sm text-ink-muted">{r.terms_text}</p>
+                    <p className="m-0 text-xs text-ink-subtle">
+                      Accepted {formatDateTime(r.terms_accepted_at)} · version {r.terms_version}
+                      {r.terms_version !== TERMS_VERSION ? ` (current is ${TERMS_VERSION} — the signed agreement covers the newer terms)` : ""}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-0 mb-1 flex items-center gap-1.5 text-sm font-medium">
+                      <AlertTriangle aria-hidden="true" className="size-4 text-warn-ink" /> Terms of Service not accepted
+                    </p>
+                    <p className="m-0 text-sm text-ink-muted">
+                      This enquiry arrived before patients accepted the Terms online. Signing the service agreement below
+                      covers it — the agreement includes the Terms.
+                    </p>
+                  </>
+                )}
+              </li>
+              <li className="border-t border-line-soft pt-4">
+                <p className="mt-0 mb-1 flex items-center gap-1.5 text-sm font-medium">
+                  {signing === "signed" ? (
+                    <CheckCircle2 aria-hidden="true" className="size-4 text-brand" />
+                  ) : (
+                    <FileSignature aria-hidden="true" className="size-4 text-ink-subtle" />
+                  )}
+                  Service agreement
+                  {signing === "awaiting" ? <span className="font-normal text-ink-subtle">· awaiting signature</span> : null}
+                </p>
+                {agreement?.signed_at ? (
+                  <p className="m-0 text-sm text-ink-muted">
+                    Signed by <strong className="font-medium text-ink">{agreement.signer_name}</strong>
+                    {agreement.signer_relationship ? ` (${agreement.signer_relationship}, for the patient)` : ""} on{" "}
+                    {formatDateTime(agreement.signed_at)} · {agreement.document.title} · version {agreement.version}
+                  </p>
+                ) : agreement ? (
+                  <div className="flex flex-col gap-2">
+                    <p className="m-0 text-sm text-ink-muted">
+                      {agreement.document.title}, prepared {formatDateTime(agreement.created_at)} by {agreement.created_by}.{" "}
+                      {activeLink
+                        ? "The patient signs it on their private link — use the “Agreement to sign” message to send it."
+                        : "Create a patient link (right) so the patient can sign it."}
+                    </p>
+                    <form action={cancelAgreement.bind(null, r.reference, agreement.id)}>
+                      <button type="submit" className="text-[13px] text-error">
+                        Withdraw agreement
+                      </button>
+                    </form>
+                  </div>
+                ) : (
+                  <p className="m-0 text-sm text-ink-muted">
+                    Sets out the scope, fee, refund policy and the patient&apos;s authorisation for us to deal with hospitals and
+                    documents for them. Recommended for every booked case, and required before Concierge on-ground work.
+                  </p>
+                )}
+                {!agreement?.signed_at ? (
+                  <Disclosure summary={agreement ? "Replace with a new agreement" : "Prepare agreement"} open={!agreement && needsAgreement} className="mt-3">
+                    <ActionForm action={prepareAgreement.bind(null, r.reference)} className="grid gap-3 sm:grid-cols-2">
+                      {r.plan === "concierge" ? (
+                        <>
+                          <Label text="Expected arrival">
+                            <input type="date" name="arrival" className={inputClass} />
+                          </Label>
+                          <Label text="Expected departure">
+                            <input type="date" name="departure" className={inputClass} />
+                          </Label>
+                          <Label text="On-ground days">
+                            <input name="days" inputMode="numeric" defaultValue={CONCIERGE_INCLUDED_DAYS} maxLength={3} className={inputClass} />
+                          </Label>
+                          <Label text="Companions">
+                            <input name="companions" inputMode="numeric" defaultValue="1" maxLength={2} className={inputClass} />
+                          </Label>
+                        </>
+                      ) : null}
+                      <Label text="Agreed fee (USD)" className="sm:col-span-2">
+                        <input name="fee" inputMode="numeric" defaultValue={planFee ?? ""} maxLength={7} className={inputClass} />
+                      </Label>
+                      <Label text="Anything else agreed (optional)" className="sm:col-span-2">
+                        <textarea name="notes" rows={2} maxLength={1000} placeholder="e.g. Airport pickup for two, Hindi–Bengali translation" className={textareaClass} />
+                      </Label>
+                      <p className="m-0 text-xs text-ink-subtle sm:col-span-2">
+                        {r.plan === "concierge"
+                          ? `The fee should include any extra weeks beyond ${CONCIERGE_INCLUDED_DAYS} days ($${CONCIERGE_EXTRA_WEEK_USD} each). `
+                          : ""}
+                        The patient sees the full text, including the refund policy, before signing. No medical details go into it.
+                      </p>
+                      <div className="sm:col-span-2">
+                        <button type="submit" className={smallButton("dark")}>
+                          {agreement ? "Replace agreement" : "Prepare for signature"}
+                        </button>
+                      </div>
+                    </ActionForm>
+                  </Disclosure>
+                ) : null}
+              </li>
+            </ul>
           </Card>
 
           <Card title="Delete request" className="border-warn-line">

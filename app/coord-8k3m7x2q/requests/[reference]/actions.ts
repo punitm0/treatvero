@@ -23,6 +23,7 @@ import { deleteHospitalSend, isSendStatus, logHospitalSend, updateHospitalSend }
 import { deleteRequest } from "@/lib/admin/data";
 import { MESSAGE_TEMPLATES } from "@/lib/admin/messages";
 import { createPatientLink, revokePatientLinks } from "@/lib/patient-links";
+import { sendAgreement, withdrawAgreement } from "@/lib/agreements";
 import { sendEmail, textToHtml } from "@/lib/notifications/email";
 import { getHospital } from "@/data/hospitals";
 import { getCity } from "@/data/destinations";
@@ -262,6 +263,46 @@ export async function removeHospitalSend(reference: string, id: number) {
   const user = await guard(reference);
   if (!Number.isInteger(id)) return;
   await deleteHospitalSend(reference, id, user.email);
+  revalidate(reference);
+}
+
+export async function prepareAgreement(reference: string, _prev: ActionResult, formData: FormData): Promise<ActionResult> {
+  const user = await guard(reference);
+  const r = await getRequestDetail(reference);
+  if (!r) return { ok: false, message: "Request not found." };
+  const plan = r.plan === "concierge" ? "concierge" : "basic";
+  const arrival = str(formData, "arrival", 10);
+  const departure = str(formData, "departure", 10);
+  if (arrival && departure && departure < arrival) return { ok: false, message: "Departure must be after arrival." };
+  const days = int(formData, "days");
+  if (plan === "concierge" && isDate(arrival) && isDate(departure) && days != null) {
+    const span = Math.round((Date.parse(departure) - Date.parse(arrival)) / 86400_000) + 1;
+    if (span > days) return { ok: false, message: `Those dates cover ${span} days. Set on-ground days to at least ${span}, and include the extra weeks in the fee.` };
+  }
+  await sendAgreement(
+    {
+      plan,
+      patientName: r.full_name,
+      reference,
+      treatment: r.treatment,
+      destination: r.city && r.city !== "No preference" ? `${r.city}, ${r.destination}` : r.destination,
+      arrival: plan === "concierge" && isDate(arrival) ? arrival : null,
+      departure: plan === "concierge" && isDate(departure) ? departure : null,
+      onGroundDays: plan === "concierge" ? days : null,
+      companions: plan === "concierge" ? int(formData, "companions") : null,
+      feeUSD: int(formData, "fee"),
+      notes: orNull(str(formData, "notes", 1000)),
+    },
+    user.email,
+  );
+  revalidate(reference);
+  return { ok: true, message: "Agreement ready. Send the patient their link so they can sign." };
+}
+
+export async function cancelAgreement(reference: string, id: string) {
+  const user = await guard(reference);
+  if (!UUID_RE.test(id)) return;
+  await withdrawAgreement(reference, id, user.email);
   revalidate(reference);
 }
 

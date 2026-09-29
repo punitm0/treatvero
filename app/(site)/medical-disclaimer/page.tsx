@@ -1,3 +1,4 @@
+import { LEGAL_UPDATED } from "@/data/legal";
 import { pageMetadata } from "@/lib/seo";
 import { LegalPage } from "@/components/ui/legal-page";
 
@@ -13,7 +14,7 @@ export default function MedicalDisclaimerPage() {
     <LegalPage
       title="Medical Disclaimer"
       path="/medical-disclaimer"
-      updated="September 2026"
+      updated={LEGAL_UPDATED}
       intro="Your health journey deserves clarity. Here is exactly what TreatVero does — and what it doesn't — in plain language."
       sections={[
         {

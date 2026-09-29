@@ -67,6 +67,7 @@ export const stepContactSchema = z.object({
 
 export const stepPlanSchema = z.object({
   plan: z.enum(["basic", "concierge"], { error: "Please choose a plan." }),
+  terms: z.literal(true, { error: "Please accept the Terms of Service to continue." }),
 });
 
 export const enquirySchema = stepTreatmentSchema
@@ -80,9 +81,10 @@ export const enquirySchema = stepTreatmentSchema
   });
 
 export type EnquiryInput = z.infer<typeof enquirySchema>;
-/** Form values before validation (consent starts unchecked, plan unset). */
-export type EnquiryFormValues = Omit<EnquiryInput, "consent" | "plan"> & {
+/** Form values before validation (consent and terms start unchecked, plan unset). */
+export type EnquiryFormValues = Omit<EnquiryInput, "consent" | "terms" | "plan"> & {
   consent: boolean;
+  terms: boolean;
   plan: EnquiryInput["plan"] | undefined;
 };
 

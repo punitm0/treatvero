@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { CheckCircle2, FileText, Lock, MessageCircle, Upload } from "lucide-react";
+import { CheckCircle2, FileSignature, FileText, Lock, MessageCircle, Upload } from "lucide-react";
 import { resolvePatientLink } from "@/lib/patient-links";
 import { MAX_FILES_PER_UPLOAD } from "@/lib/patient-links";
 import { getRequestDetail, listReports } from "@/lib/admin/requests";
@@ -17,7 +17,9 @@ import { ACCEPT_ATTR, MAX_UPLOAD_BYTES } from "@/lib/uploads/validate";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { siteConfig } from "@/lib/config";
 import { formatBytes } from "@/lib/utils";
-import { markViewed, submitReply } from "./actions";
+import { currentAgreement, listAgreements } from "@/lib/agreements";
+import { AgreementBody, SignatureBlock } from "@/components/agreements/agreement-document";
+import { markViewed, signServiceAgreement, submitReply } from "./actions";
 import { ViewBeacon } from "./view-beacon";
 
 export const metadata: Metadata = {
@@ -54,7 +56,13 @@ export default async function PatientOptionsPage({
   const link = await resolvePatientLink(token);
   const r = link ? await getRequestDetail(link.reference) : null;
   if (!link || !r) notFound();
-  const [options, reports, sp] = await Promise.all([listOptions(r.reference), listReports(r.reference), searchParams]);
+  const [options, reports, agreements, sp] = await Promise.all([
+    listOptions(r.reference),
+    listReports(r.reference),
+    listAgreements(r.reference),
+    searchParams,
+  ]);
+  const agreement = currentAgreement(agreements);
   const upload = typeof sp.upload === "string" ? UPLOAD_MESSAGES[sp.upload] : undefined;
   const chosen = link.choice ? (link.choice === "call" ? "a call with your coordinator" : options.find((o) => o.id === link.choice)?.hospital_name) : null;
 
@@ -83,6 +91,83 @@ export default async function PatientOptionsPage({
             like to go ahead with — or ask for a call first. This page is personal to you; please don&apos;t share the link.
           </p>
         </section>
+
+        {agreement && !agreement.signed_at ? (
+          <section aria-labelledby="agreement-heading" className="rounded-2xl border border-brand-line bg-surface p-6 print:hidden">
+            <p className="label-mono mt-0 mb-2 flex items-center gap-1.5 text-brand">
+              <FileSignature aria-hidden="true" className="size-4" /> Action needed
+            </p>
+            <h2 id="agreement-heading" className="mt-0 mb-1 text-lg font-semibold">
+              Please read and sign your {agreement.document.title.toLowerCase()}
+            </h2>
+            <p className="mt-0 mb-5 max-w-[680px] text-sm text-ink-muted">
+              It sets out what we&apos;ll do for you, our fee and refund policy, and your permission for us to talk to hospitals for
+              you. Questions? Message your coordinator before signing.
+            </p>
+            <div className="max-h-[420px] overflow-y-auto rounded-xl border border-line-soft p-5" tabIndex={0} aria-label="Agreement text">
+              <AgreementBody document={agreement.document} />
+            </div>
+            <ActionForm action={signServiceAgreement.bind(null, token, agreement.id)} className="mt-5 flex max-w-[560px] flex-col gap-3">
+              <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
+                <legend className="mb-1 p-0 text-sm font-medium">Who is signing?</legend>
+                <label className="flex cursor-pointer items-center gap-2.5 text-sm">
+                  <input type="radio" name="capacity" value="patient" defaultChecked className="size-4 accent-brand" />I am the patient
+                </label>
+                <label className="flex cursor-pointer items-center gap-2.5 text-sm">
+                  <input type="radio" name="capacity" value="representative" className="size-4 accent-brand" />
+                  I&apos;m signing for the patient (parent, guardian or family member)
+                </label>
+              </fieldset>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs text-ink-subtle">If signing for the patient: your relationship to them</span>
+                <input
+                  name="relationship"
+                  maxLength={60}
+                  placeholder="e.g. son, wife, legal guardian"
+                  className="h-11 rounded-xl border border-line-strong bg-surface px-3 text-sm outline-none focus:border-brand"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs text-ink-subtle">Type your full name to sign</span>
+                <input
+                  name="name"
+                  required
+                  minLength={2}
+                  maxLength={120}
+                  autoComplete="name"
+                  className="h-12 rounded-xl border border-line-strong bg-surface px-3 font-serif text-lg italic outline-none focus:border-brand"
+                />
+              </label>
+              <label className="flex cursor-pointer items-start gap-2.5 text-sm">
+                <input type="checkbox" name="agree" required className="mt-0.5 size-4 shrink-0 accent-brand" />
+                I have read this agreement and agree to it, and I understand that typing my name is my electronic signature.
+              </label>
+              <button type="submit" className={buttonClasses({ size: "sm", className: "self-start" })}>
+                Sign agreement
+              </button>
+            </ActionForm>
+          </section>
+        ) : null}
+
+        {agreement?.signed_at && agreement.signer_name ? (
+          <details className="group rounded-2xl border border-line bg-surface print:hidden">
+            <summary className="flex cursor-pointer list-none items-center gap-2 px-6 py-4 text-sm font-medium [&::-webkit-details-marker]:hidden">
+              <CheckCircle2 aria-hidden="true" className="size-4 text-brand" />
+              Your {agreement.document.title.toLowerCase()} — signed {formatDate(agreement.signed_at.slice(0, 10))}
+              <span className="ml-auto text-ink-subtle transition-transform group-open:rotate-90">›</span>
+            </summary>
+            <div className="flex flex-col gap-5 border-t border-line-soft p-6">
+              <AgreementBody document={agreement.document} />
+              <SignatureBlock
+                signerName={agreement.signer_name}
+                relationship={agreement.signer_relationship}
+                signedAt={agreement.signed_at}
+                version={agreement.version}
+              />
+              <p className="m-0 text-xs text-ink-subtle">Need a copy? Ask your coordinator and we&apos;ll email you a PDF.</p>
+            </div>
+          </details>
+        ) : null}
 
         {options.length ? (
           <section aria-labelledby="options-heading" className="flex flex-col gap-4">

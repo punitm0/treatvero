@@ -25,6 +25,11 @@ export const generalFaqs: FAQ[] = [
     answer: `TreatVero is a paid service with two plans, priced in USD and agreed before any work starts: ${basic} and ${concierge}. Concierge covers up to ${CONCIERGE_INCLUDED_DAYS} days on the ground; longer stays are $${CONCIERGE_EXTRA_WEEK_USD} per additional week. If you start on Basic and upgrade, your Basic fee is credited toward Concierge. There is no free plan. Medical treatment and other third-party costs are paid separately.`,
   },
   {
+    question: "Can I get a refund if I cancel?",
+    answer:
+      "Yes, in most cases. You get a full refund if you cancel before we send your case to any hospital, or if no hospital we approach can offer you a treatment option. Once hospitals have reviewed your case the Basic fee is non-refundable, and if you cancel Concierge (or your visa is refused) before on-ground support begins, we refund the Concierge balance above the Basic fee. The full refund policy is in our Terms of Service.",
+  },
+  {
     question: "Does TreatVero take commissions from hospitals?",
     answer:
       "No. TreatVero is paid by patients through our plan fees — we don't currently receive commissions or referral fees from hospitals, so the options we share aren't shaped by who pays us. If that ever changes, we'll say so clearly before you choose a provider.",
@@ -123,6 +128,7 @@ export const pricingFaqs: FAQ[] = generalFaqs.filter((f) =>
   [
     "How much does TreatVero cost?",
     "Does TreatVero take commissions from hospitals?",
+    "Can I get a refund if I cancel?",
     "What does the Basic plan include?",
     "What does Concierge include?",
     "Are treatment costs included?",
