@@ -10,8 +10,8 @@ export function FaqList({ faqs, className, openFirst = true }: { faqs: FAQ[]; cl
   return (
     <div className={cn("flex flex-col", className)}>
       {faqs.map((faq, i) => (
-        <details key={faq.question} open={openFirst && i === 0} className="group border-t border-line-alt">
-          <summary className="flex min-h-14 cursor-pointer items-center justify-between gap-5 py-5 text-left text-[17px] font-medium text-ink">
+        <details key={faq.question} open={openFirst && i === 0} className="faq group border-t border-line-alt">
+          <summary className="flex min-h-14 cursor-pointer items-center justify-between gap-5 py-5 text-left text-[17px] font-medium text-ink transition-colors hover:text-brand">
             <span>{faq.question}</span>
             <Plus aria-hidden="true" strokeWidth={1.75} className="faq-plus size-[22px] shrink-0 text-brand" />
             <Minus aria-hidden="true" strokeWidth={1.75} className="faq-minus size-[22px] shrink-0 text-brand" />

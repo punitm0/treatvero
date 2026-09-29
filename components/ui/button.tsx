@@ -3,7 +3,7 @@ import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
 const base =
-  "inline-flex items-center justify-center gap-2.5 rounded-full font-medium whitespace-nowrap transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed";
+  "inline-flex items-center justify-center gap-2.5 rounded-full font-medium whitespace-nowrap transition-[color,background-color,border-color,scale] duration-200 enabled:active:scale-[0.97] [&>svg:last-child:not(:first-child)]:transition-transform [&>svg:last-child:not(:first-child)]:duration-200 hover:[&>svg:last-child:not(:first-child)]:translate-x-0.5 disabled:opacity-60 disabled:cursor-not-allowed";
 
 const variants = {
   primary: "bg-brand text-white hover:bg-brand-hover hover:text-white",

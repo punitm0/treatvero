@@ -64,10 +64,10 @@ export function ChoiceChip({ label, sublabel, shape = "pill", disabled, ...input
       <input type="radio" className="peer sr-only" disabled={disabled} {...input} />
       <span
         className={cn(
-          "flex border border-line-alt bg-surface text-ink transition-colors",
+          "flex border border-line-alt bg-surface text-ink transition-[color,background-color,border-color,scale] duration-150",
           "peer-checked:border-brand peer-checked:bg-brand-tint",
           "peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand",
-          !disabled && "hover:border-line-hover",
+          !disabled && "hover:border-line-hover active:scale-[0.98]",
           shape === "pill" && "min-h-11 items-center rounded-full px-4 text-sm",
           shape === "tile" && "min-h-[46px] items-center rounded-[10px] px-3.5 py-2.5 text-sm leading-[1.3]",
           shape === "card" && "min-h-16 flex-col justify-center gap-[3px] rounded-xl px-3.5 py-3",
