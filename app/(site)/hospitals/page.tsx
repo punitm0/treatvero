@@ -10,7 +10,7 @@ import { ComparisonSection } from "@/components/home/comparison-section";
 export const metadata = pageMetadata({
   title: "Hospital Options in India",
   description:
-    "How TreatVero sources hospital options for international patients in India — by specialty, accreditation and city. Listings show accreditations, not rankings.",
+    "How TreatVero finds hospital options for you in India — by specialty, accreditation and city. Listings show accreditations, not rankings.",
   path: "/hospitals",
 });
 
@@ -18,7 +18,7 @@ const criteria = [
   { title: "Your medical requirement", text: "Hospitals with the relevant specialty and experience for your treatment." },
   { title: "Accreditations", text: "Accreditations such as JCI or NABH are shown so you can check them yourself." },
   { title: "Your preferences", text: "Preferred city, timing, budget and any hospital or doctor you already have in mind." },
-  { title: "Practical factors", text: "Availability, international patient services and travel connections." },
+  { title: "Practical factors", text: "Availability, timing and travel connections." },
 ];
 
 export default function HospitalsPage() {

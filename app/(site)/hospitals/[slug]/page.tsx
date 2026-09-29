@@ -14,10 +14,6 @@ import { FinalCta } from "@/components/home/final-cta";
 
 export const dynamicParams = false;
 
-function formatDate(iso: string) {
-  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
-}
-
 export function generateStaticParams() {
   return hospitals.map((h) => ({ slug: h.slug }));
 }
@@ -83,11 +79,6 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
             <p className="m-0 text-[15px]">{h.accreditations.join(" · ")}</p>
             {h.isSample ? (
               <p className="mt-3 mb-0 text-[13px] text-ink-subtle">Illustrative only. Verified accreditations are shown on real listings.</p>
-            ) : h.verifiedOn ? (
-              <p className="mt-3 mb-0 text-[13px] text-ink-subtle">
-                Checked against the {h.accreditations.join(" and ")} {h.accreditations.length > 1 ? "directories" : "directory"} on{" "}
-                {formatDate(h.verifiedOn)}.
-              </p>
             ) : null}
           </div>
           <div className="rounded-[20px] border border-line bg-surface p-[22px]">
@@ -111,13 +102,6 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
             <p className="m-0 text-[15px]">{city.name}, India</p>
             {h.isConfirmedPartner ? (
               <p className="mt-3 mb-0 text-[15px] text-ink-muted">TreatVero has a confirmed working agreement with this hospital.</p>
-            ) : null}
-            {h.website ? (
-              <p className="mt-3 mb-0 text-[15px]">
-                <a href={h.website} target="_blank" rel="noopener noreferrer nofollow">
-                  Official website
-                </a>
-              </p>
             ) : null}
           </div>
         </Container>

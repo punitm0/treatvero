@@ -23,6 +23,9 @@ import { getCity } from "@/data/destinations";
  * - `image`: a photo of the hospital itself, saved to
  *   public/images/hospitals/<slug>.jpg (max 1600px wide).
  * - Set `verifiedOn` to the date the entry was checked.
+ * - `website` and `verifiedOn` are internal records only. Don't render them
+ *   or any other source on public pages: patients come to hospitals through
+ *   TreatVero, not directly.
  */
 export const hospitals: Hospital[] = [
   /* ------------------------------- Delhi NCR ------------------------------- */
