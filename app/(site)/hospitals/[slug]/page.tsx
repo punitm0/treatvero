@@ -2,16 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Check, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import type { FAQ, Hospital } from "@/types";
-import {
-  getHospital,
-  getRelatedHospitals,
-  hospitalImage,
-  hospitalMapUrl,
-  hospitals,
-  internationalServiceLabels,
-} from "@/data/hospitals";
+import { getHospital, getRelatedHospitals, hospitalImage, hospitalMapUrl, hospitals } from "@/data/hospitals";
 import { getCity } from "@/data/destinations";
 import { indiaCityPageHref } from "@/data/seo-pages";
 import { getTreatmentOrThrow } from "@/data/treatments";
@@ -57,7 +50,7 @@ function hospitalFaqs(h: Hospital): FAQ[] {
     ].filter((r) => r !== null);
     faqs.push({
       question: `Is ${h.name} ${accreditationText(h)} accredited?`,
-      answer: `Yes. ${h.name} ${listText(records)}.${h.verifiedOn ? ` TreatVero checked ${records.length > 1 ? "both directories" : "the directory"} on ${formatDate(h.verifiedOn)}.` : ""} Accreditation is renewed periodically, so you can confirm the current status on jointcommission.org and nabh.co.`,
+      answer: `Yes. ${h.name} ${listText(records)}. Accreditation is renewed periodically.`,
     });
   }
 
@@ -88,14 +81,6 @@ function hospitalFaqs(h: Hospital): FAQ[] {
     answer: `You can request options for ${listText(treatmentNames)} at ${h.name}. Options are requested for your specific case, and the hospital confirms whether and how it can treat you after reviewing your reports.`,
   });
 
-  if (h.international?.services.length) {
-    const services = h.international.services.map((s) => internationalServiceLabels[s].toLowerCase());
-    faqs.push({
-      question: `Does ${h.name} help international patients?`,
-      answer: `Its international patients page lists ${listText(services)}.${h.international.languages?.length ? ` Languages named include ${listText(h.international.languages)}.` : ""} TreatVero can also coordinate your visa, stay and transfers around the treatment plan.`,
-    });
-  }
-
   faqs.push({
     question: `How do I get a treatment plan and cost estimate from ${h.name}?`,
     answer: `Share your requirement and medical reports through TreatVero. With your consent, we request a treatment plan and estimate from suitable hospitals in ${city.name}, which can include ${h.name}. TreatVero doesn't publish prices: estimates come from the hospital for your case.`,
@@ -104,7 +89,7 @@ function hospitalFaqs(h: Hospital): FAQ[] {
   if (!h.isConfirmedPartner) {
     faqs.push({
       question: `Is TreatVero part of ${h.name}?`,
-      answer: `No. TreatVero is a medical travel facilitator, not a hospital, and has no agreement with ${h.name}. This page lists publicly available information, checked against the hospital's website, the accreditation directories and the sources listed on this page.`,
+      answer: `No. TreatVero is a medical travel facilitator, not a hospital, and has no agreement with ${h.name}. We request options from the hospital on your behalf.`,
     });
   }
 
@@ -227,12 +212,6 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
                 ) : null}
               </dl>
             ) : null}
-            {h.verifiedOn ? (
-              <p className="mt-3 mb-0 text-[13px] text-ink-subtle">
-                Checked against the {h.accreditations.join(" and ")} {h.accreditations.length > 1 ? "directories" : "directory"} on{" "}
-                {formatDate(h.verifiedOn)}.
-              </p>
-            ) : null}
           </div>
           <div className="rounded-[20px] border border-line bg-surface p-[22px]">
             <h2 className="label-mono mt-0 mb-4 font-normal text-ink-subtle">Specialties</h2>
@@ -272,79 +251,23 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
             {h.isConfirmedPartner ? (
               <p className="mt-3 mb-0 text-[15px] text-ink-muted">TreatVero has a confirmed working agreement with this hospital.</p>
             ) : null}
-            <p className="mt-3 mb-0 flex flex-wrap gap-x-5 gap-y-1 text-[15px]">
-              {mapUrl ? (
+            {mapUrl ? (
+              <p className="mt-3 mb-0 text-[15px]">
                 <a href={mapUrl} target="_blank" rel="noopener noreferrer nofollow">
                   View on map
                 </a>
-              ) : null}
-              {h.website ? (
-                <a href={h.website} target="_blank" rel="noopener noreferrer nofollow">
-                  Official website
-                </a>
-              ) : null}
-            </p>
+              </p>
+            ) : null}
           </div>
         </Container>
-        {h.sources?.length || h.geo ? (
+        {h.geo ? (
           <Container className="mt-5">
             <p className="m-0 text-[13px] text-ink-subtle">
-              {h.sources?.length ? (
-                <>
-                  Sources:{" "}
-                  {h.sources.map((src, i) => (
-                    <span key={src.url}>
-                      {i > 0 ? "; " : null}
-                      <a href={src.url} target="_blank" rel="noopener noreferrer nofollow" className="text-ink-subtle">
-                        {src.title}
-                      </a>
-                    </span>
-                  ))}
-                  .{" "}
-                </>
-              ) : null}
-              {h.geo ? "Location, station and road distances from OpenStreetMap data © OpenStreetMap contributors." : null}
+              Location, station and road distances from OpenStreetMap data © OpenStreetMap contributors.
             </p>
           </Container>
         ) : null}
       </section>
-
-      {h.international?.services.length ? (
-        <section aria-labelledby="international" className="section-y-sm bg-surface">
-          <Container className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] items-start gap-x-20 gap-y-8">
-            <div>
-              <Eyebrow>International patients</Eyebrow>
-              <h2 id="international" className="text-h2-sm mb-4">
-                Services listed by {h.name}
-              </h2>
-              <p className="m-0 text-base text-pretty text-ink-muted">
-                From the international patients page on the hospital&apos;s website. TreatVero also coordinates your{" "}
-                <Link href="/concierge">visa, stay and transfers</Link> around the treatment plan.
-              </p>
-            </div>
-            <div>
-              <ul className="m-0 flex list-none flex-col gap-3 p-0">
-                {h.international.services.map((s) => (
-                  <li key={s} className="flex items-start gap-2.5 text-[15px]">
-                    <Check aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-brand" strokeWidth={1.75} />
-                    {internationalServiceLabels[s]}
-                  </li>
-                ))}
-              </ul>
-              {h.international.languages?.length ? (
-                <p className="mt-4 mb-0 text-[15px] text-ink-muted">Interpreter languages named: {h.international.languages.join(", ")}.</p>
-              ) : null}
-              {h.international.url ? (
-                <p className="mt-4 mb-0 text-[15px]">
-                  <a href={h.international.url} target="_blank" rel="noopener noreferrer nofollow">
-                    Hospital&apos;s international patients page
-                  </a>
-                </p>
-              ) : null}
-            </div>
-          </Container>
-        </section>
-      ) : null}
 
       {faqs.length > 0 ? <FaqSection faqs={faqs} eyebrow="Hospital FAQ" title={`${h.name}: common questions`} /> : null}
 
