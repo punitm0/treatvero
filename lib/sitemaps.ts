@@ -14,25 +14,27 @@ export function sitemapUrl(id: SitemapId): string {
   return absoluteUrl(`/sitemaps/sitemap/${id}.xml`);
 }
 
-const staticPaths: { path: string; priority: number }[] = [
-  { path: "/", priority: 1 },
-  { path: "/india", priority: 0.9 },
-  { path: "/treatments", priority: 0.9 },
-  { path: "/get-treatment-options", priority: 0.9 },
-  { path: "/pricing", priority: 0.8 },
-  { path: "/concierge", priority: 0.8 },
-  { path: "/how-it-works", priority: 0.7 },
-  { path: "/hospitals", priority: 0.7 },
-  { path: "/about", priority: 0.5 },
-  { path: "/contact", priority: 0.5 },
-  { path: "/privacy", priority: 0.2 },
-  { path: "/terms", priority: 0.2 },
-  { path: "/medical-disclaimer", priority: 0.3 },
+/** Top-level pages, shared by the XML sitemap and the HTML /sitemap page. */
+export const mainPages: { path: string; label: string; priority: number }[] = [
+  { path: "/", label: "Home", priority: 1 },
+  { path: "/india", label: "Treatment in India", priority: 0.9 },
+  { path: "/treatments", label: "Treatments", priority: 0.9 },
+  { path: "/get-treatment-options", label: "Get treatment options", priority: 0.9 },
+  { path: "/pricing", label: "Pricing", priority: 0.8 },
+  { path: "/concierge", label: "Concierge", priority: 0.8 },
+  { path: "/how-it-works", label: "How it works", priority: 0.7 },
+  { path: "/hospitals", label: "Hospitals", priority: 0.7 },
+  { path: "/about", label: "About", priority: 0.5 },
+  { path: "/contact", label: "Contact", priority: 0.5 },
+  { path: "/privacy", label: "Privacy Policy", priority: 0.2 },
+  { path: "/terms", label: "Terms of Service", priority: 0.2 },
+  { path: "/medical-disclaimer", label: "Medical Disclaimer", priority: 0.3 },
+  { path: "/sitemap", label: "Sitemap", priority: 0.2 },
 ];
 
 export const sitemapSections: Record<SitemapId, () => MetadataRoute.Sitemap> = {
   pages: () =>
-    staticPaths.map(({ path, priority }) => ({ url: absoluteUrl(path), changeFrequency: "monthly", priority })),
+    mainPages.map(({ path, priority }) => ({ url: absoluteUrl(path), changeFrequency: "monthly", priority })),
   treatments: () =>
     treatments.map((t) => ({ url: absoluteUrl(`/treatments/${t.slug}`), changeFrequency: "monthly", priority: 0.8 })),
   india: () =>
