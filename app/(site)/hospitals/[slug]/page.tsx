@@ -50,7 +50,7 @@ function hospitalFaqs(h: Hospital): FAQ[] {
     ].filter((r) => r !== null);
     faqs.push({
       question: `Is ${h.name} ${accreditationText(h)} accredited?`,
-      answer: `Yes. ${h.name} ${listText(records)}.Accreditation is renewed periodically.`,
+      answer: `Yes. ${h.name} ${listText(records)}. Accreditation is renewed periodically.`,
     });
   }
 
