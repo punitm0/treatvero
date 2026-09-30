@@ -8,6 +8,8 @@ import { LogoMark } from "@/components/ui/logo";
 const company = [
   { label: "About", href: "/about" },
   { label: "How It Works", href: "/how-it-works" },
+  { label: "Hospitals", href: "/hospitals" },
+  { label: "Doctors", href: "/doctors" },
   { label: "Concierge", href: "/concierge" },
   { label: "Pricing", href: "/pricing" },
   { label: "Contact", href: "/contact" },
