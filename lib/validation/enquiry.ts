@@ -39,8 +39,13 @@ export const stepTreatmentSchema = z.object({
     .max(2000, "Please keep this under 2,000 characters."),
 });
 
+/** Slug of a listed hospital or doctor the patient asked about (checked against the data on the server). */
+const listingSlug = z.union([z.string().regex(/^[a-z0-9-]{1,120}$/), z.literal("")]).optional();
+
 export const stepPreferencesSchema = z.object({
   destination: z.enum(DESTINATION_OPTIONS),
+  preferredHospital: listingSlug,
+  preferredDoctor: listingSlug,
   city: optionalEnum(CITY_OPTIONS),
   timing: optionalEnum(TIMING_OPTIONS),
   budget: optionalEnum(BUDGET_OPTIONS),

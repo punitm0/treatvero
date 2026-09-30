@@ -4,11 +4,13 @@ import type { FAQ, Treatment } from "@/types";
 import type { Crumb } from "@/lib/seo";
 import { internationalPatientJourney } from "@/data/treatments";
 import { getHospitalsForTreatment } from "@/data/hospitals";
+import { getDoctorsForTreatment } from "@/data/doctors";
 import { getCity } from "@/data/destinations";
 import { Icon } from "@/components/ui/icon";
 import { PageHero } from "@/components/ui/page-hero";
 import { Container, Eyebrow, Section } from "@/components/ui/primitives";
 import { HospitalCard } from "@/components/hospitals/hospital-card";
+import { DoctorCard } from "@/components/doctors/doctor-card";
 import { FaqSection } from "@/components/home/faq-section";
 import { FinalCta } from "@/components/home/final-cta";
 
@@ -31,6 +33,7 @@ export function TreatmentGuide({
   const allHospitalOptions = getHospitalsForTreatment(t.slug);
   const hospitalOptions = allHospitalOptions.slice(0, 3);
   const moreHospitalOptions = allHospitalOptions.slice(3);
+  const doctorOptions = getDoctorsForTreatment(t.slug, 6);
   const faqs = [...t.faqs, ...extraFaqs];
 
   return (
@@ -232,6 +235,32 @@ export function TreatmentGuide({
                 </ul>
               </div>
             ) : null}
+          </Container>
+        </Section>
+      ) : null}
+
+      {/* Doctors */}
+      {doctorOptions.length > 0 ? (
+        <Section aria-labelledby="doctor-options">
+          <Container>
+            <div className="mb-[clamp(36px,4vw,52px)] flex flex-wrap items-end justify-between gap-6">
+              <div className="max-w-[640px]">
+                <Eyebrow>Specialists</Eyebrow>
+                <h2 id="doctor-options" className="text-h2-sm m-0">
+                  Doctors for {t.name.toLowerCase()}
+                </h2>
+              </div>
+              <Link href="/doctors" className="text-[15px] font-medium no-underline">
+                View all doctors
+              </Link>
+            </div>
+            <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-4 p-0">
+              {doctorOptions.map((d) => (
+                <li key={d.slug} className="grid">
+                  <DoctorCard doctor={d} />
+                </li>
+              ))}
+            </ul>
           </Container>
         </Section>
       ) : null}

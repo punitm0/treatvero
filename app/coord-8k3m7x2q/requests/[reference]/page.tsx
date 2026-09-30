@@ -24,6 +24,7 @@ import {
   getRequest,
   knownAdmins,
   missedFirstContact,
+  preferredListingLabel,
   statusLabel,
   type RequestEvent,
 } from "@/lib/admin/requests";
@@ -155,6 +156,7 @@ export default async function AdminRequestPage({ params }: { params: Promise<{ r
               <Field label="Patient age">{r.age}</Field>
               <Field label="Country of residence">{r.country}</Field>
               <Field label="Destination">{r.city && r.city !== "No preference" ? `${r.destination} · ${r.city}` : r.destination}</Field>
+              {preferredListingLabel(r) ? <Field label="Asked about">{preferredListingLabel(r)}</Field> : null}
               <Field label="Travel timing">{r.timing}</Field>
               <Field label="Budget">{r.budget}</Field>
             </dl>

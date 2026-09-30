@@ -4,7 +4,7 @@ import { MapPin } from "lucide-react";
 import type { Hospital } from "@/types";
 import { getTreatmentOrThrow } from "@/data/treatments";
 import { hospitalImage, hospitalPlace } from "@/data/hospitals";
-import { ENQUIRY_PATH } from "@/lib/config";
+import { enquiryHref } from "@/lib/enquiry-link";
 import { cn } from "@/lib/utils";
 import { buttonClasses } from "@/components/ui/button";
 
@@ -46,7 +46,7 @@ export function HospitalCard({ hospital: h, headingLevel = "h3" }: { hospital: H
         <div className="flex-1" />
         <div className="flex items-center justify-between gap-3 border-t border-line-soft pt-4">
           {h.isConfirmedPartner ? <span className="text-xs text-ink-subtle">TreatVero partner</span> : <span />}
-          <Link href={ENQUIRY_PATH} className={buttonClasses({ variant: "outline", size: "sm", className: "h-11 px-4" })}>
+          <Link href={enquiryHref({ hospital: h.slug })} className={buttonClasses({ variant: "outline", size: "sm", className: "h-11 px-4" })}>
             Request Options
           </Link>
         </div>
@@ -79,7 +79,7 @@ export function HospitalCardCompact({ hospital: h, className }: { hospital: Hosp
       <p className="m-0 text-sm text-ink-muted">{specialtyLine(h)}</p>
       <div className="mt-auto flex items-center justify-between gap-3 border-t border-line-soft pt-3.5">
         {h.isConfirmedPartner ? <span className="text-xs text-ink-subtle">TreatVero partner</span> : <span />}
-        <Link href={ENQUIRY_PATH} className={buttonClasses({ variant: "outline", size: "sm", className: "h-11 px-4" })}>
+        <Link href={enquiryHref({ hospital: h.slug })} className={buttonClasses({ variant: "outline", size: "sm", className: "h-11 px-4" })}>
           Request Options
         </Link>
       </div>

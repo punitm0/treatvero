@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useForm, useWatch, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowLeft, ArrowRight, Check, Loader2, Lock, MessageCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2, Lock, MessageCircle, Stethoscope, X } from "lucide-react";
 import type { z } from "zod";
 import type { PlanId } from "@/types";
 import { formatPlanCompareAt, formatPlanPrice, planList, THIRD_PARTY_COSTS_NOTE } from "@/data/pricing";
@@ -34,7 +34,17 @@ type FormInput = z.input<typeof enquirySchema>;
 const comingSoon = ["Turkey", "Thailand", "UAE", "Singapore"];
 const VERIFY_ERROR = "We couldn't verify your browser. Please refresh the page and try again, or reach us on WhatsApp.";
 
-export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
+/** A listed hospital/doctor the patient came from, resolved on the server. */
+export type PreferredListing = {
+  hospital?: { slug: string; name: string };
+  doctor?: { slug: string; name: string };
+  /** Pre-selected treatment option label and city name. */
+  treatment?: (typeof TREATMENT_OPTIONS)[number];
+  city?: (typeof CITY_OPTIONS)[number];
+};
+
+export function EnquiryForm({ initialPlan, preferred }: { initialPlan?: PlanId; preferred?: PreferredListing }) {
+  const [listing, setListing] = useState(preferred?.hospital || preferred?.doctor ? preferred : undefined);
   const [step, setStep] = useState(0);
   const [uploads, setUploads] = useState<UploadItem[]>([]);
   const [serverError, setServerError] = useState("");
@@ -51,6 +61,7 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
     handleSubmit,
     trigger,
     setError,
+    setValue,
     control,
     formState: { errors },
   } = useForm<FormInput, unknown, EnquiryInput>({
@@ -64,7 +75,10 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
       age: "",
       description: "",
       destination: "India",
-      city: "No preference",
+      city: preferred?.city ?? "No preference",
+      preferredHospital: preferred?.hospital?.slug ?? "",
+      preferredDoctor: preferred?.doctor?.slug ?? "",
+      ...(preferred?.treatment ? { treatment: preferred.treatment } : {}),
       timing: "",
       budget: "",
       uploadIds: [],
@@ -194,6 +208,30 @@ export function EnquiryForm({ initialPlan }: { initialPlan?: PlanId }) {
                       title="What treatment are you looking for?"
                       text="A few details help hospitals prepare useful estimates. It takes about two minutes."
                     />
+                    {listing ? (
+                      <div className="flex items-start gap-3 rounded-xl border border-brand-line bg-brand-tint px-4 py-3">
+                        <Stethoscope aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-brand" strokeWidth={1.75} />
+                        <p className="m-0 flex-1 text-sm text-ink">
+                          You&apos;re asking about{" "}
+                          <strong className="font-medium">
+                            {listing.doctor ? `${listing.doctor.name}${listing.hospital ? ` at ${listing.hospital.name}` : ""}` : listing.hospital?.name}
+                          </strong>
+                          . We&apos;ll request their opinion, and can suggest other options too.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setValue("preferredHospital", "");
+                            setValue("preferredDoctor", "");
+                            setListing(undefined);
+                          }}
+                          className="-m-1.5 flex size-8 shrink-0 items-center justify-center rounded-full text-ink-muted hover:bg-hover hover:text-ink"
+                          aria-label="Remove this hospital or doctor from my request"
+                        >
+                          <X aria-hidden="true" className="size-4" />
+                        </button>
+                      </div>
+                    ) : null}
                     <ChoiceGroup legend="Treatment" error={err("treatment")} errorId="treatment-error">
                       <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2">
                         {TREATMENT_OPTIONS.map((t) => (

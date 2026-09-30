@@ -1,13 +1,14 @@
 import type { MetadataRoute } from "next";
 import { treatments } from "@/data/treatments";
 import { hospitals } from "@/data/hospitals";
+import { doctors } from "@/data/doctors";
 import { publishedIndiaPages, publishedSourceCountryPages } from "@/data/seo-pages";
 import { absoluteUrl } from "@/lib/utils";
 
 // Each section is served as its own sitemap at /sitemaps/sitemap/<id>.xml
 // (app/sitemaps/sitemap.ts) and listed in the index at /sitemap.xml
 // (app/sitemap.xml/route.ts).
-export const sitemapIds = ["pages", "treatments", "india", "from", "hospitals"] as const;
+export const sitemapIds = ["pages", "treatments", "india", "from", "hospitals", "doctors"] as const;
 export type SitemapId = (typeof sitemapIds)[number];
 
 export function sitemapUrl(id: SitemapId): string {
@@ -24,6 +25,7 @@ export const mainPages: { path: string; label: string; priority: number }[] = [
   { path: "/concierge", label: "Concierge", priority: 0.8 },
   { path: "/how-it-works", label: "How it works", priority: 0.7 },
   { path: "/hospitals", label: "Hospitals", priority: 0.7 },
+  { path: "/doctors", label: "Doctors", priority: 0.7 },
   { path: "/about", label: "About", priority: 0.5 },
   { path: "/contact", label: "Contact", priority: 0.5 },
   { path: "/privacy", label: "Privacy Policy", priority: 0.2 },
@@ -47,5 +49,12 @@ export const sitemapSections: Record<SitemapId, () => MetadataRoute.Sitemap> = {
       ...(h.verifiedOn ? { lastModified: h.verifiedOn } : {}),
       changeFrequency: "monthly",
       priority: 0.6,
+    })),
+  doctors: () =>
+    doctors.map((d) => ({
+      url: absoluteUrl(`/doctors/${d.slug}`),
+      lastModified: d.verifiedOn,
+      changeFrequency: "monthly",
+      priority: 0.5,
     })),
 };

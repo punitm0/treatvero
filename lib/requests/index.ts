@@ -33,8 +33,8 @@ class D1RequestStore implements TreatmentRequestStore {
         `INSERT INTO treatment_requests
           (reference, created_at, status, plan, country, age, treatment, description,
            destination, city, timing, budget, full_name, email, whatsapp, consent_text, consent_at,
-           terms_version, terms_text, terms_accepted_at)
-         VALUES (?1, ?2, 'new', ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?2, ?16, ?17, ?2)`,
+           terms_version, terms_text, terms_accepted_at, preferred_hospital, preferred_doctor)
+         VALUES (?1, ?2, 'new', ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?2, ?16, ?17, ?2, ?18, ?19)`,
       )
       .bind(
         reference,
@@ -54,6 +54,8 @@ class D1RequestStore implements TreatmentRequestStore {
         CONSENT_TEXT,
         TERMS_VERSION,
         TERMS_ACCEPTANCE_TEXT,
+        input.preferredHospital || null,
+        input.preferredDoctor || null,
       );
     const insertReports = reports.map((r) =>
       this.db

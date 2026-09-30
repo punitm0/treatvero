@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { treatments } from "@/data/treatments";
-import { hospitals } from "@/data/hospitals";
+import { getHospital, hospitals } from "@/data/hospitals";
+import { doctors } from "@/data/doctors";
 import { cities, getCity } from "@/data/destinations";
 import { publishedIndiaPages, publishedSourceCountryPages } from "@/data/seo-pages";
 import { mainPages } from "@/lib/sitemaps";
@@ -80,6 +81,14 @@ export default function SitemapPage() {
                 </div>
               ))}
             </div>
+          </section>
+        )}
+        {doctors.length > 0 && (
+          <section className="border-t border-line py-8">
+            <h2 className="mt-0 mb-5 text-xl font-medium tracking-[-0.01em]">Doctors</h2>
+            <LinkList
+              links={doctors.map((d) => ({ href: `/doctors/${d.slug}`, label: `${d.name}, ${getHospital(d.hospital)!.name}` }))}
+            />
           </section>
         )}
       </Container>

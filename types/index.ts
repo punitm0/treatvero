@@ -97,6 +97,22 @@ export type Hospital = {
   established?: number;
   /** Bed count as published by the source cited in `sources`. */
   beds?: number;
+  /** ICU (critical care) bed count, exact figure as published. */
+  icuBeds?: number;
+  /** Number of operation theatres, exact figure as published. */
+  operationTheatres?: number;
+  /**
+   * Notable facilities and technology (equipment, units, programmes), one
+   * short neutral line each, from the hospital's own page or `sources`.
+   */
+  facilities?: string[];
+  /**
+   * Services the hospital lists for international patients (interpreters,
+   * visa letters, airport help…), in our own words.
+   */
+  internationalServices?: string[];
+  /** Extra photos for the hospital page gallery, shown after `image`. */
+  gallery?: GalleryImage[];
   /** One to three neutral sentences on the hospital's history, from `sources`. */
   history?: string;
   /** Closest metro or rail station (OpenStreetMap), straight-line distance. */
@@ -119,6 +135,46 @@ export type Hospital = {
    * partnership unless this is explicitly set.
    */
   isConfirmedPartner: boolean;
+};
+
+export type GalleryImage = {
+  /** Site path, e.g. /images/hospitals/<slug>/lobby.jpg */
+  src: string;
+  alt: string;
+  /** Credit shown with the photo, when the source requires one. */
+  credit?: string;
+  /** Where the photo came from. Internal record, not shown on the page. */
+  source?: string;
+};
+
+export type Doctor = {
+  /** Name without the title, lower-case and hyphenated ("ajay-kaul"); add the hospital's city when two doctors share a name. */
+  slug: string;
+  /** Full name with title, as the hospital publishes it ("Dr. Ajay Kaul"). */
+  name: string;
+  /** Slug of the hospital (data/hospitals.ts) the doctor practises at. */
+  hospital: string;
+  /** Role as the hospital publishes it ("Chairman, Cardiac Sciences"). */
+  designation: string;
+  /** Department or speciality as the hospital lists it. */
+  department: string;
+  /** Treatment areas the doctor's practice covers (for filters and treatment pages). */
+  specialties: TreatmentSlug[];
+  /** Degrees and fellowships as published. */
+  qualifications: string[];
+  /** Experience as the hospital publishes it on `verifiedOn` ("38 years", "10+ years"). */
+  experience?: string;
+  /** One to three neutral sentences on the doctor's practice, in our own words. No volumes, rankings or outcome claims. */
+  about?: string;
+  /** Procedures and conditions the doctor's profile lists (short labels). */
+  expertise?: string[];
+  languages?: string[];
+  /** Photo, public/images/doctors/<slug>.jpg (square, max 600px). Initials are shown without one. */
+  photo?: string;
+  /** The doctor's profile on the hospital's website. Internal record, not shown on the page. */
+  profileUrl: string;
+  /** ISO date the profile was last checked against `profileUrl`. */
+  verifiedOn: string;
 };
 
 export type PlanId = "basic" | "concierge";

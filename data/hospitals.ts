@@ -52,6 +52,13 @@ import { getCity } from "@/data/destinations";
  *   volumes, success rates, "first" or "best" claims.
  * - Descriptions are factual and neutral: no rankings, "best", "leading",
  *   outcome or volume claims.
+ * - `icuBeds`, `operationTheatres`: exact figures from the hospital's own
+ *   page for that hospital (skip "140+"-style numbers, as for `beds`).
+ * - `facilities`: short neutral lines on equipment, units and programmes the
+ *   hospital's page names for that hospital; skip group-wide technology
+ *   lists. `internationalServices`: what its international desk offers.
+ * - `gallery`: extra photos in public/images/hospitals/<slug>/, with `source`
+ *   (internal) and `credit` when the licence needs one.
  * - `image`: a photo of the hospital itself, saved to
  *   public/images/hospitals/<slug>.jpg (max 1600px wide).
  * - Set `verifiedOn` to the date the entry was checked.
@@ -97,6 +104,9 @@ export const hospitals: Hospital[] = [
       effectiveDate: "2013-08-31",
     },
     nabh: { number: "H-2011-0073" },
+    // ICU beds and operation theatres from the hospital's page (structured data on its doctor profiles).
+    icuBeds: 316,
+    operationTheatres: 40,
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -146,6 +156,10 @@ export const hospitals: Hospital[] = [
       program: "Hospital Program",
       effectiveDate: "2005-06-18",
     },
+    internationalServices: [
+      "International Patient Services team for medical visas, travel arrangements and accommodation",
+      "Language interpretation",
+    ],
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -202,8 +216,92 @@ export const hospitals: Hospital[] = [
       effectiveDate: "2019-07-13",
     },
     nabh: { number: "H-2015-0303" },
+    icuBeds: 107,
+    operationTheatres: 15,
+    facilities: [
+      "Gamma Knife radiosurgery",
+      "Digital PET-CT",
+      "SSI Mantra 3 robotic surgical system",
+      "Adult and paediatric bone marrow transplant programme",
+      "25-bed emergency ward with 24×7 critical care",
+    ],
+    internationalServices: [
+      "International patient team for treatment coordination and appointments",
+      "Help with medical documentation for the visit",
+    ],
+    gallery: [
+      {
+        src: "/images/hospitals/fortis-memorial-research-institute-gurugram/campus.jpg",
+        alt: "Fortis Memorial Research Institute campus, Sector 44, Gurugram",
+        source: "https://www.fortishealthcare.com/location/fortis-memorial-research-institute-gurgaon",
+      },
+    ],
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
+  },
+  // JCI: not listed. NABH: H-2007-0009, listed as "International Hospital Limited - (Earlier Certificate issued in the Name of Fortis Hospital)", B-22, Sector 62, Noida.
+  {
+    slug: "fortis-hospital-noida",
+    name: "Fortis Hospital, Noida",
+    city: "delhi-ncr",
+    place: "Sector 62, Noida",
+    accreditations: ["NABH"],
+    specialties: [
+      "cardiac-care",
+      "cancer-treatment",
+      "orthopaedics",
+      "spine-surgery",
+      "neurology-neurosurgery",
+      "organ-transplant",
+      "bariatric-surgery",
+    ],
+    specialtyNotes: {
+      "cardiac-care": "Interventional and non-invasive cardiology, adult and paediatric cardiothoracic surgery, vascular surgery and a heart transplant programme.",
+      "cancer-treatment": "Medical, surgical and radiation oncology, with haemato-oncology and bone marrow transplant.",
+      orthopaedics: "Joint replacement, including robotic and computer-navigated joint reconstruction, and sports medicine.",
+      "spine-surgery": "Spine surgery within its neuro and spine surgery department.",
+      "neurology-neurosurgery": "Neurology and neurosurgery, with dedicated neuro and neurosurgery intensive care.",
+      "organ-transplant": "Liver, kidney and heart transplant, with a dedicated liver transplant and digestive diseases institute.",
+      "bariatric-surgery": "Bariatric surgery within its general and minimal access surgery department.",
+    },
+    description: "Multi-specialty tertiary-care hospital on a 6-acre campus in Sector 62, Noida, part of Fortis Healthcare, open since 2004.",
+    image: "/images/hospitals/fortis-hospital-noida.jpg",
+    imageCredit: "Photo: Ali Rizvi, CC BY-SA 3.0, via Wikimedia Commons",
+    website: "https://www.fortishealthcare.com/location/fortis-hospital-noida",
+    address: "B-22, Rasoolpur Nawada, D Block, Sector 62, Noida, Uttar Pradesh 201301",
+    geo: { lat: 28.61876, lng: 77.37261 },
+    airportDistanceKm: 38,
+    nearestStation: { name: "Noida Sector 62", network: "Delhi Metro", km: 0.2 },
+    established: 2004,
+    history:
+      "Opened in 2004 as the second hospital of Fortis Healthcare, on a 6-acre campus in Sector 62, Noida. It runs a dedicated liver transplant and digestive diseases institute.",
+    sources: [
+      {
+        title: "Fortis Healthcare: Fortis Hospital, Noida (international patients)",
+        url: "https://www.fortishealthcare.com/international-patients/hospitals/fortis-hospital-noida",
+      },
+      { title: "Wikimedia Commons: Fortis Hospital Noida photo", url: "https://commons.wikimedia.org/wiki/File:Fortis_Hospital_Noida_-_panoramio.jpg" },
+    ],
+    nabh: { number: "H-2007-0009" },
+    operationTheatres: 18,
+    facilities: [
+      "18 modular operation theatres",
+      "Cardiac catheterisation labs for minimally invasive and complex procedures",
+      "Liver transplant and digestive diseases institute with its own operation theatre, ICU and HDU",
+      "Specialised ICUs for medical, surgical, neurology, neurosurgery, joint replacement and transplant patients",
+      "Neonatal (NICU) and paediatric (PICU) intensive care",
+      "25 dedicated emergency beds",
+    ],
+    internationalServices: ["International patient section for treatment coordination and appointments"],
+    gallery: [
+      {
+        src: "/images/hospitals/fortis-hospital-noida/facade.jpg",
+        alt: "Fortis Hospital, Noida, with its new tower",
+        source: "https://www.fortishealthcare.com/location/fortis-hospital-noida",
+      },
+    ],
+    isConfirmedPartner: false,
+    verifiedOn: "2026-09-30",
   },
 
   /* -------------------------------- Mumbai --------------------------------- */
@@ -343,6 +441,10 @@ export const hospitals: Hospital[] = [
       program: "Hospital Program",
       effectiveDate: "2006-01-29",
     },
+    internationalServices: [
+      "International Patient Services team for medical visas, travel arrangements and accommodation",
+      "Language interpretation",
+    ],
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -419,6 +521,19 @@ export const hospitals: Hospital[] = [
       effectiveDate: "2026-06-19",
     },
     nabh: { number: "H-2007-0007" },
+    operationTheatres: 19,
+    facilities: [
+      "19 cardiac operation theatres, including 2 robotic operation theatres",
+      "8 cath labs, including a hybrid cath lab for combined surgical and interventional procedures",
+      "da Vinci robot for robot-assisted cardiac surgery",
+    ],
+    gallery: [
+      {
+        src: "/images/hospitals/narayana-institute-of-cardiac-sciences-bengaluru/campus.jpg",
+        alt: "Narayana Institute of Cardiac Sciences at Narayana Health City, Bommasandra",
+        source: "https://www.narayanahealth.org/hospitals-clinics/bangalore/narayana-institute-cardiac-sciences-bommasandra",
+      },
+    ],
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -453,6 +568,10 @@ export const hospitals: Hospital[] = [
       program: "Hospital Program",
       effectiveDate: "2008-07-18",
     },
+    internationalServices: [
+      "International Patient Services team for medical visas, travel arrangements and accommodation",
+      "Language interpretation",
+    ],
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -496,6 +615,10 @@ export const hospitals: Hospital[] = [
       program: "Hospital Program",
       effectiveDate: "2006-04-28",
     },
+    internationalServices: [
+      "International Patient Services team for medical visas, travel arrangements and accommodation",
+      "Language interpretation",
+    ],
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
