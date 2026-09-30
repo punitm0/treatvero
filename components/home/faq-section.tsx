@@ -21,7 +21,7 @@ export function FaqSection({
   sticky?: boolean;
 }) {
   return (
-    <section id="faq" aria-labelledby="faq-title" className="section-y bg-sand">
+    <section id="faq" aria-labelledby="faq-title" className="section-y scroll-mt-[140px] bg-sand">
       <Container className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] items-start gap-x-20 gap-y-10">
         <div className={sticky ? "lg:sticky lg:top-[108px]" : undefined}>
           <Eyebrow>{eyebrow}</Eyebrow>

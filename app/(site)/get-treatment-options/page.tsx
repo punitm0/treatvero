@@ -1,7 +1,27 @@
 import { isPlanId } from "@/data/pricing";
 import { pageMetadata } from "@/lib/seo";
 import { verifyPayment } from "@/lib/payments";
-import { EnquiryForm } from "@/components/forms/enquiry-form";
+import { EnquiryForm, type PreferredListing } from "@/components/forms/enquiry-form";
+import { getHospital } from "@/data/hospitals";
+import { getDoctor } from "@/data/doctors";
+import { getCity } from "@/data/destinations";
+import { getTreatmentOrThrow } from "@/data/treatments";
+import { CITY_OPTIONS, TREATMENT_OPTIONS } from "@/lib/validation/enquiry";
+
+/** Resolves ?hospital= / ?doctor= from hospital and doctor pages into what the form shows. */
+function preferredListing(hospitalSlug: unknown, doctorSlug: unknown): PreferredListing | undefined {
+  const doctor = typeof doctorSlug === "string" ? getDoctor(doctorSlug) : undefined;
+  const hospital = getHospital(doctor?.hospital ?? (typeof hospitalSlug === "string" ? hospitalSlug : ""));
+  if (!hospital) return undefined;
+  const cityName = getCity(hospital.city).name;
+  const treatmentName = doctor?.specialties.length === 1 ? getTreatmentOrThrow(doctor.specialties[0]).name : undefined;
+  return {
+    hospital: { slug: hospital.slug, name: hospital.name },
+    doctor: doctor ? { slug: doctor.slug, name: doctor.name } : undefined,
+    city: CITY_OPTIONS.find((c) => c === cityName),
+    treatment: TREATMENT_OPTIONS.find((t) => t === treatmentName),
+  };
+}
 
 export const metadata = pageMetadata({
   title: "Get Treatment Options",
@@ -30,7 +50,7 @@ export default async function GetTreatmentOptionsPage({ searchParams }: PageProp
           Payment was cancelled. Your request is saved — a coordinator can send you a payment link later.
         </p>
       ) : null}
-      <EnquiryForm initialPlan={plan} />
+      <EnquiryForm initialPlan={plan} preferred={preferredListing(sp.hospital, sp.doctor)} />
     </div>
   );
 }

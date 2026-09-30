@@ -14,6 +14,8 @@ export function PageHero({
   title,
   lede,
   actions = true,
+  ctaHref = ENQUIRY_PATH,
+  ctaLabel = "Get Treatment Options",
   aside,
   children,
 }: {
@@ -22,6 +24,9 @@ export function PageHero({
   title: ReactNode;
   lede?: ReactNode;
   actions?: boolean;
+  /** Primary button target, e.g. the enquiry form with a hospital pre-selected. */
+  ctaHref?: string;
+  ctaLabel?: string;
   aside?: ReactNode;
   children?: ReactNode;
 }) {
@@ -36,8 +41,8 @@ export function PageHero({
             {lede ? <p className="text-lede mb-8 max-w-[560px] text-ink-muted">{lede}</p> : null}
             {actions ? (
               <div className="flex flex-wrap gap-3">
-                <ButtonLink href={ENQUIRY_PATH} size="lg">
-                  Get Treatment Options
+                <ButtonLink href={ctaHref} size="lg">
+                  {ctaLabel}
                   <ArrowRight aria-hidden="true" className="size-5" strokeWidth={1.75} />
                 </ButtonLink>
                 <WhatsAppButton size="lg" className="px-6" />

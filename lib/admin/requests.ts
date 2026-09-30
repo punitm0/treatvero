@@ -1,6 +1,8 @@
 import "server-only";
 import { cfEnv } from "@/lib/cloudflare";
 import { istDayStartUtc, addDays, todayIST } from "@/components/admin/format";
+import { getHospital } from "@/data/hospitals";
+import { getDoctor } from "@/data/doctors";
 
 /**
  * Read/write access to treatment requests for the admin area. Callers must
@@ -81,7 +83,20 @@ export type RequestDetail = {
   follow_up_on: string | null;
   paid_at: string | null;
   payment_note: string | null;
+  /** Listing slugs the patient asked about (NULL before migration 0005 or when none). */
+  preferred_hospital: string | null;
+  preferred_doctor: string | null;
 };
+
+/** "Dr. X at Hospital Y" for the listing a patient asked about, or null. */
+export function preferredListingLabel(r: Pick<RequestDetail, "preferred_hospital" | "preferred_doctor">): string | null {
+  const doctor = r.preferred_doctor ? getDoctor(r.preferred_doctor) : undefined;
+  const hospital = r.preferred_hospital ? getHospital(r.preferred_hospital) : undefined;
+  const doctorName = doctor?.name ?? r.preferred_doctor;
+  const hospitalName = hospital?.name ?? r.preferred_hospital;
+  if (doctorName && hospitalName) return `${doctorName} at ${hospitalName}`;
+  return doctorName || hospitalName || null;
+}
 
 export type RequestReport = { report_id: string; file_name: string; mime_type: string; size_bytes: number };
 
@@ -251,6 +266,8 @@ export type ExportRow = RequestSummary & {
   budget: string | null;
   payment_note: string | null;
   terms_accepted_at: string | null;
+  preferred_hospital: string | null;
+  preferred_doctor: string | null;
 };
 
 /** Every matching request (no paging) for CSV export. Excludes the medical description. */
@@ -258,7 +275,8 @@ export async function exportRequests(filters: RequestFilters): Promise<ExportRow
   const { sql, params } = buildWhere(filters);
   const { results } = await db()
     .prepare(
-      `SELECT ${SUMMARY_COLUMNS}, r.age, r.email, r.whatsapp, r.timing, r.budget, r.payment_note, r.terms_accepted_at
+      `SELECT ${SUMMARY_COLUMNS}, r.age, r.email, r.whatsapp, r.timing, r.budget, r.payment_note, r.terms_accepted_at,
+              r.preferred_hospital, r.preferred_doctor
        FROM treatment_requests r ${sql} ORDER BY r.created_at DESC LIMIT 10000`,
     )
     .bind(...params)

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { FAQ, Hospital } from "@/types";
+import type { Doctor, FAQ, Hospital } from "@/types";
 import { getCity } from "@/data/destinations";
 import { getTreatmentOrThrow } from "@/data/treatments";
 import { hospitalImage } from "@/data/hospitals";
@@ -138,6 +138,34 @@ export function hospitalJsonLd(h: Hospital) {
             credentialCategory: "accreditation",
             name: c.name,
             recognizedBy: { "@type": "Organization", name: c.body.name, url: c.body.url },
+          })),
+        }
+      : {}),
+  };
+}
+
+/**
+ * Describes a listed doctor as a Person working at the listed hospital.
+ * Only fields published on the doctor's hospital profile are included.
+ */
+export function doctorJsonLd(d: Doctor) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": `${absoluteUrl(`/doctors/${d.slug}`)}#person`,
+    name: d.name,
+    jobTitle: d.designation,
+    ...(d.photo ? { image: absoluteUrl(d.photo) } : {}),
+    ...(d.about ? { description: d.about } : {}),
+    worksFor: { "@id": `${absoluteUrl(`/hospitals/${d.hospital}`)}#hospital` },
+    ...(d.expertise?.length ? { knowsAbout: d.expertise } : {}),
+    ...(d.languages?.length ? { knowsLanguage: d.languages } : {}),
+    ...(d.qualifications.length
+      ? {
+          hasCredential: d.qualifications.map((q) => ({
+            "@type": "EducationalOccupationalCredential",
+            credentialCategory: "degree",
+            name: q,
           })),
         }
       : {}),

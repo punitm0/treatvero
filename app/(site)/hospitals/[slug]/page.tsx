@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MapPin } from "lucide-react";
+import { Check, MapPin } from "lucide-react";
 import type { FAQ, Hospital } from "@/types";
 import {
   getHospital,
@@ -16,12 +16,19 @@ import {
 import { getCity } from "@/data/destinations";
 import { indiaCityPageHref } from "@/data/seo-pages";
 import { getTreatmentOrThrow } from "@/data/treatments";
+import { getDoctorsForHospital } from "@/data/doctors";
 import { hospitalJsonLd, pageMetadata } from "@/lib/seo";
+import { enquiryHref } from "@/lib/enquiry-link";
 import { PageHero } from "@/components/ui/page-hero";
 import { Container, Eyebrow } from "@/components/ui/primitives";
+import { ButtonLink } from "@/components/ui/button";
+import { WhatsAppButton } from "@/components/ui/whatsapp-link";
 import { Icon } from "@/components/ui/icon";
 import { JsonLd } from "@/components/ui/json-ld";
 import { HospitalCardCompact } from "@/components/hospitals/hospital-card";
+import { HospitalGallery } from "@/components/hospitals/hospital-gallery";
+import { SectionNav } from "@/components/hospitals/section-nav";
+import { DoctorCard } from "@/components/doctors/doctor-card";
 import { FaqSection } from "@/components/home/faq-section";
 import { FinalCta } from "@/components/home/final-cta";
 
@@ -84,6 +91,27 @@ function hospitalFaqs(h: Hospital): FAQ[] {
     });
   }
 
+  const listedDoctors = getDoctorsForHospital(h.slug);
+  if (listedDoctors.length) {
+    faqs.push({
+      question: `Can I ask for a specific doctor at ${h.name}?`,
+      answer: `Yes. Name the doctor in your request, for example ${listText(listedDoctors.slice(0, 2).map((d) => d.name))}, and we'll ask ${h.name} for their opinion on your case. The hospital confirms the doctor's availability.`,
+    });
+  }
+
+  if (h.icuBeds || h.operationTheatres) {
+    faqs.push({
+      question: `How many ${listText([h.icuBeds ? "ICU beds" : null, h.operationTheatres ? "operation theatres" : null].filter((x) => x !== null))} does ${h.name} have?`,
+      answer: `${h.name} publishes ${listText(
+        [
+          h.beds ? `${h.beds.toLocaleString("en-IN")} beds` : null,
+          h.icuBeds ? `${h.icuBeds.toLocaleString("en-IN")} ICU beds` : null,
+          h.operationTheatres ? `${h.operationTheatres} operation theatres` : null,
+        ].filter((x) => x !== null),
+      )}.`,
+    });
+  }
+
   faqs.push({
     question: `Which treatments can I request at ${h.name} through TreatVero?`,
     answer: `You can request options for ${listText(treatmentNames)} at ${h.name}. Options are requested for your specific case, and the hospital confirms whether and how it can treat you after reviewing your reports.`,
@@ -137,6 +165,30 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
   const mapUrl = hospitalMapUrl(h);
   const faqs = hospitalFaqs(h);
   const related = getRelatedHospitals(h);
+  const hospitalDoctors = getDoctorsForHospital(h.slug);
+  const requestHref = enquiryHref({ hospital: h.slug });
+  const photos = h.gallery?.length
+    ? [...(h.image ? [{ src: h.image, alt: `${h.name}, ${place}`, credit: h.imageCredit }] : []), ...h.gallery]
+    : [];
+  const facts = [
+    h.established ? { label: "Opened", value: String(h.established) } : null,
+    h.beds ? { label: "Beds (published)", value: h.beds.toLocaleString("en-IN") } : null,
+    h.icuBeds ? { label: "ICU beds", value: h.icuBeds.toLocaleString("en-IN") } : null,
+    h.operationTheatres ? { label: "Operation theatres", value: String(h.operationTheatres) } : null,
+  ].filter((f) => f !== null);
+  const hasAbout = Boolean(h.history || facts.length);
+  const hasFacilities = Boolean(h.facilities?.length || h.internationalServices?.length);
+  const sections = [
+    hasAbout ? { id: "about", label: "About" } : null,
+    hasFacilities ? { id: "facilities", label: "Facilities" } : null,
+    { id: "treatments", label: "Treatments" },
+    hospitalDoctors.length ? { id: "doctors", label: "Doctors" } : null,
+    photos.length ? { id: "gallery", label: "Photos" } : null,
+    { id: "visit", label: "Location & travel" },
+    faqs.length ? { id: "faq", label: "FAQ" } : null,
+  ].filter((x) => x !== null);
+  const sectionClass = "scroll-mt-[140px] pb-[clamp(56px,7vw,96px)]";
+
   return (
     <>
       <JsonLd data={hospitalJsonLd(h)} />
@@ -151,10 +203,13 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
               <MapPin aria-hidden="true" className="size-4" strokeWidth={1.75} />
               {place}, India
             </span>
+            <span className="rounded-md border border-line px-2 py-0.5 text-xs font-medium">{h.accreditations.join(" · ")}</span>
           </div>
         }
         title={h.name}
         lede={h.description}
+        ctaHref={requestHref}
+        ctaLabel="Request Options"
         aside={
           <figure className="m-0">
             <div className="relative aspect-[16/11] overflow-hidden rounded-3xl border border-line bg-[#e8e4dc]">
@@ -166,6 +221,14 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
                 sizes="(min-width: 1100px) 560px, 100vw"
                 className="object-cover"
               />
+              {photos.length > 1 ? (
+                <a
+                  href="#gallery"
+                  className="absolute right-3 bottom-3 rounded-full bg-surface/95 px-3.5 py-2 text-sm font-medium text-ink no-underline shadow-lift hover:text-brand"
+                >
+                  View all {photos.length} photos
+                </a>
+              ) : null}
             </div>
             {h.image ? (
               h.imageCredit ? <figcaption className="mt-2 text-[13px] text-ink-subtle">{h.imageCredit}</figcaption> : null
@@ -175,26 +238,23 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
           </figure>
         }
       />
-      <section aria-label="Hospital details" className="pb-[clamp(56px,7vw,96px)]">
-        {h.history || h.established || h.beds ? (
+
+      <SectionNav items={sections} />
+
+      <section id="about" aria-label="Hospital details" className={sectionClass}>
+        {hasAbout ? (
           <Container className="mb-[clamp(32px,4vw,48px)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] items-start gap-x-20 gap-y-5">
             <h2 className="text-h2-sm m-0">About {h.name}</h2>
             <div>
-              {h.history ? <p className="mt-0 mb-4 text-base text-pretty text-ink-muted">{h.history}</p> : null}
-              {h.established || h.beds ? (
-                <dl className="m-0 flex flex-wrap gap-x-10 gap-y-3">
-                  {h.established ? (
-                    <div>
-                      <dt className="text-xs text-ink-subtle">Opened</dt>
-                      <dd className="m-0 text-[15px]">{h.established}</dd>
+              {h.history ? <p className="mt-0 mb-5 text-base text-pretty text-ink-muted">{h.history}</p> : null}
+              {facts.length ? (
+                <dl className="m-0 grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-3">
+                  {facts.map((f) => (
+                    <div key={f.label} className="rounded-2xl border border-line bg-surface px-4 py-3.5">
+                      <dt className="text-xs text-ink-subtle">{f.label}</dt>
+                      <dd className="m-0 mt-1 font-serif text-[26px] leading-none">{f.value}</dd>
                     </div>
-                  ) : null}
-                  {h.beds ? (
-                    <div>
-                      <dt className="text-xs text-ink-subtle">Beds (published)</dt>
-                      <dd className="m-0 text-[15px]">{h.beds.toLocaleString("en-IN")}</dd>
-                    </div>
-                  ) : null}
+                  ))}
                 </dl>
               ) : null}
             </div>
@@ -240,7 +300,49 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
         </Container>
       </section>
 
-      <section aria-labelledby="hospital-treatments" className="pb-[clamp(56px,7vw,96px)]">
+      {hasFacilities ? (
+        <section id="facilities" aria-labelledby="hospital-facilities" className={sectionClass}>
+          <Container>
+            <Eyebrow>Infrastructure</Eyebrow>
+            <h2 id="hospital-facilities" className="text-h2-sm mt-0 mb-7">
+              Facilities and services
+            </h2>
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,340px),1fr))] gap-4">
+              {h.facilities?.length ? (
+                <div className="rounded-[20px] border border-line bg-surface p-[22px]">
+                  <h3 className="label-mono mt-0 mb-4 font-normal text-ink-subtle">Technology & facilities</h3>
+                  <ul className="m-0 flex list-none flex-col gap-3 p-0 text-[15px]">
+                    {h.facilities.map((f) => (
+                      <li key={f} className="flex gap-2.5">
+                        <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={2} />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {h.internationalServices?.length ? (
+                <div className="rounded-[20px] border border-line bg-surface p-[22px]">
+                  <h3 className="label-mono mt-0 mb-4 font-normal text-ink-subtle">For international patients</h3>
+                  <ul className="m-0 flex list-none flex-col gap-3 p-0 text-[15px]">
+                    {h.internationalServices.map((f) => (
+                      <li key={f} className="flex gap-2.5">
+                        <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={2} />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-4 mb-0 text-[13px] text-ink-subtle">
+                    As listed by the hospital. TreatVero coordinates with the international desk for you.
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          </Container>
+        </section>
+      ) : null}
+
+      <section id="treatments" aria-labelledby="hospital-treatments" className={sectionClass}>
         <Container>
           <Eyebrow>Specialties</Eyebrow>
           <h2 id="hospital-treatments" className="text-h2-sm mt-0 mb-7">
@@ -266,7 +368,70 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
         </Container>
       </section>
 
-      <section aria-labelledby="plan-visit" className="pb-[clamp(56px,7vw,96px)]">
+      <section aria-labelledby="request-panel" className="pb-[clamp(56px,7vw,96px)]">
+        <Container>
+          <div className="flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-brand-line bg-brand-tint px-[clamp(22px,4vw,44px)] py-[clamp(24px,3.5vw,36px)]">
+            <div className="max-w-[620px]">
+              <h2 id="request-panel" className="mt-0 mb-2 text-[clamp(22px,2.4vw,28px)] font-medium tracking-[-0.01em]">
+                Get a treatment plan and estimate from {h.name}
+              </h2>
+              <p className="m-0 text-[15px] text-pretty text-ink-muted">
+                Share your reports once. With your consent, we send your case to the hospital&apos;s international desk and
+                bring back the doctor&apos;s opinion, a treatment plan and a cost estimate.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <ButtonLink href={requestHref} size="md">
+                Request Options
+              </ButtonLink>
+              <WhatsAppButton size="md" className="px-5" />
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {hospitalDoctors.length > 0 ? (
+        <section id="doctors" aria-labelledby="hospital-doctors" className={sectionClass}>
+          <Container>
+            <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <Eyebrow>Specialists</Eyebrow>
+                <h2 id="hospital-doctors" className="text-h2-sm m-0">
+                  Doctors at {h.name}
+                </h2>
+              </div>
+              <Link href="/doctors" className="text-[15px] font-medium no-underline">
+                Browse all doctors
+              </Link>
+            </div>
+            <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-4 p-0">
+              {hospitalDoctors.map((d) => (
+                <li key={d.slug} className="grid">
+                  <DoctorCard doctor={d} showHospital={false} />
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 mb-0 text-[13px] text-ink-subtle">
+              A selection of senior specialists from the hospital&apos;s published doctor profiles. We can request an opinion
+              from any doctor at the hospital.
+            </p>
+          </Container>
+        </section>
+      ) : null}
+
+      {photos.length > 0 ? (
+        <section id="gallery" aria-labelledby="hospital-gallery" className={sectionClass}>
+          <Container>
+            <Eyebrow>Gallery</Eyebrow>
+            <h2 id="hospital-gallery" className="text-h2-sm mt-0 mb-7">
+              Photos of {h.name}
+            </h2>
+            <HospitalGallery images={photos} hospitalName={h.name} />
+          </Container>
+        </section>
+      ) : null}
+
+      <section id="visit" aria-labelledby="plan-visit" className={sectionClass}>
         <Container className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] items-start gap-x-20 gap-y-5">
           <h2 id="plan-visit" className="text-h2-sm m-0">
             Planning your visit

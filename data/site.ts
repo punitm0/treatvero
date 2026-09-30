@@ -6,6 +6,7 @@ export const mainNav: { label: string; href: string }[] = [
   { label: "Treatments", href: "/treatments" },
   { label: "Destinations", href: "/india" },
   { label: "Hospitals", href: "/hospitals" },
+  { label: "Doctors", href: "/doctors" },
   { label: "How It Works", href: "/how-it-works" },
   { label: "Concierge", href: "/concierge" },
   { label: "Pricing", href: "/pricing" },

@@ -9,6 +9,8 @@ import { createCheckoutSession } from "@/lib/payments";
 import { getReportStorage } from "@/lib/uploads/storage";
 import { getSessionId } from "@/lib/security/session";
 import { sendEnquiryAlert } from "@/lib/notifications/enquiry-alert";
+import { getHospital } from "@/data/hospitals";
+import { getDoctor } from "@/data/doctors";
 
 export type SubmitResult =
   | { ok: true; reference: string; checkoutUrl: string | null }
@@ -40,6 +42,10 @@ export async function submitTreatmentRequest(raw: unknown): Promise<SubmitResult
     };
   }
   const input = parsed.data;
+  // Keep only listings that exist; a doctor also fixes the hospital.
+  const doctor = input.preferredDoctor ? getDoctor(input.preferredDoctor) : undefined;
+  input.preferredDoctor = doctor?.slug ?? "";
+  input.preferredHospital = doctor?.hospital ?? (input.preferredHospital && getHospital(input.preferredHospital) ? input.preferredHospital : "");
 
   // Honeypot filled → silently accept without storing anything.
   if (input.website) return { ok: true, reference: "TV-RECEIVED", checkoutUrl: null };
