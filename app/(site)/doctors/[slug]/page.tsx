@@ -40,7 +40,7 @@ function doctorFaqs(d: Doctor): FAQ[] {
     },
     {
       question: `Can I have a video consultation with ${d.name} before travelling?`,
-      answer: `Many hospitals offer an online consultation for international patients. We can ask ${h.name} whether ${d.name} is available for one and what it costs; the hospital sets the schedule and fee.`,
+      answer: `Often, yes. We can ask ${h.name} whether ${d.name} can review your case by video before you travel, and what it costs; the hospital sets the schedule and fee, and TreatVero arranges it with you.`,
     },
   );
   if (!h.isConfirmedPartner) {

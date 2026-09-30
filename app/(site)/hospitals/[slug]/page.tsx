@@ -177,7 +177,7 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
     h.operationTheatres ? { label: "Operation theatres", value: String(h.operationTheatres) } : null,
   ].filter((f) => f !== null);
   const hasAbout = Boolean(h.history || facts.length);
-  const hasFacilities = Boolean(h.facilities?.length || h.internationalServices?.length);
+  const hasFacilities = Boolean(h.facilities?.length);
   const sections = [
     hasAbout ? { id: "about", label: "About" } : null,
     hasFacilities ? { id: "facilities", label: "Facilities" } : null,
@@ -305,7 +305,7 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
           <Container>
             <Eyebrow>Infrastructure</Eyebrow>
             <h2 id="hospital-facilities" className="text-h2-sm mt-0 mb-7">
-              Facilities and services
+              Facilities and technology
             </h2>
             <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,340px),1fr))] gap-4">
               {h.facilities?.length ? (
@@ -319,22 +319,6 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
                       </li>
                     ))}
                   </ul>
-                </div>
-              ) : null}
-              {h.internationalServices?.length ? (
-                <div className="rounded-[20px] border border-line bg-surface p-[22px]">
-                  <h3 className="label-mono mt-0 mb-4 font-normal text-ink-subtle">For international patients</h3>
-                  <ul className="m-0 flex list-none flex-col gap-3 p-0 text-[15px]">
-                    {h.internationalServices.map((f) => (
-                      <li key={f} className="flex gap-2.5">
-                        <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={2} />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-4 mb-0 text-[13px] text-ink-subtle">
-                    As listed by the hospital. TreatVero coordinates with the international desk for you.
-                  </p>
                 </div>
               ) : null}
             </div>
@@ -376,8 +360,8 @@ export default async function HospitalPage({ params }: PageProps<"/hospitals/[sl
                 Get a treatment plan and estimate from {h.name}
               </h2>
               <p className="m-0 text-[15px] text-pretty text-ink-muted">
-                Share your reports once. With your consent, we send your case to the hospital&apos;s international desk and
-                bring back the doctor&apos;s opinion, a treatment plan and a cost estimate.
+                Share your reports once. With your consent, TreatVero shares your case with {h.name} and brings back the
+                doctor&apos;s opinion, a treatment plan and a cost estimate, then coordinates your trip.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">

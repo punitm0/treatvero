@@ -56,9 +56,11 @@ import { getCity } from "@/data/destinations";
  *   page for that hospital (skip "140+"-style numbers, as for `beds`).
  * - `facilities`: short neutral lines on equipment, units and programmes the
  *   hospital's page names for that hospital; skip group-wide technology
- *   lists. `internationalServices`: what its international desk offers.
+ *   lists. Never international-patient services (desk, visas, interpreters,
+ *   airport help): coordinating those is TreatVero's service.
  * - `gallery`: extra photos in public/images/hospitals/<slug>/, with `source`
- *   (internal) and `credit` when the licence needs one.
+ *   (internal) and `credit` when the licence needs one. Real photos only:
+ *   no architectural renders, promotional banners with text, or stock images.
  * - `image`: a photo of the hospital itself, saved to
  *   public/images/hospitals/<slug>.jpg (max 1600px wide).
  * - Set `verifiedOn` to the date the entry was checked.
@@ -156,10 +158,6 @@ export const hospitals: Hospital[] = [
       program: "Hospital Program",
       effectiveDate: "2005-06-18",
     },
-    internationalServices: [
-      "International Patient Services team for medical visas, travel arrangements and accommodation",
-      "Language interpretation",
-    ],
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -225,10 +223,6 @@ export const hospitals: Hospital[] = [
       "Adult and paediatric bone marrow transplant programme",
       "25-bed emergency ward with 24×7 critical care",
     ],
-    internationalServices: [
-      "International patient team for treatment coordination and appointments",
-      "Help with medical documentation for the visit",
-    ],
     gallery: [
       {
         src: "/images/hospitals/fortis-memorial-research-institute-gurugram/campus.jpg",
@@ -291,14 +285,6 @@ export const hospitals: Hospital[] = [
       "Specialised ICUs for medical, surgical, neurology, neurosurgery, joint replacement and transplant patients",
       "Neonatal (NICU) and paediatric (PICU) intensive care",
       "25 dedicated emergency beds",
-    ],
-    internationalServices: ["International patient section for treatment coordination and appointments"],
-    gallery: [
-      {
-        src: "/images/hospitals/fortis-hospital-noida/facade.jpg",
-        alt: "Fortis Hospital, Noida, with its new tower",
-        source: "https://www.fortishealthcare.com/location/fortis-hospital-noida",
-      },
     ],
     isConfirmedPartner: false,
     verifiedOn: "2026-09-30",
@@ -441,10 +427,6 @@ export const hospitals: Hospital[] = [
       program: "Hospital Program",
       effectiveDate: "2006-01-29",
     },
-    internationalServices: [
-      "International Patient Services team for medical visas, travel arrangements and accommodation",
-      "Language interpretation",
-    ],
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -568,10 +550,6 @@ export const hospitals: Hospital[] = [
       program: "Hospital Program",
       effectiveDate: "2008-07-18",
     },
-    internationalServices: [
-      "International Patient Services team for medical visas, travel arrangements and accommodation",
-      "Language interpretation",
-    ],
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
@@ -615,10 +593,6 @@ export const hospitals: Hospital[] = [
       program: "Hospital Program",
       effectiveDate: "2006-04-28",
     },
-    internationalServices: [
-      "International Patient Services team for medical visas, travel arrangements and accommodation",
-      "Language interpretation",
-    ],
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },

@@ -106,11 +106,6 @@ export type Hospital = {
    * short neutral line each, from the hospital's own page or `sources`.
    */
   facilities?: string[];
-  /**
-   * Services the hospital lists for international patients (interpreters,
-   * visa letters, airport help…), in our own words.
-   */
-  internationalServices?: string[];
   /** Extra photos for the hospital page gallery, shown after `image`. */
   gallery?: GalleryImage[];
   /** One to three neutral sentences on the hospital's history, from `sources`. */
