@@ -100,7 +100,159 @@ export type SourceCountryPage = {
 const emptyCountry = { published: false, facts: [], notes: [], faqs: [], sources: [] };
 
 export const sourceCountryPages: SourceCountryPage[] = [
-  { slug: "nigeria", country: "Nigeria", demonym: "Nigerian", ...emptyCountry },
+  {
+    slug: "nigeria",
+    country: "Nigeria",
+    demonym: "Nigerian",
+    published: true,
+    verifiedOn: "2026-10-01",
+    intro:
+      "Nigerian citizens cannot use India's e-Visa, so patients apply for a regular medical visa in person at the High Commission of India in Abuja or the Consulate General of India in Lagos. Flights from Lagos to India connect through a Gulf hub such as Dubai. TreatVero shares your reports with suitable hospitals, coordinates the hospital's invitation letter for your visa and helps plan your flights, stay and airport pickup in India.",
+    metaDescription:
+      "Medical treatment in India from Nigeria: medical visa via Abuja or Lagos (no e-Visa), attendants, flights from Lagos, polio and yellow fever documents.",
+    facts: [
+      { label: "Visa route", value: "Regular medical visa via the mission (no e-Visa)" },
+      { label: "Where to apply", value: "In person at HCI Abuja or CGI Lagos" },
+      { label: "Main airports", value: "Lagos (LOS), Abuja (ABV)" },
+      { label: "Typical route", value: "One stop, e.g. Lagos–Dubai–India" },
+      { label: "Health documents", value: "Polio and yellow fever certificates" },
+    ],
+    visa: {
+      eMedical: "not-available",
+      summary:
+        "The High Commission of India states that there is no e-Visa facility for Nigerian nationals, so patients apply for a regular medical visa in person at the High Commission in Abuja or the Consulate General in Lagos. Family members who travel with you are named as attendants in the Indian hospital's invitation letter and apply with proof of their relationship to you.",
+      points: [
+        "Fill in the regular visa form online at indianvisaonline.gov.in, selecting Abuja or Lagos as your mission, then submit the signed printout in person with your original documents. Fingerprints and iris scans are taken when you apply.",
+        "Residents of Lagos, Ogun, Ondo, Osun, Oyo, Abia, Anambra, Ebonyi, Enugu, Imo, Akwa Ibom, Bayelsa, Cross River, Delta, Edo and Rivers states apply at the Consulate General in Lagos; other states apply at the High Commission in Abuja.",
+        "The Indian hospital emails its invitation letter, with the treatment, its dates and the names of any attendants, to the High Commission or Consulate; you attach a printout of that email. The High Commission's checklist also asks for an FRRO-registered invitation with a file reference number.",
+        "You also need a referral letter or medical report from a hospital in Nigeria (the High Commission's checklist asks for a government hospital), your medical history and scans, and a bank statement for the last three months, or a sponsor's letter, ID and bank statement.",
+        "Applications are taken by appointment date, but patients who need to travel urgently and cannot get an early appointment can go to the High Commission or the Lagos office between 9:00 and 11:00 on any working day.",
+      ],
+      missions: [
+        { name: "High Commission of India, Abuja", url: "https://hciabuja.gov.in/" },
+        { name: "Consulate General of India, Lagos", url: "https://cgilagos.gov.in/" },
+      ],
+    },
+    travel: {
+      summary:
+        "Most patients fly from Murtala Muhammed International Airport in Lagos or Nnamdi Azikiwe International Airport in Abuja, with one connection on the way to India. Emirates sells flights from Lagos to Delhi, Mumbai, Chennai, Bengaluru, Hyderabad and Ahmedabad, changing planes at its Dubai hub.",
+      airports: [
+        { name: "Murtala Muhammed International Airport, Lagos", code: "LOS" },
+        { name: "Nnamdi Azikiwe International Airport, Abuja", code: "ABV" },
+      ],
+      routes: [
+        {
+          to: "delhi-ncr",
+          kind: "one-stop",
+          note: "Emirates connects Lagos with Indira Gandhi International Airport through Dubai.",
+        },
+        {
+          to: "mumbai",
+          kind: "one-stop",
+          note: "Emirates connects Lagos with Chhatrapati Shivaji Maharaj International Airport through Dubai.",
+        },
+        {
+          to: "chennai",
+          kind: "one-stop",
+          note: "Emirates connects Lagos with Chennai International Airport through Dubai.",
+        },
+        {
+          to: "bengaluru",
+          kind: "one-stop",
+          note: "Emirates connects Lagos with Kempegowda International Airport through Dubai.",
+        },
+        {
+          to: "hyderabad",
+          kind: "one-stop",
+          note: "Emirates connects Lagos with Rajiv Gandhi International Airport through Dubai.",
+        },
+        {
+          to: "ahmedabad",
+          kind: "one-stop",
+          note: "Emirates connects Lagos with Ahmedabad through Dubai.",
+        },
+      ],
+    },
+    notes: [
+      {
+        title: "Documents to prepare",
+        text: "Your passport needs at least six months' validity, or longer if the visa you are requesting runs longer, plus two 2 x 2 inch photos on a light background. Bring your original scans (CT, MRI or X-ray reports) and medical papers for the consular officer to check, and the Indian hospital's invitation letter, which TreatVero coordinates.",
+      },
+      {
+        title: "Polio vaccination certificate",
+        text: "All Nigerian nationals visiting India must carry a polio vaccination certificate showing at least one dose of bivalent oral polio vaccine (bOPV) or inactivated polio vaccine (IPV). The dose must be within the previous 12 months and at least 4 weeks before you arrive.",
+      },
+      {
+        title: "Yellow fever certificate",
+        text: "Nigeria is on India's list of yellow fever endemic countries, so carry your original yellow fever vaccination certificate. Travellers without a valid certificate can be quarantined in India for up to six days; the High Commission lists the vaccine as compulsory for everyone except infants under six months.",
+      },
+      {
+        title: "Proof of funds and paying",
+        text: "The visa application needs a certified bank statement for the last three months, or a bank guarantee letter, showing you can cover medical and living costs in India. If someone is sponsoring your treatment, add their affidavit or signed sponsorship letter and a copy of their ID. The visa fee is paid in naira at the bank counter inside the High Commission or Consulate.",
+      },
+      {
+        title: "Book flights after your visa",
+        text: "The Indian missions advise against confirming travel bookings until your visa is granted, and the Lagos Consulate notes that some visa types take up to six weeks to process. Indian visas are valid from the date of issue, not the date you arrive.",
+      },
+      {
+        title: "Follow-up and transplant cases",
+        text: "If you are returning for follow-up treatment, attach your previous discharge summary from the Indian hospital. For organ transplants, the High Commission asks for the donor and patient compatibility report.",
+      },
+    ],
+    faqs: [
+      {
+        question: "Do Nigerian citizens need a visa for medical treatment in India?",
+        answer:
+          "Yes. All foreign nationals, including children, need a visa to enter India. Nigerian patients apply for a regular medical visa in person at the High Commission of India in Abuja or the Consulate General of India in Lagos, with an invitation letter from the Indian hospital, which TreatVero coordinates once a hospital has reviewed your reports.",
+      },
+      {
+        question: "Can I apply for an Indian e-Medical visa from Nigeria?",
+        answer:
+          "No. The High Commission states that there is currently no e-Visa facility for Nigerian nationals, and Nigeria is not on the e-Visa country list (the Niger Republic, which is listed, is a different country). Apply through the Indian mission instead.",
+      },
+      {
+        question: "Should I apply in Abuja or Lagos?",
+        answer:
+          "It depends on the state you live in. Residents of the South West, South East and South South states, such as Lagos, Rivers, Enugu, Delta and Edo, apply at the Consulate General in Lagos. Residents of other states apply at the High Commission in Abuja.",
+      },
+      {
+        question: "Can a family member travel with me?",
+        answer:
+          "Yes. The Indian hospital names your attendants in its invitation letter, with a contact person at the hospital, and each attendant shows proof of their relationship to you when applying. TreatVero makes sure the attendants' details are in the letter before it is sent to the mission.",
+      },
+      {
+        question: "How do I fly from Nigeria to India?",
+        answer:
+          "Most routes need one connection. Emirates sells flights from Lagos to Delhi, Mumbai, Chennai, Bengaluru, Hyderabad and Ahmedabad through Dubai. Book only after your visa is granted, and we will help you time the flight around your admission date.",
+      },
+      {
+        question: "Which vaccination certificates do I need for India?",
+        answer:
+          "You need a polio vaccination certificate (a bOPV or IPV dose within the last 12 months, given at least 4 weeks before arrival) and a yellow fever vaccination certificate, because Nigeria is a yellow fever endemic country. Carry both originals when you travel.",
+      },
+    ],
+    sources: [
+      { title: "Indian e-Visa: list of eligible countries", url: "https://indianvisaonline.gov.in/evisa/" },
+      { title: "High Commission of India, Abuja: visa instructions", url: "https://hciabuja.gov.in/pages/MTA4" },
+      { title: "High Commission of India, Abuja: medical visa requirements", url: "https://hciabuja.gov.in/pages/MTE1" },
+      {
+        title: "High Commission of India, Abuja: medical visa document checklist",
+        url: "https://hciabuja.gov.in/public_files/assets/pdf/Medical_Visa_200226.pdf",
+      },
+      {
+        title: "High Commission of India, Abuja: appointment date system for visas",
+        url: "https://hciabuja.gov.in/public_files/assets/pdf/Appointment_date_system_for_visas.pdf",
+      },
+      {
+        title: "High Commission of India, Abuja: states under the Lagos office",
+        url: "https://hciabuja.gov.in/public_files/assets/pdf/LIST_OF_STATES_FALL_UNDER_THE_JURISDICTION_OF_HIGH_COMMISSION_OF_INDIA_OFFICE.pdf",
+      },
+      { title: "Consulate General of India, Lagos: visa services", url: "https://cgilagos.gov.in/visa-services.php" },
+      { title: "Federal Airports Authority of Nigeria: airports", url: "https://faan.gov.ng/" },
+      { title: "Emirates: flights from Lagos", url: "https://www.emirates.com/ng/english/destinations/flights-from-lagos/" },
+      { title: "Ministry of Health and Family Welfare: yellow fever vaccination", url: "https://www.ihpoe.mohfw.gov.in/vaccination.php" },
+    ],
+  },
   { slug: "kenya", country: "Kenya", demonym: "Kenyan", ...emptyCountry },
   {
     slug: "bangladesh",
