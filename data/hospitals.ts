@@ -389,6 +389,68 @@ export const hospitals: Hospital[] = [
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
+  // JCI: not listed. NABH: H-2013-0184, listed as "Jaslok Hospital & Research Center", Dr. G. Deshmukh Marg, Peddar Road, Mumbai.
+  {
+    slug: "jaslok-hospital-mumbai",
+    name: "Jaslok Hospital & Research Centre",
+    city: "mumbai",
+    place: "Peddar Road, Mumbai",
+    accreditations: ["NABH"],
+    specialties: [
+      "cardiac-care",
+      "cancer-treatment",
+      "orthopaedics",
+      "spine-surgery",
+      "ivf-fertility",
+      "eye-care",
+      "neurology-neurosurgery",
+      "organ-transplant",
+      "dental-treatment",
+      "bariatric-surgery",
+    ],
+    specialtyNotes: {
+      "cardiac-care":
+        "Cardiology with complex angioplasty, electrophysiology, device closures and TAVR, and cardiovascular and thoracic surgery with a heart failure clinic offering ventricular assist devices.",
+      "cancer-treatment": "Medical, radiation and surgical oncology, with bone marrow transplant.",
+      "ivf-fertility":
+        "A department of assisted reproduction and genetics offering IUI, IVF, ICSI, egg, sperm and embryo freezing and preimplantation genetic testing, with its own andrology and genetics laboratories.",
+      "eye-care": "Cataract (phacoemulsification), vitreoretinal, corneal, glaucoma and squint surgery.",
+      "neurology-neurosurgery":
+        "Neurology and neurosurgery, with a stereotactic and functional neurosurgery programme that includes deep brain stimulation.",
+      "organ-transplant": "Liver transplant from living and deceased donors, kidney transplant and a heart transplant programme.",
+      "dental-treatment": "General and preventive dentistry, root canal treatment, gum care, crowns, bridges, dentures and dental implants.",
+      "bariatric-surgery": "A bariatric surgery department offering weight-loss surgery since 2000.",
+    },
+    description: "Multi-specialty tertiary-care private trust hospital on Peddar Road in South Mumbai, with a department of assisted reproduction and genetics.",
+    image: "/images/hospitals/jaslok-hospital-mumbai.jpg",
+    website: "https://www.jaslokhospital.net",
+    address: "15, Dr. G. Deshmukh Marg, Peddar Road, Mumbai, Maharashtra 400026",
+    geo: { lat: 18.9717, lng: 72.80993 },
+    googleMapsCid: "8335960369506379207",
+    airportDistanceKm: 16,
+    nearestStation: { name: "Mumbai Central", network: "Indian Railways", km: 1.0 },
+    established: 1973,
+    history:
+      "Founded by philanthropist Seth Lokoomal Chanrai with surgeon Shantilal Jamnadas Mehta, the hospital was inaugurated on 6 July 1973 by Prime Minister Indira Gandhi. Its name combines those of Lokoomal Chanrai and his wife Jasotibai, and it is run as a private trust hospital.",
+    sources: [
+      {
+        title: "Wikipedia: Jaslok Hospital",
+        url: "https://en.wikipedia.org/wiki/Jaslok_Hospital",
+        isAbout: true,
+      },
+    ],
+    nabh: { number: "H-2013-0184" },
+    facilities: [
+      "Assisted reproduction department with andrology and genetics laboratories",
+      "Stereotactic and functional neurosurgery programme, including deep brain stimulation",
+      "MR-guided focused ultrasound (MRgFUS)",
+      "PET-CT scanner in the nuclear medicine department",
+      "Bone marrow transplant",
+      "Heart failure clinic with left ventricular assist devices (LVAD)",
+    ],
+    isConfirmedPartner: false,
+    verifiedOn: "2026-10-05",
+  },
 
   /* -------------------------------- Chennai -------------------------------- */
   // JCI: "Apollo Hospital, Chennai", Hospital Program, 29 Jan 2006. NABH: not found in the directory.
