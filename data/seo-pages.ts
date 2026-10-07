@@ -253,7 +253,157 @@ export const sourceCountryPages: SourceCountryPage[] = [
       { title: "Ministry of Health and Family Welfare: yellow fever vaccination", url: "https://www.ihpoe.mohfw.gov.in/vaccination.php" },
     ],
   },
-  { slug: "kenya", country: "Kenya", demonym: "Kenyan", ...emptyCountry },
+  {
+    slug: "kenya",
+    country: "Kenya",
+    demonym: "Kenyan",
+    published: true,
+    verifiedOn: "2026-10-07",
+    intro:
+      "Kenyan citizens can apply online for India's e-Medical visa or for a regular paper medical visa at the High Commission of India in Nairobi, and Nairobi has direct flights to Mumbai and Delhi. TreatVero shares your reports with suitable hospitals, coordinates the hospital's invitation letter for your visa and helps plan your flights, stay and airport pickup in India.",
+    metaDescription:
+      "Medical treatment in India from Kenya: e-Medical or paper medical visa via Nairobi, attendants, direct flights to Mumbai and Delhi, yellow fever certificate.",
+    facts: [
+      { label: "Visa route", value: "e-Medical visa online, or paper visa via the mission" },
+      { label: "Indian missions", value: "High Commission, Nairobi; Assistant High Commission, Mombasa" },
+      { label: "Main airport", value: "Nairobi (NBO)" },
+      { label: "Direct flights", value: "Mumbai, Delhi" },
+      { label: "Health document", value: "Yellow fever vaccination certificate" },
+    ],
+    visa: {
+      eMedical: "available",
+      summary:
+        "Kenya is on India's e-Visa list, and the High Commission of India in Nairobi confirms that Kenyan nationals can use either an e-Visa or a regular paper visa. Patients can apply online for an e-Medical visa, with e-Medical Attendant visas for up to two companions, or apply in person for a Medical or Medical Attendant visa at the mission.",
+      points: [
+        "e-Medical visa: apply online at least 4 days before you arrive (up to 120 days ahead) and upload your passport bio page and the Indian hospital's letter on its letterhead. The High Commission does not process e-Visas; they are applied for, paid for and approved online and sent to your email.",
+        "Paper visa in Nairobi: fill in the regular form at indianvisaonline.gov.in, book an appointment and submit the signed printout at the High Commission on a working day between 9:00 and 12:30. Patient and attendant should come in person, and regular visas are normally processed in 3 to 5 working days.",
+        "The Indian hospital or doctor emails the invitation letter to the High Commission's visa section, naming the patient and attendants with passport numbers, the illness, the length of treatment and the estimated cost. Your Kenyan hospital's or doctor's referral letter is emailed to the same address.",
+        "You also submit proof of your relationship with each attendant, a medical visa undertaking stating the purpose of your visit and your return home after treatment and, for a child, consent from both parents.",
+        "Residents of Mombasa, Kwale, Kilifi, Taita Taveta, Tana River and Lamu come under the Assistant High Commission of India in Mombasa, which accepts applications on working days from 9:30 to 12:30 and recommends applying at least seven working days before you travel.",
+      ],
+      missions: [
+        { name: "High Commission of India, Nairobi", url: "https://hcinairobi.gov.in/" },
+        { name: "Assistant High Commission of India, Mombasa", url: "https://www.ahcimombasa.gov.in/" },
+      ],
+    },
+    travel: {
+      summary:
+        "Most patients fly from Jomo Kenyatta International Airport in Nairobi, which has direct flights to Mumbai and Delhi. Other Indian cities need one connection, either through Mumbai or Delhi or through a Gulf hub such as Dubai.",
+      airports: [
+        { name: "Jomo Kenyatta International Airport, Nairobi", code: "NBO" },
+        { name: "Moi International Airport, Mombasa", code: "MBA" },
+      ],
+      routes: [
+        {
+          to: "mumbai",
+          kind: "direct",
+          note: "Kenya Airways and IndiGo fly direct from Nairobi to Chhatrapati Shivaji Maharaj International Airport.",
+        },
+        {
+          to: "delhi-ncr",
+          kind: "direct",
+          note: "Air India flies direct from Nairobi to Indira Gandhi International Airport.",
+        },
+        {
+          to: "chennai",
+          kind: "one-stop",
+          note: "No direct flight from Nairobi; Emirates connects Nairobi with Chennai through Dubai, or change planes in Mumbai or Delhi.",
+        },
+        {
+          to: "bengaluru",
+          kind: "one-stop",
+          note: "No direct flight from Nairobi; Emirates connects Nairobi with Bengaluru through Dubai, or change planes in Mumbai or Delhi.",
+        },
+        {
+          to: "hyderabad",
+          kind: "one-stop",
+          note: "No direct flight from Nairobi; Emirates connects Nairobi with Hyderabad through Dubai, or change planes in Mumbai or Delhi.",
+        },
+        {
+          to: "ahmedabad",
+          kind: "one-stop",
+          note: "No direct flight from Nairobi; Emirates connects Nairobi with Ahmedabad through Dubai, or change planes in Mumbai or Delhi.",
+        },
+      ],
+    },
+    notes: [
+      {
+        title: "Documents to prepare",
+        text: "Your passport needs at least six months' validity and, for an e-Visa, two blank pages. For a paper visa, add two recent 51 mm x 51 mm colour photos on a white background, your medical reports and local referral letter, and the Indian hospital's invitation letter, which TreatVero coordinates.",
+      },
+      {
+        title: "Yellow fever certificate",
+        text: "Kenya is on India's list of yellow fever endemic countries, so everyone arriving from Kenya needs a valid yellow fever vaccination certificate. The vaccine must be given at least 10 days before you travel, at a government-approved clinic or hospital; travellers without a valid certificate can be quarantined for up to six days.",
+      },
+      {
+        title: "Polio certificate",
+        text: "The High Commission in Nairobi states that oral polio vaccine is not required for travel from Kenya to India. The Assistant High Commission in Mombasa still asks applicants to submit copies of both yellow fever and polio vaccination certificates, so check with that office if you apply there.",
+      },
+      {
+        title: "Proof of funds",
+        text: "The paper visa application needs original proof that you can cover your treatment and stay, such as a bank statement for the last three months, a salary certificate or a sponsorship or insurance letter. If the statement belongs to someone else, add their letter of financial undertaking and proof of their relationship to you.",
+      },
+      {
+        title: "Carrying and sending money",
+        text: "Under the Central Bank of Kenya's foreign exchange guidelines, you can take up to KES 500,000, or US$ 5,000 equivalent in foreign currency, out of Kenya without declaring it; larger amounts must be declared at the exit point. Banks keep supporting documents for transfers above US$ 10,000 equivalent, so have the hospital's written estimate ready, and the Central Bank advises using bank transfers or cards rather than cash.",
+      },
+      {
+        title: "Visa fee, collection and follow-up",
+        text: "In Nairobi the paper visa fee is paid after you submit, at Bank of India's Kenyatta Avenue branch or at the High Commission by M-Pesa or card. You collect your passport in person and give your biometrics then; a patient's documents can also be handed in or collected by an attendant or close relative with a signed letter of authority. For follow-up treatment, attach your earlier papers and discharge summary from the Indian hospital.",
+      },
+    ],
+    faqs: [
+      {
+        question: "Do Kenyan citizens need a visa for medical treatment in India?",
+        answer:
+          "Yes. Kenya is on India's e-Visa list, so you can apply online for an e-Medical visa, or you can apply for a regular paper Medical visa at the High Commission of India in Nairobi. Both need a letter from the Indian hospital, which TreatVero coordinates once a hospital has reviewed your reports.",
+      },
+      {
+        question: "Can a family member travel with me?",
+        answer:
+          "Yes. Up to two companions can get e-Medical Attendant visas against one e-Medical visa. For a paper visa, the hospital's invitation letter names your attendants with their passport numbers, and you submit proof of your relationship with each of them.",
+      },
+      {
+        question: "Are there direct flights from Nairobi to India?",
+        answer:
+          "Yes. Kenya Airways and IndiGo fly direct from Nairobi to Mumbai, and Air India flies direct from Nairobi to Delhi. Chennai, Bengaluru, Hyderabad and Ahmedabad need one stop, through Mumbai or Delhi or through a Gulf hub such as Dubai.",
+      },
+      {
+        question: "Where do I apply for an Indian medical visa in Kenya?",
+        answer:
+          "The e-Medical visa is applied for entirely online. For a paper visa, book an appointment and apply in person at the High Commission of India in Gigiri, Nairobi; residents of Mombasa, Kwale, Kilifi, Taita Taveta, Tana River and Lamu come under the Assistant High Commission of India in Mombasa.",
+      },
+      {
+        question: "Do I need a yellow fever certificate to travel from Kenya to India?",
+        answer:
+          "Yes. All travellers arriving in India from Kenya need a valid yellow fever vaccination certificate, with the vaccine given at least 10 days before travel. Carry the original with your passport; without it you can be quarantined for up to six days on arrival.",
+      },
+      {
+        question: "What documents should I bring?",
+        answer:
+          "Bring your passport with at least six months' validity, your visa or a printed copy of your e-Visa approval, your yellow fever certificate, your medical reports and referral letter, and the hospital letter used for your visa. e-Visa holders also need a return or onward ticket, and their biometrics are taken at immigration on arrival.",
+      },
+    ],
+    sources: [
+      { title: "Indian e-Visa: eligible countries and e-Medical visa rules", url: "https://indianvisaonline.gov.in/evisa/" },
+      { title: "High Commission of India, Nairobi: visa types and documents", url: "https://hcinairobi.gov.in/Visa_Types" },
+      { title: "High Commission of India, Nairobi: vaccination requirement", url: "https://hcinairobi.gov.in/eoinrb_pages/NjMw" },
+      {
+        title: "Assistant High Commission of India, Mombasa: information on visa",
+        url: "https://www.ahcimombasa.gov.in/page/information-on-visa/",
+      },
+      { title: "Ministry of Health and Family Welfare: yellow fever vaccination", url: "https://www.ihpoe.mohfw.gov.in/vaccination.php" },
+      {
+        title: "Central Bank of Kenya: Guidelines on Foreign Exchange",
+        url: "https://www.centralbank.go.ke/wp-content/uploads/2016/08/foreignexchangeguidelines.pdf",
+      },
+      { title: "Kenya Airways: flights from Nairobi to Mumbai", url: "https://www.kenya-airways.com/en_ke/flights-from-nairobi-to-mumbai/" },
+      { title: "IndiGo: Nairobi to Mumbai flights", url: "https://www.goindigo.in/international-flights/nairobi-to-mumbai-flights.html" },
+      { title: "Air India: Nairobi to Delhi flights", url: "https://www.airindia.com/en/book-flights/nairobi-to-delhi-flights" },
+      { title: "Emirates: flights from Nairobi", url: "https://www.emirates.com/ke/english/destinations/flights-from-nairobi/" },
+      { title: "Kenya Airports Authority: our airports", url: "https://www.kaa.go.ke/our-airports/" },
+    ],
+  },
   {
     slug: "bangladesh",
     country: "Bangladesh",
