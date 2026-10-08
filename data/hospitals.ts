@@ -615,6 +615,71 @@ export const hospitals: Hospital[] = [
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
+  // JCI: not listed. NABH: H-2008-0012, listed as "Manipal Hospital", Old Airport Road, Rustum Bagh, Bengaluru.
+  {
+    slug: "manipal-hospital-old-airport-road-bengaluru",
+    name: "Manipal Hospital Old Airport Road",
+    city: "bengaluru",
+    place: "Bengaluru",
+    accreditations: ["NABH"],
+    specialties: [
+      "cardiac-care",
+      "cancer-treatment",
+      "orthopaedics",
+      "spine-surgery",
+      "ivf-fertility",
+      "eye-care",
+      "neurology-neurosurgery",
+      "organ-transplant",
+      "dental-treatment",
+      "bariatric-surgery",
+    ],
+    specialtyNotes: {
+      "cardiac-care":
+        "Interventional cardiology, electrophysiology and paediatric cardiology, with cardiothoracic and vascular surgery for adults and children, including coronary bypass and valve repair and replacement.",
+      "cancer-treatment": "Medical, surgical and radiation oncology, with clinical haematology, bone marrow transplant, orthopaedic oncology and psycho-oncology.",
+      orthopaedics: "Joint replacement, arthroscopy and sports injury care, trauma and fracture surgery, paediatric orthopaedics and limb-preservation surgery for bone tumours.",
+      "spine-surgery":
+        "A dedicated spine care centre covering microdiscectomy, endoscopic and minimally invasive fusion surgery, artificial disc replacement, and scoliosis and other deformity correction.",
+      "ivf-fertility":
+        "A reproductive medicine department with its own andrology and embryology laboratories, offering IUI, IVF, ICSI, and egg and embryo freezing.",
+      "eye-care": "Cataract, glaucoma and refractive surgery, including LASIK, with retina and paediatric ophthalmology services.",
+      "neurology-neurosurgery": "Neurology with stroke and epilepsy care, and neurosurgery including skull base surgery and treatment of brain tumours and arteriovenous malformations.",
+      "organ-transplant": "Liver, kidney, heart, lung and pancreas transplant, with living donor liver transplant and bone marrow transplant.",
+      "dental-treatment": "Orthodontics including braces and aligners, dental implants, root canal treatment, crowns and prosthetics, and oral and maxillofacial surgery.",
+      "bariatric-surgery": "Gastric bypass, sleeve gastrectomy, biliopancreatic diversion with duodenal switch and adjustable gastric banding.",
+    },
+    description:
+      "Multi-specialty tertiary-care hospital on HAL Old Airport Road, Kodihalli, in east Bengaluru: the first hospital of the Manipal Hospitals group, with a dedicated spine care centre.",
+    image: "/images/hospitals/manipal-hospital-old-airport-road-bengaluru.jpg",
+    imageCredit: "Photo: Amol.Gaitonde, CC BY-SA 3.0, via Wikimedia Commons",
+    website: "https://www.manipalhospitals.com/oldairportroad/",
+    address: "98, HAL Old Airport Road, Kodihalli, Bengaluru, Karnataka 560017",
+    geo: { lat: 12.95857, lng: 77.64904 },
+    googleMapsCid: "1358069224078559197",
+    airportDistanceKm: 37,
+    nearestStation: { name: "Indiranagar", network: "Namma Metro", km: 2.5 },
+    established: 1991,
+    // Beds left out: Wikipedia gives 600, other published figures give 650.
+    history:
+      "Opened in 1991 on HAL Old Airport Road as the first hospital of Manipal Hospitals. The group is part of the Manipal Education and Medical Group and traces its origins to Kasturba Medical College, founded in Manipal by T. M. A. Pai in 1953.",
+    sources: [
+      { title: "Wikipedia: Manipal Hospitals", url: "https://en.wikipedia.org/wiki/Manipal_Hospitals" },
+      {
+        title: "Wikimedia Commons: Manipal Hospital front view photo",
+        url: "https://commons.wikimedia.org/wiki/File:Manipal_Hospital_front_View_4-20-2008_5-24-37_PM.JPG",
+      },
+    ],
+    nabh: { number: "H-2008-0012" },
+    facilities: [
+      "Reproductive medicine unit with in-house IVF, andrology and embryology laboratories",
+      "Dedicated spine care centre, with minimally invasive and endoscopic spine surgery",
+      "Bone marrow transplant alongside medical, surgical and radiation oncology",
+      "Liver, kidney, heart, lung and pancreas transplant programmes",
+    ],
+    isConfirmedPartner: false,
+    verifiedOn: "2026-10-08",
+  },
 
   /* ------------------------------- Hyderabad ------------------------------- */
   // JCI: "Apollo Hospital, Hyderabad", Road No 72, Film Nagar, Hospital Program, 28 Apr 2006. NABH: not found in the directory.
