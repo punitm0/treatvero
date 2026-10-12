@@ -757,6 +757,87 @@ export const hospitals: Hospital[] = [
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
+  // JCI: "Continental Hospitals Limited, Hyderabad", Hyderabad, Hospital Program, 24 Jan 2015. NABH: H-2014-0255 (Continental Hospitals Limited, Financial District, Gachibowli).
+  {
+    slug: "continental-hospitals-hyderabad",
+    name: "Continental Hospitals",
+    city: "hyderabad",
+    place: "Gachibowli, Hyderabad",
+    accreditations: ["JCI", "NABH"],
+    specialties: [
+      "cardiac-care",
+      "cancer-treatment",
+      "orthopaedics",
+      "spine-surgery",
+      "neurology-neurosurgery",
+      "organ-transplant",
+      "bariatric-surgery",
+      "ivf-fertility",
+      "eye-care",
+      "dental-treatment",
+    ],
+    specialtyNotes: {
+      "cardiac-care": "Cardiology and cardiothoracic and vascular surgery through the hospital's heart centre.",
+      "cancer-treatment":
+        "Continental Cancer Centre, with medical, surgical and radiation oncology, and a haematology and bone marrow transplant department.",
+      orthopaedics: "Orthopaedics, with a separate arthroscopy and sports medicine department.",
+      "neurology-neurosurgery":
+        "Neurology and neurosurgery, including a centre for minimally invasive endoscopic neurosurgery and a brain tumour centre.",
+      "organ-transplant": "Liver transplant within the HPB and liver transplant department, and kidney transplant under urology and nephrology.",
+      "bariatric-surgery": "Bariatric surgery through the hospital's obesity and weight loss centre.",
+      "ivf-fertility": "Continental Fertility Centre offers IVF, ICSI, IUI and fertility preservation (egg, sperm and embryo freezing).",
+      "dental-treatment": "Dental and maxillofacial surgery department, with cosmetic dentistry.",
+    },
+    description:
+      "Multi-specialty tertiary-care hospital in the Financial District, Nanakramguda (Gachibowli), Hyderabad, with a cancer centre and liver and kidney transplant programmes.",
+    image: "/images/hospitals/continental-hospitals-hyderabad.jpg",
+    imageCredit: "Photo: Tarunsamanta, CC BY-SA 4.0, via Wikimedia Commons",
+    website: "https://continentalhospitals.com/about-us/",
+    address: "Plot No. 3, Road No. 2, Financial District, Nanakramguda, Gachibowli, Hyderabad, Telangana 500032",
+    geo: { lat: 17.41766, lng: 78.33913 },
+    googleMapsCid: "200983805608306591",
+    airportDistanceKm: 29,
+    established: 2013,
+    beds: 585,
+    icuBeds: 90,
+    operationTheatres: 16,
+    facilities: [
+      "Modular operation theatres",
+      "Single-room ICU beds, including level 3 neonatal and paediatric intensive care",
+      "Haematology and bone marrow transplant department",
+      "Continental Cancer Centre",
+      "Continental Fertility Centre",
+    ],
+    history:
+      "Founded by Dr Guru N Reddy and opened in April 2013. Parkway Pantai, part of Malaysia's IHH Healthcare, bought a 51% stake in March 2015; IHH sold its stake, by then 62.2%, back to Dr Reddy and affiliates in December 2021.",
+    sources: [
+      { title: "Wikipedia: Continental Hospitals", url: "https://en.wikipedia.org/wiki/Continental_Hospitals", isAbout: true },
+      {
+        title: "Business Today: Parkway Pantai integrates part of Indian operations with brand Gleneagles (15 Mar 2017)",
+        url: "https://www.businesstoday.in/latest/corporate/story/parkway-pantai-integrates-part-of-indian-operations-with-brand-gleneagles-70294-2017-03-15",
+      },
+      {
+        title: "New Straits Times: IHH Healthcare completes Continental Hospitals divestment (14 Dec 2021)",
+        url: "https://nst.com.my/amp/business/2021/12/754322/ihh-healthcare-completes-continental-hospitals-divestment",
+      },
+    ],
+    gallery: [
+      {
+        src: "/images/hospitals/continental-hospitals-hyderabad/exterior.jpg",
+        alt: "Continental Hospitals building in the Financial District, Hyderabad",
+        source: "https://commons.wikimedia.org/wiki/File:Continental_hospital_at_Hyderabad.jpg",
+        credit: "Photo: Wasiul Bahar, CC BY-SA 4.0, via Wikimedia Commons",
+      },
+    ],
+    jci: {
+      listedAs: "Continental Hospitals Limited, Hyderabad",
+      program: "Hospital Program",
+      effectiveDate: "2015-01-24",
+    },
+    nabh: { number: "H-2014-0255" },
+    isConfirmedPartner: false,
+    verifiedOn: "2026-10-12",
+  },
 
   /* ------------------------------- Ahmedabad ------------------------------- */
   // JCI: "Marengo Asia Healthcare Private Limited", Sola, Ahmedabad, Hospital Program, 24 Sep 2016. NABH: H-2013-0166 (formerly CIMS Hospital).
