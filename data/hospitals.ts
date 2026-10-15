@@ -527,6 +527,73 @@ export const hospitals: Hospital[] = [
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
+  // JCI: "Kauvery Hospital Alwarpet", Chennai, Hospital Program, 13 Sep 2025. NABH: H-2019-0625 (Kauvery Hospital, 199 Luz Church Road, Mylapore).
+  {
+    slug: "kauvery-hospital-alwarpet-chennai",
+    name: "Kauvery Hospital Alwarpet",
+    city: "chennai",
+    place: "Chennai",
+    accreditations: ["JCI", "NABH"],
+    specialties: ["cardiac-care", "neurology-neurosurgery", "orthopaedics", "organ-transplant", "dental-treatment"],
+    specialtyNotes: {
+      "cardiac-care":
+        "Cardiac sciences with interventional cardiology, cardiothoracic surgery and a robotic-assisted beating-heart coronary bypass programme.",
+      "neurology-neurosurgery": "Neurology and neuroscience department, with neurosurgery and an O-arm navigation system for brain and spine surgery.",
+      "organ-transplant": "A heart and lung transplant centre, and liver transplantation within the liver diseases and hepatobiliary surgery department.",
+      "dental-treatment": "Dental and maxillofacial department, including maxillofacial and jaw surgery.",
+    },
+    description:
+      "Multi-specialty hospital of the Kauvery Hospital group on Luz Church Road, Alwarpet, Chennai, with a heart and lung transplant centre.",
+    image: "/images/hospitals/kauvery-hospital-alwarpet-chennai.jpg",
+    website: "https://www.kauveryhospital.com/our-locations/chennai/",
+    address: "No. 199, Luz Church Road, Mylapore, Chennai, Tamil Nadu 600004",
+    geo: { lat: 13.03817, lng: 80.2573 },
+    googleMapsCid: "9217523275751190822",
+    airportDistanceKm: 13,
+    nearestStation: { name: "Thirumayilai", network: "Chennai MRTS", km: 1.1 },
+    facilities: [
+      "O-arm intraoperative imaging with navigation for brain, spine and orthopaedic surgery",
+      "Robotic-assisted beating-heart coronary bypass surgery (da Vinci system)",
+      "Heart revival (E-CPR) programme for cardiac arrest",
+      "Heart and lung transplant centre",
+    ],
+    history:
+      "The Kauvery group, which began in Tiruchirappalli, set up this hospital as its Chennai unit. Orthopaedic surgeon Dr Aravindan Selvaraj, its co-founder and executive director, returned to India in 2010 to establish it.",
+    sources: [
+      {
+        title: "The News Minute: Kauvery Hospital co-founder Dr Aravindan Selvaraj appointed chairman of ASSOCHAM TN (12 May 2022)",
+        url: "https://www.thenewsminute.com/amp/story/archive/kauvery-hospital-co-founder-dr-aravindan-selvaraj-appointed-chairman-assocham-tn-163903",
+      },
+      {
+        title: "Kauvery Hospital: Chennai gets its first O-ARM with navigation system (23 Apr 2025)",
+        url: "https://www.kauveryhospital.com/news-events/chennai-gets-its-first-o-arm/",
+      },
+      {
+        title: "Kauvery Hospital: robotic beating heart CABG programme (10 Feb 2026)",
+        url: "https://www.kauveryhospital.com/news-events/press-releases/kauvery-robotic-beating-heart-cabg/",
+      },
+      {
+        title: "Kauvery Hospital Alwarpet: heart revival (E-CPR) programme (20 May 2024)",
+        url: "https://www.kauveryhospital.com/news-events/kauvery-hospital-alwarpet-introduces-heart-revival-e-cpr-program-to-improve-survival-rate-of-cardiac-arrests/",
+      },
+    ],
+    gallery: [
+      {
+        src: "/images/hospitals/kauvery-hospital-alwarpet-chennai/exterior.jpg",
+        alt: "Kauvery Hospital building on Luz Church Road, Alwarpet, Chennai",
+        source: "https://commons.wikimedia.org/wiki/File:Kauvery_Hospital.jpg",
+        credit: "Photo: Kauvery Hospital, CC BY-SA 4.0, via Wikimedia Commons",
+      },
+    ],
+    jci: {
+      listedAs: "Kauvery Hospital Alwarpet",
+      program: "Hospital Program",
+      effectiveDate: "2025-09-13",
+    },
+    nabh: { number: "H-2019-0625" },
+    isConfirmedPartner: false,
+    verifiedOn: "2026-10-15",
+  },
 
   /* ------------------------------- Bengaluru ------------------------------- */
   // JCI: "Narayana Institute of Cardiac Sciences", Hosur Road, Bangalore, Hospital Program, 19 Jun 2026. NABH: H-2007-0007.
