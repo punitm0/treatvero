@@ -992,6 +992,67 @@ export const hospitals: Hospital[] = [
     isConfirmedPartner: false,
     verifiedOn: "2026-09-28",
   },
+  // JCI: not found in the directory. NABH: H-2016-0421 ("Zydus Hospital", Near Sola Bridge, Sarkhej Gandhinagar Road; the group's cancer hospital nearby holds H-2022-0921).
+  {
+    slug: "zydus-hospital-ahmedabad",
+    name: "Zydus Hospital",
+    city: "ahmedabad",
+    place: "Thaltej, Ahmedabad",
+    accreditations: ["NABH"],
+    specialties: [
+      "cardiac-care",
+      "neurology-neurosurgery",
+      "orthopaedics",
+      "spine-surgery",
+      "organ-transplant",
+      "ivf-fertility",
+      "dental-treatment",
+    ],
+    specialtyNotes: {
+      "cardiac-care": "Interventional cardiology, cardiac surgery, electrophysiology and cardiac critical care, with a heart transplant and mechanical circulatory support (ECMO, VAD) programme.",
+      "neurology-neurosurgery": "Neurology, stroke care and neurosurgery, including endovascular neuro-interventions in a dedicated neuro cath lab.",
+      orthopaedics: "Joint replacement, including MAKO robotic-arm assisted surgery, along with trauma care and arthroscopy.",
+      "spine-surgery": "A spine care department covering minimally invasive, endoscopic and deformity surgery, with O-arm navigation and neuromonitoring.",
+      "organ-transplant": "Liver, kidney and heart transplant, with dedicated transplant ICUs.",
+      "ivf-fertility": "IVF and ICSI, egg, sperm and embryo freezing, donor programmes and preimplantation genetic testing.",
+      "dental-treatment": "A department of dental sciences covering implants, root canal treatment, orthodontics, gum care and oral and maxillofacial surgery.",
+    },
+    description:
+      "Multi-specialty tertiary-care hospital of the Zydus group on S G Highway near Sola bridge, Ahmedabad, with liver, kidney and heart transplant programmes.",
+    image: "/images/hospitals/zydus-hospital-ahmedabad.jpg",
+    website: "https://zydushospitals.com/zydus-ahmedabad",
+    address: "Zydus Hospitals Road, near Sola Bridge, S G Highway, Thaltej, Ahmedabad, Gujarat 380054",
+    geo: { lat: 23.05851, lng: 72.51744 },
+    googleMapsCid: "5379697709052115081",
+    airportDistanceKm: 19,
+    nearestStation: { name: "Thaltej", network: "Ahmedabad Metro", km: 1 },
+    // NABH certificate (2026) and the hospital page both give 550 beds; a 2018 news report said 650.
+    beds: 550,
+    history:
+      "Built by the Ahmedabad-based Zydus group, led by Pankaj Patel, as a 20-storey, 550-bed hospital beside the Sola overbridge on S G Highway. A report in April 2015 said the building had taken 22 months to construct and that the Gujarat chief minister would inaugurate it on 1 May that year.",
+    sources: [
+      {
+        title: "DeshGujarat: Pankaj Patel shares details of soon-to-open Zydus Hospital in Ahmedabad (5 Apr 2015)",
+        url: "https://deshgujarat.com/2015/04/05/pankaj-patel-shares-details-of-soon-to-open-zydus-hospital-in-ahmedabad/",
+      },
+      {
+        title: "NABH scope of accreditation H-2016-0421 (Zydus Hospital, 550 sanctioned beds)",
+        url: "https://portal.nabh.co/Documents/AccreditedList/Hospitals/H-2016-0421_6th_Edition.pdf",
+      },
+    ],
+    nabh: { number: "H-2016-0421" },
+    // From the hospital's Ahmedabad page (advanced technology section).
+    facilities: [
+      "Two da Vinci Xi robotic surgical systems",
+      "MAKO robotic-arm system for joint replacement",
+      "Two 3 Tesla MRI scanners",
+      "Cath labs for cardiac and neuro interventions, with OCT imaging",
+      "O-arm navigation and neuromonitoring for spine surgery",
+      "Organ transplant unit with dedicated ICUs",
+    ],
+    isConfirmedPartner: false,
+    verifiedOn: "2026-10-19",
+  },
 ];
 
 export function getHospital(slug: string): Hospital | undefined {
